@@ -7,7 +7,7 @@ class Authentication {
   final _firebaseAuth = FirebaseAuth.instance;
   final _apiServices = ApiServices();
 
-  Future<UserProfile> _login(String emailAddress, String password) async {
+  Future<UserProfile> login(String emailAddress, String password) async {
     try {
       final cred = await _firebaseAuth.signInWithEmailAndPassword(
         email: emailAddress,
@@ -36,7 +36,7 @@ class Authentication {
     }
   }
 
-  Future<void> _register(
+  Future<void> register(
     String emailAddress,
     String password,
     String firstName,
