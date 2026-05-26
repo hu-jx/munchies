@@ -3,8 +3,8 @@
 import { User } from "../models/user.js"
 
 export async function getProfile (req, res) {
-    const profile_data = await User.findOne({uid: req.uid})
-    res.json(profile_data)
+    const profile_data = await User.findOne({firebase_uid: req.firebase_uid})
+    res.status(200).json(profile_data)
 }
 
 export async function createProfile (req, res) {

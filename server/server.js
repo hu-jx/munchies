@@ -5,7 +5,6 @@ import express, { json } from 'express'
 import {connectDB} from './config/db.js'
 import auth_routes from './routes/auth_routes.js'
 
-//Config
 const app = express()
 const PORT = process.env.PORT || 5000
 
