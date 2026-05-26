@@ -190,3 +190,4 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+server/munchies-auth-firebase-key.json
