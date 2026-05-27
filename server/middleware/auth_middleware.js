@@ -7,7 +7,7 @@ export async function verifyToken(req, resp, next) {
         //check token
         var decoded_token = await getAuth.verifyIdToken(token)
         //if verified & no error 
-        resp.uid = decoded_token.uid
+        req.uid = decoded_token.uid
         next()
     } catch (error) {
         resp.status(401).json({ message: 'Invalid Token' })
