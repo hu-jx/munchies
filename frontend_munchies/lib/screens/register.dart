@@ -5,7 +5,7 @@ import 'package:frontend_munchies/widgets/general_textfield.dart';
 import 'package:frontend_munchies/widgets/pw_textfield.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_munchies/widgets/button.dart';
-import 'package:frontend_munchies/screens/homepage.dart';
+import 'package:frontend_munchies/screens/main_screen.dart';
 
 // Use GoogleFonts.font_family to obtain desired font (e.g. GoogleFonts.poppins)
 
