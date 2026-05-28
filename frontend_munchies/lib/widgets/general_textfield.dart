@@ -5,11 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 class GeneralTextfield extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
+  final String? Function(String?)? validator;
 
   const GeneralTextfield({
     super.key,
     required this.controller,
     required this.labelText,
+    this.validator,
   });
 
   @override
@@ -17,11 +19,18 @@ class GeneralTextfield extends StatefulWidget {
 }
 
 class _GeneralTextfield extends State<GeneralTextfield> {
+  static String? defaultValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Field cannot be empty.";
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 22),
-      child: TextField(
+      child: TextFormField(
         controller: widget.controller,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -29,6 +38,7 @@ class _GeneralTextfield extends State<GeneralTextfield> {
           fillColor: Colors.white,
           labelText: widget.labelText,
           labelStyle: GoogleFonts.poppins(color: Colours.grey),
+          errorStyle: GoogleFonts.poppins(color: Colors.red),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colours.grey),
           ),
@@ -40,6 +50,7 @@ class _GeneralTextfield extends State<GeneralTextfield> {
                 ),
         ),
         style: GoogleFonts.poppins(),
+        validator: widget.validator ?? defaultValidator,
       ),
     );
     /*

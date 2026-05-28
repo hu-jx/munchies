@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/models/user_profile.dart';
+import 'package:frontend_munchies/screens/homepage.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/pw_textfield.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_munchies/widgets/general_textfield.dart';
 import 'package:frontend_munchies/screens/register.dart';
 import 'package:frontend_munchies/widgets/button.dart';
+import 'package:frontend_munchies/services/authentication.dart';
 // Use GoogleFonts.font_family to obtain desired font (e.g. GoogleFonts.poppins)
 
 class LoginPage extends StatefulWidget {
-
-  const LoginPage({
-    super.key,});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  final emailController = TextEditingController();
+  final pwController = TextEditingController();
+  String? errorMessage;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
     return Center(
       child: Container(
         width: 342.0,
-        height: 385.0,
+        height: 430.0,
         decoration: BoxDecoration(
           color: Colours.darkerBeige,
           borderRadius: BorderRadius.circular(25),
@@ -52,8 +58,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget buildCenter() {
     return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
+          SizedBox(height: 5,),
           Text(
             'MUNCHIES',
             style: GoogleFonts.cherryBombOne(
@@ -71,30 +79,39 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
-                  onPressed: () {
-                    //redirect to reset pw page
-                  },
-                  child: Text(
-                    'Forget password',
-                    style: GoogleFonts.poppins(
-                      color: Colours.grey,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colours.grey,
-                    ),
+                onPressed: () {
+                  //redirect to reset pw page
+                },
+                child: Text(
+                  'Forget password',
+                  style: GoogleFonts.poppins(
+                    color: Colours.grey,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colours.grey,
                   ),
                 ),
+              ),
             ],
           ),
-          AppButton(text:'Login', onPressed: (){}),
+          AppButton(
+            text: 'Login',
+            onPressed: () {
+              tryLogin();
+            },
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('New to Munchies?', style: GoogleFonts.poppins(
-                    color: Colours.grey,)),
+              Text(
+                'New to Munchies?',
+                style: GoogleFonts.poppins(color: Colours.grey),
+              ),
               TextButton(
                 onPressed: () {
-                  Navigator.push(context, 
-                  MaterialPageRoute(builder: (context) => RegisterPage()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterPage()),
+                  );
                   //redirect to sign up page
                 },
                 child: Text(
@@ -108,6 +125,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ],
           ),
+          //Text("test"),
+          Text(errorMessage ?? "", style: GoogleFonts.poppins(color: Colors.red, fontSize: 14.0)),
         ],
       ),
     );
@@ -116,12 +135,32 @@ class _LoginPageState extends State<LoginPage> {
   Widget buildTextfields() {
     return Column(
       children: [
-        GeneralTextfield(controller: TextEditingController(), labelText: 'Email Address'),
-        SizedBox(height: 10.0,),
-        PasswordTextfield(pwController: TextEditingController(), labelText: 'Password'),]);
+        GeneralTextfield(
+          controller: emailController,
+          labelText: 'Email Address',
+        ),
+        SizedBox(height: 10.0),
+        PasswordTextfield(pwController: pwController, labelText: 'Password'),
+      ],
+    );
   }
 
-/*
+  void tryLogin() async {
+    try {
+      //if successful, route to homepage
+      await Authentication().login(emailController.text, pwController.text);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Homepage()),
+      );
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+      });
+    }
+  }
+
+  /*
   Widget buildButton() {
     return OutlinedButton(
           onPressed: () {

@@ -28,6 +28,8 @@ class Authentication {
           throw AuthException(
             'No users found with the given email address. Please sign up.',
           );
+        case 'invalid-credential':
+          throw AuthException('Wrong email or password. Please try again');
         default:
           throw Exception("Unexpected Error");
       }

@@ -5,15 +5,17 @@ import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:http/http.dart' as http;
 
 class ApiServices {
-  static const String _baseUrl = "http://10.0.2.2:5000/api";
+  static const String _baseUrl = "http://10.0.2.2:3000/api";
 
   //GET http request
   Future<UserProfile> fetchProfileData(String idToken) async {
-    final res = await http.get(Uri.parse('$_baseUrl/profile'), 
-    headers: {
-      'Authorization': 'Bearer $idToken',
-      'Content-type': 'application/json'
-    });
+    final res = await http.get(
+      Uri.parse('$_baseUrl/profile'),
+      headers: {
+        'Authorization': 'Bearer $idToken',
+        'Content-type': 'application/json',
+      },
+    );
 
     if (res.statusCode == 200) {
       var data = jsonDecode(res.body);
@@ -28,20 +30,22 @@ class ApiServices {
 
   //POST http request
   Future<void> createProfile(String idToken, UserProfile profile) async {
-    final res = await http.post(Uri.parse('$_baseUrl/profile'),
-    headers: {
-      'Authorization': 'Bear $idToken',
-      'Content-type': 'application/json'
-    },
-    body: jsonEncode({
-      'firebase_uid': profile.firebase_uid,
-      'emailAddress': profile.emailAddress,
-      'firstName': profile.firstName,
-      'lastName': profile.lastName
-    }));
+    final res = await http.post(
+      Uri.parse('$_baseUrl/profile'),
+      headers: {
+        'Authorization': 'Bearer $idToken',
+        'Content-type': 'application/json',
+      },
+      body: jsonEncode({
+        'firebase_uid': profile.firebase_uid,
+        'emailAddress': profile.emailAddress,
+        'firstName': profile.firstName,
+        'lastName': profile.lastName,
+      }),
+    );
 
     if (res.statusCode != 201) {
       throw Exception('Failed to create profile');
     }
-  } 
+  }
 }
