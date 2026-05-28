@@ -20,10 +20,10 @@ class _HomepageState extends State<Homepage> {
 
   final List<Widget> _viewOptions = [
     HomePageView(), 
-    const Center(child: Text('Dashboard')), 
-    const Center(child: Text('Track')), 
-    const Center(child: Text('Feed')), 
-    const Center(child: Text('Profile'))
+    const Center(child: Text('Dashboard. Not yet implemented.')), 
+    const Center(child: Text('Track. Not yet implemented.')), 
+    const Center(child: Text('Feed. Not yet implemented.')), 
+    const Center(child: Text('Profile. Not yet implemented.'))
   ];
 
   @override

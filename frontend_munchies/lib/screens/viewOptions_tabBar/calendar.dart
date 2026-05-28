@@ -15,7 +15,7 @@ class CalendarView extends StatelessWidget {
               width: width,
               height: height * 0.85 - 92.0,
               color: Colours.lightBeige,
-              child: Text("Calendar View"),
+              child: Text("Calendar View. Not yet implemented."),
             );
   }
 }
