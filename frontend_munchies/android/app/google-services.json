@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "566827527571",
+    "project_id": "munchies-auth",
+    "storage_bucket": "munchies-auth.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566827527571:android:d7c71975fa798566238c66",
+        "android_client_info": {
+          "package_name": "com.example.frontend_munchies"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNvnX5zflwN_kpWzOnYeOhJOdK-3qjcok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
