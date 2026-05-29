@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/models/user_profile.dart';
+// import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/main_screen.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/pw_textfield.dart';
