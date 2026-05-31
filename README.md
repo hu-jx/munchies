@@ -18,8 +18,8 @@ The tracker will help users track their snacking habits, as well as function as 
 * Node.js  
 * MongoDB
 
-## Software architecture diagram
-<img width="1920" height="1080" alt="software archi diag" src="https://github.com/user-attachments/assets/b48454a6-dd07-44b5-b864-a4fb6673d53a" />
+## (tentative) Software architecture diagram
+<img width="1920" height="1080" alt="software archi diag" src="https://github.com/user-attachments/assets/d406a3ef-0e73-49b8-ad13-fad7ca801c6f" />
 
 ## Usage/Deployment details
 
