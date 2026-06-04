@@ -295,6 +295,5 @@ class _RegisterPageState extends State<RegisterPage> {
         errorMessage = e.toString();
       });
     }
-    ;
   }
 }

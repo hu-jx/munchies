@@ -4,6 +4,8 @@ import 'package:frontend_munchies/styles/colours.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TextfieldGeneral extends StatefulWidget {
+  const TextfieldGeneral({super.key});
+
   @override
   State<StatefulWidget> createState() => _TextfieldGeneralState();
 }

@@ -1,14 +1,17 @@
-import { Schema, mongoose } from 'mongoose'
+import { Int32 } from 'mongodb'
+import { Schema, model } from 'mongoose'
 
 //schema 
 const recordSchema = new Schema({
-    user_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+    user_uid: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        immutable: true
     },
 
-    item_name: {
+    itemName: {
         type: String,
         required: true,
         trim: true,
@@ -16,19 +19,35 @@ const recordSchema = new Schema({
 
     date: {
         type: Date, 
-        required: true
+        required: true,
+        default: new Date(Date.now())
     },
 
     //stored in cents in database
     cost: {
-        type: int,
+        type: Int32,
         required: true
     },
 
+    //convert to Base64 for use
     photo: {
-        type: Image,
-        required: false
+        type: Buffer,
+        required: false,
+        default: null
     },
+    
+    category: {
+        type: String,
+        required: false,
+        default: null,
+        trim: true
+    },
+
+    isFavourited: {
+        type: Boolean,
+        required: true,
+        default: false
+    }
 },
     {
         timestamps: true

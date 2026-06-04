@@ -5,7 +5,7 @@ import 'package:frontend_munchies/services/auth_exception.dart';
 
 class Authentication {
   final _firebaseAuth = FirebaseAuth.instance;
-  final _apiServices = ApiServices();
+  final _apiServices = AuthServices();
 
   Future<UserProfile> login(String emailAddress, String password) async {
     try {
