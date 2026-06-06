@@ -286,6 +286,7 @@ class _RegisterPageState extends State<RegisterPage> {
         fNameController.text,
         lNameController.text,
       );
+      if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Homepage()),

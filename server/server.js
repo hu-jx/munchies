@@ -10,7 +10,8 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 //Configuration
-app.use(json())
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use('/api', authRouter)
 app.use('/api', recordRouter)
 

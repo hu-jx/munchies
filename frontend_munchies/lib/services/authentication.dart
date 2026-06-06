@@ -14,7 +14,7 @@ class Authentication {
         password: password,
       );
       final user = cred.user!;
-      final String? idToken = await user.getIdToken(true);
+      final String? idToken = await user.getIdToken();
       return _apiServices.fetchProfileData(idToken!);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {

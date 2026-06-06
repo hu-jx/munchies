@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/viewOptions_bottomBar/homePageView.dart';
 import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/widgets/logging_options.dart';
+import 'package:popover/popover.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -11,31 +13,39 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   int _selectedIndex = 0;
+  
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      if (index != 2) {
+        _selectedIndex = index;
+      }
     });
   }
 
   final List<Widget> _viewOptions = [
-    HomePageView(), 
-    const Center(child: Text('Dashboard. Not yet implemented.')), 
-    const Center(child: Text('Track. Not yet implemented.')), 
-    const Center(child: Text('Feed. Not yet implemented.')), 
-    const Center(child: Text('Profile. Not yet implemented.'))
+    HomePageView(),
+    const Center(child: Text('Dashboard. Not yet implemented.')),
+    const Center(child: Text('Track. Not yet implemented.')),
+    const Center(child: Text('Feed. Not yet implemented.')),
+    const Center(child: Text('Profile. Not yet implemented.')),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/homepage_background.png'),
-          fit: BoxFit.cover,
+    Size size = MediaQuery.of(context).size;
+    double height = size.height;
+    double width = size.width;
+    
+    return Scaffold(body: Stack(children: [
+        // Background image — always has finite constraints from the Stack
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/homepage_background.png',
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      child: Scaffold(
+      Scaffold(
         backgroundColor: Colors.transparent,
 
         body: _viewOptions[_selectedIndex],
@@ -67,8 +77,27 @@ class _HomepageState extends State<Homepage> {
               label: "Dashboard",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_rounded, color: Colours.greyPink),
-              label: "Track",
+              icon: Builder(
+                builder: (context) {
+                  return GestureDetector(
+                    onTap: () => showPopover(
+                      context: context,
+                      bodyBuilder: (context) => LoggingOptions(),
+                      width: width *0.757,
+                      height: height * 0.181,
+                      direction: PopoverDirection.top,
+                      backgroundColor: Color(0xffD0A09F),
+                      barrierDismissible: true
+                    ),
+                    child: Icon(
+                      Icons.add_circle_rounded,
+                      color: Colours.greyPink,
+                      size: 40,
+                    ),
+                  );
+                }
+              ),
+              label: 'Track',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.article_rounded),
@@ -78,7 +107,8 @@ class _HomepageState extends State<Homepage> {
           ],
           onTap: _onItemTapped,
         ),
-      ),
+      )],
+    )
     );
   }
 }

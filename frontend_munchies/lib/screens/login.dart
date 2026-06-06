@@ -149,6 +149,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       //if successful, route to homepage
       await Authentication().login(emailController.text, pwController.text);
+      if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Homepage()),

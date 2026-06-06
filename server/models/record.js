@@ -47,6 +47,11 @@ const recordSchema = new Schema({
         type: Boolean,
         required: true,
         default: false
+    },
+    details: {
+        type: String,
+        required: false,
+        trim: true
     }
 },
     {
