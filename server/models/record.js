@@ -46,7 +46,8 @@ const recordSchema = new Schema({
     isFavourited: {
         type: Boolean,
         required: true,
-        default: false
+        default: false,
+        immutable: false
     },
     details: {
         type: String,

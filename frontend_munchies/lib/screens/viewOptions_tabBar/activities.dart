@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/record.dart';
-import 'package:frontend_munchies/services/auth_exception.dart';
-import 'package:frontend_munchies/services/record_services.dart';
+import 'package:frontend_munchies/services/auth/auth_exception.dart';
+import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/services/records/record_services.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/widgets/record_card.dart';
+import 'package:frontend_munchies/widgets/errorMessage.dart';
+import 'package:frontend_munchies/widgets/activitiesView_widget/record_card.dart';
+import 'package:provider/provider.dart';
 
 class ActivitiesView extends StatefulWidget {
   const ActivitiesView({super.key});
@@ -17,61 +20,88 @@ class _ActivitiesViewState extends State<ActivitiesView> {
   List<Record> _recordDetails = [];
   String? _errorMessage;
   bool _isLoading = false;
+  RecordChanger? recordChanger;
 
   @override 
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    RecordChanger recordChanger = context.read<RecordChanger>();
+    recordChanger.addListener(refreshRecords);
+  }
+  @override
   void initState() {
     super.initState();
     _fetchRecords();
   }
 
+  @override
+  void dispose() {
+    recordChanger?.removeListener(refreshRecords);
+    super.dispose();
+  }
+
+  void refreshRecords() {
+    if (!mounted) return;
+    _fetchRecords();
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double height = size.height;
     double width = size.width;
+    if (_errorMessage != null) {
+      return Container(
+        alignment: Alignment.center,
+        width: width,
+        height: height * 0.8,
+        color: Colours.lightBeige,
+        child: ShowErrorMessage(errorMessage: _errorMessage)
+      );
+    }
 
     return Container(
       alignment: Alignment.center,
       width: width,
-      height: height * 0.85 - 92.0,
+      height: height * 0.80,
       color: Colours.lightBeige,
-      child: _isLoading ? 
-      Text(
-            'Loading.......',
-              // "Nothing yet! \n Start tracking today!",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                color: Colours.darkBrown.withValues(alpha: 0.43),
-              ),
-            )
-      : (_recordDetails.isNotEmpty
-          ? ScrollConfiguration(
-            behavior: ScrollBehavior().copyWith(overscroll: false),
-            child: SingleChildScrollView(
-              physics: ClampingScrollPhysics(),
-                child: Column(
-                  children: _recordDetails.map((rec) {
-                    return RecordCard(
-                      itemName: rec.itemName,
-                      date: rec.date,
-                      cost: rec.cost,
-                      base64Image: rec.photo,
-                    );
-                  }).toList(),
-                ),
-              ),
-          )
-          : Text(
-            _errorMessage ?? '',
-              // "Nothing yet! \n Start tracking today!",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                color: Colours.darkBrown.withValues(alpha: 0.43),
-              ),
-            )),
+      child: _isLoading
+          // ? Text(
+          //     'Loading.......',
+          //     // "Nothing yet! \n Start tracking today!",
+          //     textAlign: TextAlign.center,
+          //     style: TextStyle(
+          //       fontFamily: 'Poppins',
+          //       color: Colours.darkBrown.withValues(alpha: 0.43),
+          //     ),
+          //   ) 
+           ? CircularProgressIndicator(color: const Color.fromARGB(255, 183, 115, 125),)
+          : (_recordDetails.isNotEmpty
+                ? ScrollConfiguration(
+                  behavior: ScrollBehavior().copyWith(overscroll: false),
+                  child: SingleChildScrollView(
+                    physics: ClampingScrollPhysics(),
+                    child: Column(
+                      children: _recordDetails.map((rec) {
+                        return RecordCard(
+                          recordId: rec.record_id!,
+                          itemName: rec.itemName,
+                          date: rec.date,
+                          cost: rec.cost,
+                          base64Image: rec.photo,
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                )
+                : Text(
+                    "Nothing yet! \n Start tracking today!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      color: Colours.darkBrown.withValues(alpha: 0.43),
+                    ),
+                  )),
     );
   }
 
@@ -86,7 +116,8 @@ class _ActivitiesViewState extends State<ActivitiesView> {
       setState(() {
         _isLoading = true;
       });
-      List<Record> data = await RecordServices.getAllRecords(idToken);
+      List<Record> data = await RecordServices.getAllRecords(idToken, null);
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
         _recordDetails = data;

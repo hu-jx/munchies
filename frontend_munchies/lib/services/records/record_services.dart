@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:http/http.dart' as http;
 
@@ -32,9 +33,33 @@ class RecordServices {
   }
 
   //GET http req (getAllrec)
-  static Future<List<Record>> getAllRecords(String idToken) async {
+  static Future<List<Record>> getAllRecords(String idToken, Map<String, String>? query) async {
+    String url = '$_baseUrl/records';
+    if (query != null) {
+      debugPrint('entered here');
+      try {
+  if (query.isNotEmpty) {
+    if (query.containsKey('today')) {
+      url = '$url?freq=today';
+    } else if (query.containsKey('weekly')) {
+      url = '$url?freq=weekly';
+    } else if (query.containsKey('favourites')) {
+      url = '$url?favourites=true';
+    } else if (query.containsKey('monthly')) {
+      List<String> month_year = query['monthly']!.split(',');
+      if (month_year.length != 2) throw Exception('Invalid date format when fetching records.');
+      String month = month_year[0];
+      String year = month_year[1];
+        url = '$url?month=$month&&year=$year';
+      }
+    }
+} on Exception catch (e) {
+  debugPrint(e.toString());
+}
+      }
+
     final res = await http.get(
-      Uri.parse('$_baseUrl/records'),
+      Uri.parse(url),
       headers: {
         'Accept': '*/*',
         'Authorization': 'Bearer $idToken',
@@ -57,6 +82,9 @@ class RecordServices {
       }).toList();
       return allRecs;
     } else {
+      if (res.statusCode == 204) {
+        return [];
+      }
       throw Exception('Failed to fetch records data');
     }
   }
@@ -84,11 +112,13 @@ class RecordServices {
   }
 
   //PATCH http req (updateRec)
-  Future<void> updateRecord(
+  static Future<void> updateRecord(
     String idToken,
     String id,
-    Map<String, dynamic> updates,
+    Map<String, dynamic>? updates,
   ) async {
+    debugPrint("CALLED HERE IN RECORD SVC");
+    debugPrint(updates.toString());
     var headers = {
       'Authorization': 'Bearer $idToken',
       'Content-Type': 'application/json',
@@ -106,7 +136,7 @@ class RecordServices {
   }
 
   //DELETE http req (delRec)
-  Future<void> deleteRecord(String idToken, String itemId) async {
+  static Future<void> deleteRecord(String idToken, String itemId) async {
     var headers = {'Authorization': 'Bearer $idToken'};
     var request = http.Request(
       'DELETE',
@@ -117,9 +147,8 @@ class RecordServices {
 
     http.StreamedResponse response = await request.send();
 
-    if (response.statusCode != 200) {
-      //print(response.reasonPhrase);
-      throw Exception('Failed to delete profile');
+    if (response.statusCode != 201) {
+      throw Exception('Failed to delete record');
     }
   }
 }

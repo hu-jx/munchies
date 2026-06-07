@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -10,23 +12,37 @@ class ImageSelectionButton extends StatefulWidget {
   const ImageSelectionButton({
     super.key,
     required this.backgroundTextStyle,
-    required this.sendBack64
+    required this.sendBack64,
+    this.existing_base64
   });
 
   final TextStyle backgroundTextStyle;
   final Function(String? base64) sendBack64;
+  final String? existing_base64;
 
   @override
   State<ImageSelectionButton> createState() => _ImageSelectionButtonState();
 }
 
 class _ImageSelectionButtonState extends State<ImageSelectionButton> {
-  File? image;
-  // ignore: non_constant_identifier_names
+  Image? image;
+  void checkIfUpdate(double width, double height) {
+    if (widget.existing_base64 != null) {
+    setState(() {
+      base64_image = widget.existing_base64;
+      image = Image.memory(base64Decode(widget.existing_base64!), fit: BoxFit.contain);
+    });
+  }
+}
+  
   String? base64_image;
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    checkIfUpdate(width, height);
+
       return ElevatedButton(
         onPressed: () {
           _onImagePickerPressed(context);
@@ -34,7 +50,7 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
         style: ButtonStyle(
           backgroundColor: WidgetStatePropertyAll(Colours.lightBeige),
           fixedSize: WidgetStatePropertyAll(
-            Size(MediaQuery.of(context).size.width * 0.95, MediaQuery.of(context).size.height * 0.3),
+            Size(width * 0.95, height * 0.3),
           ),
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
@@ -45,15 +61,15 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
           elevation: WidgetStatePropertyAll(0.0),
         ),
         clipBehavior: Clip.antiAlias,
-        child: (image == null) ?
+        child: (base64_image == null) ?
            Text(
           "Add a photo!",
           textAlign: TextAlign.center,
           style: widget.backgroundTextStyle,)
         : Padding(
           padding: EdgeInsetsGeometry.all(8.0),
-          child: Image.file(image!,fit: BoxFit.cover)),
-      );
+          child: image,
+      ));
   }
 
   Future<void> _onImagePickerPressed(BuildContext context) async {
@@ -110,7 +126,7 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
     String base64 = base64Encode(imageBytes);
     if (mounted) {
       setState(() {
-      image = File(selected.path);
+      image = Image.file(File(selected.path), fit: BoxFit.contain);
       base64_image = base64;
     });
     }

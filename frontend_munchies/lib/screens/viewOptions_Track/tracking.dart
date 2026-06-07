@@ -1,10 +1,12 @@
 //this is the default tracking page
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/widgets/logging_form.dart';
+import 'package:frontend_munchies/widgets/logging_widgets/logging_form.dart';
 
 class TrackingPage extends StatefulWidget {
-  const TrackingPage({super.key});
+  final LoggingForm? loggingForm;
+
+  const TrackingPage({super.key, this.loggingForm});
 
   @override
   State<TrackingPage> createState() => _TrackingPageState();
@@ -48,7 +50,7 @@ class _TrackingPageState extends State<TrackingPage> {
         body: Container(
           color: Colours.lightBeige,
           height: height * 0.9,
-          child: LoggingForm(),
+          child: widget.loggingForm ?? LoggingForm(),
         ),
       ),
     );

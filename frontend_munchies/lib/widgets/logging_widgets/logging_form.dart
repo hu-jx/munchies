@@ -2,29 +2,21 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:core';
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/services/auth_exception.dart';
-import 'package:frontend_munchies/services/record_services.dart';
+import 'package:frontend_munchies/models/category_item.dart';
+import 'package:frontend_munchies/services/records/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/image_widgets.dart/image_selection_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_munchies/models/record.dart';
-
-enum Categories {
-  pastry,
-  beverages,
-  cakes,
-  confectionery,
-  frozen,
-  fruits,
-  healthier,
-  none,
-}
+import 'package:provider/provider.dart';
 
 class LoggingForm extends StatefulWidget {
-  const LoggingForm({super.key});
+  final Record? record;
+
+  const LoggingForm({super.key, this.record});
 
   @override
   State<LoggingForm> createState() => _LoggingFormState();
@@ -37,14 +29,46 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   TextEditingController costController = TextEditingController();
   TextEditingController detailsController = TextEditingController();
   TextEditingController categoryController = TextEditingController();
+  final RecordChanger recChange = RecordChanger();
   String? _imageField;
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var _isFavourited = false;
   String? _errorMessage;
+  CategoryItem? _selectedCategory;
+  final Map<String, dynamic> _updates = {
+    'itemName': null,
+    'date': null,
+    'cost': null,
+    'photo': null,
+    'category': null,
+    'isFavourited': null,
+    'details': null,
+  };
 
-  // ignore: unused_field
-  Categories? _selectedCategory;
+  final List<CategoryItem> categories =
+      [
+        'pastry',
+        'cakes',
+        'confectionery',
+        'frozen',
+        'fruits',
+        'healthier',
+        'beverages',
+      ].map((stringCat) {
+        return CategoryItem(
+          name: stringCat,
+          labelText: "${stringCat[0].toUpperCase()}${stringCat.substring(1)}",
+        );
+      }).toList();
+  late bool _originalFav;
+  late String? _originalBase64;
+  late String? _originalCategory;
+  String? itemName;
+  String? cost;
+  String? details;
+  RecordChanger? _recordChanger;
+
+  //TODO: MOVE TO STYLES
   final inputTextStyle = TextStyle(
     fontFamily: 'Poppins',
     color: Colours.darkBrown,
@@ -53,24 +77,53 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     fontFamily: 'Poppins',
     color: Colours.darkBrown.withValues(alpha: 0.45),
   );
-  Future<void> _selectDate() async {
-    final date = await showDatePicker(
-      context: context,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      initialDate: _selectedDate ?? DateTime.now(),
-    );
 
-    if (date != null) {
-      setState(() {
-        _selectedDate = date;
-        String month = date.month >= 10 ? "${date.month}" : "0${date.month}";
-        String day = date.day >= 10 ? "${date.day}" : "0${date.day}";
-        dateController.text = "${date.year}-$month-$day";
-      });
+  String formatDate(DateTime date) {
+    String month = date.month >= 10 ? "${date.month}" : "0${date.month}";
+    String day = date.day >= 10 ? "${date.day}" : "0${date.day}";
+    return "${date.year}-$month-$day";
+  }
+
+  void checkIfUpdate() {
+    if (widget.record != null) {
+      _originalFav = widget.record!.isFavourited;
+      _selectedDate = widget.record!.date;
+      dateController.text = formatDate(_selectedDate!);
+      if (widget.record?.record_id != null) {
+        setState(() {
+          _isFavourited = _originalFav;
+          _originalBase64 = widget.record!.photo;
+          _originalCategory = widget.record!.category;
+          if (_originalBase64 != null) _imageField = _originalBase64;
+          itemNameController.text = widget.record!.itemName;
+          costController.text = (widget.record!.cost / 100).toStringAsFixed(2);
+          if (widget.record!.details != null) {
+            detailsController.text = widget.record!.details!;
+          }
+          if (_originalCategory != null) {
+            _selectedCategory = categories.firstWhere(
+              (str) => str.labelText == _originalCategory,
+              orElse: () => CategoryItem(
+                name: _originalCategory!,
+                labelText: _originalCategory!,
+              ),
+            );
+          }
+        });
+        debugPrint('I am at check if update $_originalBase64');
+      } else if (widget.record != null && widget.record?.record_id == null) {
+        //saving with favourite
+        setState(() {
+          itemNameController.text = widget.record!.itemName;
+          costController.text = (widget.record!.cost / 100).toStringAsFixed(2);
+          _isFavourited = _originalFav;
+        });
+
+      }
     }
   }
 
+  //TODO: MOVE TO STYLES
   InputDecoration basicBoxDeco(String labelText) {
     return InputDecoration(
       filled: true,
@@ -87,6 +140,78 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
       labelStyle: backgroundTextStyle,
       errorStyle: GoogleFonts.poppins(color: Colors.red),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _recordChanger = context.read<RecordChanger>();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfUpdate();
+
+    if (widget.record != null) {
+      itemNameController.addListener(() {
+        _updates['itemName'] =
+            itemNameController.text != widget.record!.itemName
+            ? itemNameController.text
+            : null;
+      });
+
+      dateController.addListener(() {
+        _updates['date'] =
+            dateController.text !=
+                widget.record!.date.toIso8601String().split('T')[0]
+            ? dateController.text
+            : null;
+      });
+      costController.addListener(() {
+        _updates['cost'] =
+            costController.text !=
+                (widget.record!.cost / 100).toStringAsFixed(2)
+            ? costController.text
+            : null;
+      });
+
+      detailsController.addListener(() {
+        _updates['details'] = detailsController.text != widget.record!.details
+            ? detailsController.text
+            : null;
+      });
+    }
+  }
+
+  void _saveRec(String itemName, String cost) async {
+    try {
+      await _recordChanger?.saveRecord(
+        itemName,
+        formatDate(_selectedDate!.toLocal()),
+        cost,
+        _selectedCategory.toString(),
+        _imageField,
+        _isFavourited,
+        details,
+      );
+      if (!mounted) return;
+      //change _errorMessage to be nothing on success
+      setState(() {
+        _errorMessage = null;
+      });
+    } on FormatException {
+      setState(() {
+        _errorMessage =
+            "Remember: use date picker for Date and key in a valid value for cost";
+      });
+      if (!mounted) return;
+    } catch (e) {
+      setState(() {
+        debugPrint(e.toString());
+        _errorMessage = "Unexpected error. Please try again later. ";
+      });
+    }
   }
 
   @override
@@ -144,13 +269,14 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                         optionalInputdecorationtheme,
                       ),
                       ImageSelectionButton(
+                        existing_base64: _imageField,
                         backgroundTextStyle: backgroundTextStyle,
                         sendBack64: (base64) => setState(() {
                           _imageField = base64;
                         }),
                       ),
                       _buildActionRow(width, height),
-                      _showErrorMessage(_errorMessage),
+                      ShowErrorMessage(errorMessage: _errorMessage),
                     ],
                   ),
                 ),
@@ -160,21 +286,6 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
         );
       },
     );
-  }
-
-  Center _showErrorMessage(String? errorMessage) {
-    if (errorMessage == null) {
-      return Center();
-    } else if (errorMessage.isEmpty) {
-      return Center();
-    } else {
-      return Center(
-        child: Text(
-          errorMessage,
-          style: GoogleFonts.poppins(color: Colors.red, fontSize: 14.0),
-        ),
-      );
-    }
   }
 
   Row _buildCostField(InputDecoration Function(String labelText) basicBoxDeco) {
@@ -214,10 +325,29 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
           onPressed: () async {
             var success = _formKey.currentState!.validate();
             if (success) {
-              AsyncSnapshot.waiting();
-              _saveRecord();
-              Navigator.of(context).pop();
+              if (widget.record == null || widget.record?.record_id == null) {
+                itemName = itemNameController.text;
+                cost = costController.text;
+                AsyncSnapshot.waiting();
+                _saveRec(itemName!, cost!);
+              } else if (widget.record != null) {
+                debugPrint('ERROR IN _buildActionRow entered != null');
+                debugPrint('HEREEEE final _updates: $_updates');
+                AsyncSnapshot.waiting();
+                debugPrint('BEFORE IF-ELSE $_isFavourited VS $_originalFav');
+                if (_isFavourited != _originalFav) {
+                  debugPrint('ENTERED IF-ELSE $_isFavourited vs $_originalFav');
+                  _updates['isFavourited'] = _isFavourited;
+                  debugPrint(_updates.toString());
+                }
+                if (_imageField != _originalBase64) {
+                  _updates['photo'] = _imageField;
+                }
+                debugPrint(_updates.toString());
+                _patchRecord(widget.record!);
+              }
             }
+            Navigator.of(context).pop();
           },
 
           style: OutlinedButton.styleFrom(
@@ -252,33 +382,18 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     );
   }
 
-  Future<void> _saveRecord() async {
+  void _patchRecord(Record record) async {
     try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        String idToken = await user.getIdToken() ?? '';
-        if (idToken == '') {
-          throw AuthException('No permission to access this page.');
-        }
-        Record rec = Record(
-          user_uid: user.uid,
-          itemName: itemNameController.text,
-          date: DateTime.parse(dateController.text),
-          cost: (double.parse(costController.text) * 100).toInt(),
-          photo: _imageField,
-          isFavourited: _isFavourited,
-        );
-        await RecordServices.createRecord(idToken, rec);
+      await _recordChanger?.patchRecord(record, _updates);
+      debugPrint("RECORD SERVICES SENT AND RETURNED");
 
-        if (!mounted) return;
-        //change _errorMessage to be nothing on success
-        setState(() {
-          _errorMessage = null;
-        });
-      } else {
-        throw AuthException('No permission to access this page.');
-      }
+      if (!mounted) return;
+      //change _errorMessage to be nothing on success
+      setState(() {
+        _errorMessage = null;
+      });
     } on FormatException {
+      if (!mounted) return;
       setState(() {
         _errorMessage =
             "Remember: use date picker for Date and key in a valid value for cost";
@@ -286,16 +401,18 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = "Unexpected error. Please try again later. ";
+        _errorMessage = e.toString();
+        // TODO : CHANGE BACK "Unexpected error. Please try again later. ";
       });
     }
   }
 
-  DropdownMenu<Categories> _buildCatDropdown(
+  //MOVE CATEGORY SELECTOR TO NEW FILE
+  DropdownMenu<CategoryItem> _buildCatDropdown(
     BoxConstraints constraints,
     InputDecorationTheme optionalInputdecorationtheme,
   ) {
-    return DropdownMenu<Categories>(
+    return DropdownMenu<CategoryItem>(
       trailingIcon: Icon(
         Icons.arrow_drop_down_rounded,
         color: Colours.darkBrown,
@@ -310,35 +427,27 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
       ),
       width: constraints.maxWidth,
       inputDecorationTheme: optionalInputdecorationtheme,
-      onSelected: (Categories? cat) {
+      onSelected: (CategoryItem? cat) {
         setState(() {
           _selectedCategory = cat;
         });
       },
       controller: categoryController,
-      enableFilter: true,
-      requestFocusOnTap: true,
+      enableFilter: false,
+      requestFocusOnTap: false,
       leadingIcon: const Icon(Icons.category_rounded, color: Colours.darkBrown),
       label: Text(
         "Add a category label",
         textAlign: TextAlign.center,
         style: backgroundTextStyle,
       ),
-      dropdownMenuEntries: [
-        DropdownMenuEntry(label: 'beverages', value: Categories.beverages),
-        DropdownMenuEntry(label: 'cakes', value: Categories.cakes),
-        DropdownMenuEntry(
-          label: 'confectionery',
-          value: Categories.confectionery,
-        ),
-        DropdownMenuEntry(label: 'frozen', value: Categories.frozen),
-        DropdownMenuEntry(label: 'fruits', value: Categories.fruits),
-        DropdownMenuEntry(label: 'healthier', value: Categories.healthier),
-        DropdownMenuEntry(label: 'pastry', value: Categories.pastry),
-      ],
+      dropdownMenuEntries: categories
+          .map((item) => DropdownMenuEntry(value: item, label: item.labelText))
+          .toList(),
     );
   }
 
+  //TODO: MOVE DETAILS TO NEW FIELD
   TextFormField _buildDetailsField(
     InputDecorationTheme optionalInputdecorationtheme,
   ) {
@@ -371,6 +480,24 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     );
   }
 
+  //TODO: MOVE DATE FIELD TO NEW FILE ALONG WITH DATE PICKER
+  Future<void> _selectDate() async {
+    final date = await showDatePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      initialDate: _selectedDate ?? DateTime.now(),
+    );
+    if (!mounted) return;
+
+    if (date != null) {
+      setState(() {
+        _selectedDate = date.toLocal();
+      });
+      dateController.text = formatDate(_selectedDate!);
+    }
+  }
+
   Row _buildDateField(InputDecoration Function(String labelText) basicBoxDeco) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -401,6 +528,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     );
   }
 
+  //TODO: MOVE ITEMNAME FIELD TO NEW FILE
   Row _buildItemNameField(
     InputDecoration Function(String labelText) basicBoxDeco,
   ) {

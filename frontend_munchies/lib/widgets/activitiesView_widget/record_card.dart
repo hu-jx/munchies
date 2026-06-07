@@ -1,23 +1,26 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/screens/tracking.dart';
 import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/widgets/activitiesView_widget/delete_button.dart';
+import 'package:frontend_munchies/widgets/activitiesView_widget/updateButton.dart';
 
 class RecordCard extends StatelessWidget {
   final DateTime date;
   final int cost;
   final String itemName;
   final String? base64Image;
+  final String recordId;
 
   const RecordCard({
     super.key,
     required this.date,
     required this.cost,
     required this.itemName,
+    required this.recordId,
     this.base64Image,
   });
 
+  //TODO: CONSIDER PUTTING THIS IN IMAGE SELECTION AS STATIC METHOD
   Image convertBase64(String base64) {
     return Image.memory(base64Decode(base64), width: 100,);
   }
@@ -94,64 +97,42 @@ class RecordCard extends StatelessWidget {
     await showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
-        return SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 18.0, bottom: 30.0, left:30.0, right: 30.0),
-            child: Column(
-              mainAxisSize: .min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.close_rounded, color: Colours.greyPink),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => TrackingPage()),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: .spaceBetween,
-                    children: [
-                      Icon(Icons.edit, size: 32,color: Colours.greyPink,),
-                      Text(
-                        'Edit',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          color: Colours.darkBrown,
-                          fontSize: 22
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => TrackingPage()),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: .spaceBetween,
-                    children: [
-                      Icon(Icons.delete_rounded, size: 32,color: Colours.greyPink,),
-                      Text(
-                        'Delete',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          color: Colours.darkBrown,
-                          fontSize: 22
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        return ShowRecordActions(recordId: recordId);
       },
       backgroundColor: Colours.darkerBeige,
     );
   }
 }
+
+//TODO: MIGRATE TO DIFFERENT FILE AFTER TESTING AND CONFIGURING 
+class ShowRecordActions extends StatelessWidget {
+  const ShowRecordActions({
+    super.key,
+    required this.recordId,
+  });
+
+  final String recordId;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 18.0, bottom: 30.0, left:30.0, right: 30.0),
+        child: Column(
+          mainAxisSize: .min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: Icon(Icons.close_rounded, color: Colours.greyPink),
+              onPressed: () => Navigator.pop(context),
+            ),
+            UpdateButton(recordId: recordId,),
+            DeleteButton(recordId: recordId,),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

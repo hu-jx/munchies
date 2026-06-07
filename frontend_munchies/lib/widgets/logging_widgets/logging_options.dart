@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/viewOptions_Track/favourites.dart';
 import 'package:frontend_munchies/screens/main_screen.dart';
-import 'package:frontend_munchies/screens/tracking.dart';
+import 'package:frontend_munchies/screens/viewOptions_Track/tracking.dart';
 import 'package:frontend_munchies/screens/viewOptions_tabBar/activities.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 
@@ -36,8 +37,7 @@ class _LoggingOptionsState extends State<LoggingOptions> {
         TextButton(
           onPressed: (() {
             Navigator.push(context, 
-            //TODO: CHANGE TO CORRECT PAGE
-            MaterialPageRoute(builder: (context) => Homepage()));
+            MaterialPageRoute(builder: (context) => FavouritesPage()));
           }),
           style: ButtonStyle(
             shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.zero)) ,

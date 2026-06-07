@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
-import 'package:frontend_munchies/services/api_services.dart';
-import 'package:frontend_munchies/services/auth_exception.dart';
+import 'package:frontend_munchies/services/auth/api_services.dart';
+import 'package:frontend_munchies/services/auth/auth_exception.dart';
 
 class Authentication {
   final _firebaseAuth = FirebaseAuth.instance;

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/viewOptions_bottomBar/homePageView.dart';
+import 'package:frontend_munchies/services/records/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/widgets/logging_options.dart';
+import 'package:frontend_munchies/widgets/logging_widgets/logging_options.dart';
 import 'package:popover/popover.dart';
+import 'package:provider/provider.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -32,12 +34,19 @@ class _HomepageState extends State<Homepage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    Provider.of<RecordChanger>(context, listen: false);
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double height = size.height;
     double width = size.width;
-    
-    return Scaffold(body: Stack(children: [
+    return Stack(
+      children: [
         // Background image — always has finite constraints from the Stack
         Positioned.fill(
           child: Image.asset(
@@ -47,9 +56,9 @@ class _HomepageState extends State<Homepage> {
         ),
       Scaffold(
         backgroundColor: Colors.transparent,
-
+    
         body: _viewOptions[_selectedIndex],
-
+    
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           type: BottomNavigationBarType.fixed,
@@ -108,7 +117,6 @@ class _HomepageState extends State<Homepage> {
           onTap: _onItemTapped,
         ),
       )],
-    )
     );
   }
 }

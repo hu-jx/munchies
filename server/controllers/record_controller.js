@@ -60,7 +60,7 @@ function filterRecords(query_records, query_params) {
         if (query_params.favourites == 'true') {
             fav = true
         }
-        query_records.where('isFavourited').equals(fav)
+        query_records.where('isFavourited').equals(fav).select('_id itemName date cost isFavourited')
     }
     else if ('freq' in query_params) {
         if (query_params.freq == 'today') {
@@ -87,9 +87,15 @@ function filterRecords(query_records, query_params) {
 export async function getRecord(req, res) {
     try {
         const { id } = req.params
-        const records_data = await Record.findOne({ user_uid: req.uid, _id: new ObjectId(id) })
+        var records_data = await Record.findOne({ user_uid: req.uid, _id: new ObjectId(id) })
         if (records_data.length == 0) {
             res.status().json({ message: 'Record does not exist or you do not have the permission to access it.' })
+        }
+        const obj = records_data.toObject();
+        const base64_photo = obj.photo ? obj.photo.toString('base64') : null;
+        records_data = {
+            ...obj,
+            photo: base64_photo
         }
         return res.status(200).json(records_data)
     } catch (error) {
@@ -101,11 +107,17 @@ export async function getRecord(req, res) {
 export async function updateRecord(req, res) {
     try {
         const { id } = req.params
-        const { itemName, date, cost, photo, category, isFavourited, details } = req.body
+        var { itemName, date, cost, photo, category, isFavourited, details } = req.body
+        console.log('I need to print this');
+        console.log(isFavourited)
         const record = await Record.findOne({ user_uid: req.uid, _id: new ObjectId(id) })
         if (record.length == 0) {
             res.status().json({ message: 'Record does not exist or you do not have the permission to access it.' })
         }
+        if (photo != null) {
+            photo = Buffer.from(photo, 'base64')
+        }
+        console.log(photo)
 
         //check if exists then assign 
         if (itemName) record.itemName = itemName
@@ -113,7 +125,9 @@ export async function updateRecord(req, res) {
         if (cost) record.cost = cost
         if (photo) record.photo = photo
         if (category) record.category = category
-        if (isFavourited) record.isFavourited = isFavourited
+        if (isFavourited != null) record.isFavourited = isFavourited
+        console.log(record.isFavourited);
+        console.log(isFavourited)
         if (details) record.details = details
 
         //must save to the db 
@@ -130,6 +144,7 @@ export async function deleteRecord(req, res) {
         const { id } = req.params
         //check if exists first -> shd not return success if it doenst even exist 
         var count = await Record.countDocuments({ user_uid: req.uid, _id: new ObjectId(id) })
+        console.log(count);
         if (count > 0) {
             await Record.findOneAndDelete({ user_uid: req.uid, _id: id })
         } else {

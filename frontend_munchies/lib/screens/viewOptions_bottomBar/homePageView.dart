@@ -37,26 +37,29 @@ class _HomePageViewState extends State<HomePageView>
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color(0xff696969).withValues(alpha: 0.1),
-        title: Align(
-          alignment: Alignment.bottomLeft,
-          child: Text(
-            "HOME",
-            style: TextStyle(
-              fontFamily: 'Cherry_Bomb_One',
-              fontSize: 60,
-              color: Colours.greyPink,
+        title: const Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: EdgeInsets.only(left:10.0, right: 10.0),
+            child: Text(
+              "HOME",
+              style: TextStyle(
+                fontFamily: 'Cherry_Bomb_One',
+                fontSize: 60,
+                color: Colours.greyPink,
+              ),
             ),
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(height * 0.10),
+          preferredSize: MediaQuery.of(context).orientation == Orientation.landscape ? Size.fromHeight(height * 0.22) : Size.fromHeight(height * 0.1),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Flexible(
-                fit: FlexFit.tight,
+              Expanded(
                 child: TabBar(
                   dividerHeight: 0,
                   indicatorColor: Colours.greyPink,
@@ -133,10 +136,10 @@ class _HomePageViewState extends State<HomePageView>
                 )
               else
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Icon(
-                    Icons.arrow_drop_down_rounded,
-                    size: 75,
+                    Icons.calendar_month_rounded,
+                    size: 59,
                     color: Colours.greyPink,
                   ),
                 ),
