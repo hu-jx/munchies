@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:frontend_munchies/models/record.dart';
@@ -107,6 +109,7 @@ class RecordServices {
       }
       return Record.fromJson(recordData);
     } else {
+      debugPrint(res.reasonPhrase);
       throw Exception('Failed to fetch the record');
     }
   }

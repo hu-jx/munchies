@@ -35,7 +35,8 @@ class RecordCard extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colours.darkerBeige,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0),),
-          side: BorderSide(color: Colours.darkerBeige)),
+          side: BorderSide(color: Colours.darkerBeige),
+          foregroundColor: Color(0xffA98379)),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(

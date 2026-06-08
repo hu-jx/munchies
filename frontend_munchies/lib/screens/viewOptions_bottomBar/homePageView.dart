@@ -20,6 +20,7 @@ class _HomePageViewState extends State<HomePageView>
 
   late TabController _tabController;
   // bool _isExpanded = false;
+  ActivitiesView currView = ActivitiesView(filter: ActivityFilter.all);
 
   @override
   void initState() {
@@ -95,10 +96,17 @@ class _HomePageViewState extends State<HomePageView>
                     color: Colours.greyPink,
                   ),
                   initialValue: _selectedFilter,
+                  //notify listener to call _fetch again when this change occurs 
                   onSelected: (ActivityFilter res) {
+                    debugPrint(res.toString());
                     setState(() {
+                      if (res != _selectedFilter) {
+                        currView = ActivitiesView(filter: res);
+                      }
                       _selectedFilter = res;
+
                     });
+                    debugPrint(currView.filter.toString());
                   },
                   itemBuilder: (BuildContext context) =>
                       <PopupMenuEntry<ActivityFilter>>[
@@ -149,8 +157,10 @@ class _HomePageViewState extends State<HomePageView>
       ),
       backgroundColor: Colors.transparent,
       body: TabBarView(
+        key: ValueKey(currView),
         controller: _tabController,
-        children: [ActivitiesView(), CalendarView()],
+        //tabbarview does not update automatically 
+        children: [currView, CalendarView()],
       ),
     );
   }

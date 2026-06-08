@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/en-sg.js'
 import { Record } from "../models/record.js"
 import mongoose from 'mongoose'
+import { Query } from 'firebase-admin/firestore'
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -27,22 +28,28 @@ export async function createRecord(req, res) {
 
 export async function getAllRecords(req, res) {
     try {
-        var records_data_query = Record.find({ user_uid: req.uid }).sort({ date: -1 })
-
+        var records_data_query;
         var query_params = req.query
         if (Object.keys(query_params).length !== 0) {
-            filterRecords(records_data_query, query_params)
+            records_data_query = filterRecords(records_data_query, query_params, req.uid)
+        } else {
+            records_data_query = Record.aggregate(
+                [{
+                    $match: {
+                        user_uid: req.uid
+                    }
+                }]
+            )
         }
-        var records_data = await records_data_query.exec()
+        var records_data = await records_data_query.sort('-date')
 
         if (records_data.length == 0) {
             return res.status(204).json({ message: "No data found" })
         }
         records_data = records_data.map((r) => {
-            const obj = r.toObject();
-            const base64_photo = obj.photo ? obj.photo.toString('base64') : null;
+            const base64_photo = r.photo ? r.photo.toString('base64') : null;
             return {
-                ...obj,
+                ...r,
                 photo: base64_photo,
             };
         });
@@ -53,24 +60,78 @@ export async function getAllRecords(req, res) {
     }
 }
 
-function filterRecords(query_records, query_params) {
+function filterRecords(query_records, query_params, user_uid) {
     //function only modifies the query, does not return new one 
     if ('favourites' in query_params) {
         var fav = false;
         if (query_params.favourites == 'true') {
             fav = true
         }
-        query_records.where('isFavourited').equals(fav).select('_id itemName date cost isFavourited')
+        return Record.aggregate([
+            {
+                $group: {
+                    _id: {
+                        itemName: "$itemName",
+                        cost: "$cost"
+                    },
+                    document: {
+                        $first: {
+                            _id: '$_id',
+                            user_uid: "$user_uid",
+                            itemName: "$itemName",
+                            date: "$date",
+                            cost: "$cost",
+                            isFavourited: "$isFavourited"
+                        }
+                    }
+                }
+            },
+            {
+                $match: {
+                    "document.isFavourited": true
+                }
+            },
+            {
+                $project: {
+                    _id: '$document._id',
+                    user_uid: '$document.user_uid',
+                    itemName: '$document.itemName',
+                    date: '$document.date',
+                    cost: '$document.cost',
+                    isFavourited: '$document.isFavourited'
+                }
+            }
+        ],
+        );
+
     }
     else if ('freq' in query_params) {
         if (query_params.freq == 'today') {
             var sod = dayjs().startOf('day').toDate()
             var eod = dayjs().endOf('day').toDate()
-            query_records.where('date').gte(sod).lte(eod)
+            return Record.aggregate(
+                [
+                    {
+                        $match: {
+                            'user_uid': user_uid,
+                            'date': { $gte: sod, $lte: eod }
+                        }
+                    }
+                ]
+            )
         } else if (query_params.freq == 'weekly') {
             var sow = dayjs().startOf('week').toDate()
             var eow = dayjs().endOf('week').toDate()
-            query_records.where('date').gte(sow).lte(eow)
+            return Record.aggregate(
+                [
+                    {
+                        $match: {
+                            'user_uid': user_uid,
+                            'date': { $gte: sow, $lte: eow }
+                        }
+                    }
+                ]
+            )
         }
     }
     else if ('month' in query_params && 'year' in query_params) {
@@ -78,7 +139,16 @@ function filterRecords(query_records, query_params) {
         var year = query_params.year
         var som = dayjs().year(year).month(req_month).startOf('month').toDate()
         var eom = dayjs().year(year).month(req_month).endOf('month').toDate()
-        query_records.where('date').gt(som).lte(eom)
+        return Record.aggregate(
+            [
+                {
+                    $match: {
+                        'user_uid': user_uid,
+                        'date': { $gte: som, $lt: eom }
+                    }
+                }
+            ]
+        )
     }
 }
 
@@ -117,7 +187,7 @@ export async function updateRecord(req, res) {
         if (photo != null) {
             photo = Buffer.from(photo, 'base64')
         }
-        console.log(photo)
+        console.log(category)
 
         //check if exists then assign 
         if (itemName) record.itemName = itemName
@@ -130,6 +200,7 @@ export async function updateRecord(req, res) {
         console.log(isFavourited)
         if (details) record.details = details
 
+        console.log(record.category)
         //must save to the db 
         await record.save()
         return res.status(201).json({ message: "Successfully updated record" })

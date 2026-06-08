@@ -7,6 +7,7 @@ import 'package:frontend_munchies/models/record.dart';
 class RecordChanger extends ChangeNotifier {
   String? idToken;
 
+//FIXME: ERROR HERE AFTER TIME DUE TO STALE IDTOKEN THAT IS NOT REFRESHED -> CACHED TOKEN HAS TO FOLLOW LIFECYLE OF FIREBASE TOKEN
   Future<void> getUserToken() async {
     User? usr = FirebaseAuth.instance.currentUser;
     if (usr == null) throw AuthException('Access Denied.');

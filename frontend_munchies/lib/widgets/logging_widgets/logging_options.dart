@@ -5,6 +5,8 @@ import 'package:frontend_munchies/screens/viewOptions_Track/tracking.dart';
 import 'package:frontend_munchies/screens/viewOptions_tabBar/activities.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 
+import '../../screens/viewOptions_bottomBar/homePageView.dart';
+
 class LoggingOptions extends StatefulWidget {
   const LoggingOptions({super.key});
 
@@ -24,7 +26,7 @@ class _LoggingOptionsState extends State<LoggingOptions> {
             Navigator.pop(context); 
             Navigator.push(context, 
             MaterialPageRoute(builder: (context) => TrackingPage()))
-            .then((value) => value == true ? ActivitiesView() : null,);
+            .then((value) => value == true ? ActivitiesView(filter: ActivityFilter.all) : null,);
           }),
           style: ButtonStyle(
             shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.zero)) ,

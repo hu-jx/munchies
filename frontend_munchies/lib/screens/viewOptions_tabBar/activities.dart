@@ -8,9 +8,12 @@ import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/activitiesView_widget/record_card.dart';
 import 'package:provider/provider.dart';
+import 'package:frontend_munchies/screens/viewOptions_bottomBar/homePageView.dart';
 
 class ActivitiesView extends StatefulWidget {
-  const ActivitiesView({super.key});
+  final ActivityFilter filter;
+  const ActivitiesView({super.key, required this.filter});
+
 
   @override
   State<ActivitiesView> createState() => _ActivitiesViewState();
@@ -61,7 +64,7 @@ class _ActivitiesViewState extends State<ActivitiesView> {
     }
 
     return Container(
-      alignment: Alignment.center,
+      alignment: _isLoading ? Alignment.center : Alignment.topCenter,
       width: width,
       height: height * 0.80,
       color: Colours.lightBeige,
@@ -116,7 +119,15 @@ class _ActivitiesViewState extends State<ActivitiesView> {
       setState(() {
         _isLoading = true;
       });
-      List<Record> data = await RecordServices.getAllRecords(idToken, null);
+      Map<String, String>? query;
+      if (widget.filter == ActivityFilter.all) {
+        query = null;
+      } else if (widget.filter == ActivityFilter.daily) {
+        query = {'today': 'today'};
+      } else if (widget.filter == ActivityFilter.weekly) {
+        query = {'weekly': 'weekly'};
+      }
+      List<Record> data = await RecordServices.getAllRecords(idToken, query);
       if (!mounted) return;
       setState(() {
         _isLoading = false;

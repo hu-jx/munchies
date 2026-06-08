@@ -6,6 +6,7 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/category_item.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/styles/logging_form_styles.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/image_widgets.dart/image_selection_button.dart';
@@ -68,16 +69,6 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   String? details;
   RecordChanger? _recordChanger;
 
-  //TODO: MOVE TO STYLES
-  final inputTextStyle = TextStyle(
-    fontFamily: 'Poppins',
-    color: Colours.darkBrown,
-  );
-  final backgroundTextStyle = TextStyle(
-    fontFamily: 'Poppins',
-    color: Colours.darkBrown.withValues(alpha: 0.45),
-  );
-
   String formatDate(DateTime date) {
     String month = date.month >= 10 ? "${date.month}" : "0${date.month}";
     String day = date.day >= 10 ? "${date.day}" : "0${date.day}";
@@ -108,6 +99,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                 labelText: _originalCategory!,
               ),
             );
+            categoryController.text = _selectedCategory?.labelText ?? '';
           }
         });
         debugPrint('I am at check if update $_originalBase64');
@@ -118,28 +110,8 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
           costController.text = (widget.record!.cost / 100).toStringAsFixed(2);
           _isFavourited = _originalFav;
         });
-
       }
     }
-  }
-
-  //TODO: MOVE TO STYLES
-  InputDecoration basicBoxDeco(String labelText) {
-    return InputDecoration(
-      filled: true,
-      fillColor: Colours.lightBeige,
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colours.greyPink),
-        borderRadius: BorderRadius.all(Radius.circular(5)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colours.greyPink),
-        borderRadius: BorderRadius.all(Radius.circular(5)),
-      ),
-      labelText: labelText,
-      labelStyle: backgroundTextStyle,
-      errorStyle: GoogleFonts.poppins(color: Colors.red),
-    );
   }
 
   @override
@@ -190,7 +162,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
         itemName,
         formatDate(_selectedDate!.toLocal()),
         cost,
-        _selectedCategory.toString(),
+        _selectedCategory?.labelText,
         _imageField,
         _isFavourited,
         details,
@@ -216,19 +188,6 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    var optionalInputdecorationtheme = InputDecorationTheme(
-      filled: true,
-      fillColor: Colours.lightBeige,
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.brown.withValues(alpha: 0.5)),
-        borderRadius: BorderRadius.all(Radius.circular(5)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.brown.withValues(alpha: 0.5)),
-        borderRadius: BorderRadius.all(Radius.circular(5)),
-      ),
-    );
-
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
@@ -328,22 +287,17 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
               if (widget.record == null || widget.record?.record_id == null) {
                 itemName = itemNameController.text;
                 cost = costController.text;
-                AsyncSnapshot.waiting();
                 _saveRec(itemName!, cost!);
               } else if (widget.record != null) {
-                debugPrint('ERROR IN _buildActionRow entered != null');
-                debugPrint('HEREEEE final _updates: $_updates');
-                AsyncSnapshot.waiting();
-                debugPrint('BEFORE IF-ELSE $_isFavourited VS $_originalFav');
                 if (_isFavourited != _originalFav) {
-                  debugPrint('ENTERED IF-ELSE $_isFavourited vs $_originalFav');
                   _updates['isFavourited'] = _isFavourited;
-                  debugPrint(_updates.toString());
                 }
                 if (_imageField != _originalBase64) {
                   _updates['photo'] = _imageField;
                 }
-                debugPrint(_updates.toString());
+                if (_originalCategory != _selectedCategory) {
+                  _updates['category'] = _selectedCategory?.labelText;
+                }
                 _patchRecord(widget.record!);
               }
             }
@@ -364,7 +318,6 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
           ),
         ),
         IconButton(
-          //ADD FAVOURITING HERE
           onPressed: () {
             setState(() {
               _isFavourited = !_isFavourited;
@@ -431,6 +384,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
         setState(() {
           _selectedCategory = cat;
         });
+        categoryController.text = _selectedCategory?.labelText ?? '';
       },
       controller: categoryController,
       enableFilter: false,
@@ -480,7 +434,6 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     );
   }
 
-  //TODO: MOVE DATE FIELD TO NEW FILE ALONG WITH DATE PICKER
   Future<void> _selectDate() async {
     final date = await showDatePicker(
       context: context,
