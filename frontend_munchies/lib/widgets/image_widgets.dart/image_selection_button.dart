@@ -6,19 +6,20 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageSelectionButton extends StatefulWidget {
   const ImageSelectionButton({
     super.key,
-    required this.backgroundTextStyle,
     required this.sendBack64,
+    required this.boxSize,
     this.existing_base64
   });
 
-  final TextStyle backgroundTextStyle;
   final Function(String? base64) sendBack64;
   final String? existing_base64;
+  final Size boxSize;
 
   @override
   State<ImageSelectionButton> createState() => _ImageSelectionButtonState();
@@ -50,7 +51,7 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
         style: ButtonStyle(
           backgroundColor: WidgetStatePropertyAll(Colours.lightBeige),
           fixedSize: WidgetStatePropertyAll(
-            Size(width * 0.95, height * 0.3),
+            widget.boxSize,
           ),
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
@@ -65,7 +66,7 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
            Text(
           "Add a photo!",
           textAlign: TextAlign.center,
-          style: widget.backgroundTextStyle,)
+          style: backgroundTextStyle,)
         : Padding(
           padding: EdgeInsetsGeometry.all(8.0),
           child: image,

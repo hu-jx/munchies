@@ -66,6 +66,7 @@ class RecordChanger extends ChangeNotifier {
 
   Future<Record> getRecord(String recordId) async {
     try {
+      getUserToken();
       if (idToken == null) throw AuthException('Access Denied');
       return RecordServices.getRecord(idToken!, recordId);
     } catch (e) {

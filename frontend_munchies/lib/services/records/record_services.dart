@@ -25,7 +25,7 @@ class RecordServices {
         'isFavourited': record.isFavourited,
         'category': record.category,
         'photo': record.photo,
-        'details': record.details
+        'details': record.details,
       }),
     );
 
@@ -35,30 +35,34 @@ class RecordServices {
   }
 
   //GET http req (getAllrec)
-  static Future<List<Record>> getAllRecords(String idToken, Map<String, String>? query) async {
+  static Future<List<Record>> getAllRecords(
+    String idToken,
+    Map<String, String>? query,
+  ) async {
     String url = '$_baseUrl/records';
     if (query != null) {
       debugPrint('entered here');
       try {
-  if (query.isNotEmpty) {
-    if (query.containsKey('today')) {
-      url = '$url?freq=today';
-    } else if (query.containsKey('weekly')) {
-      url = '$url?freq=weekly';
-    } else if (query.containsKey('favourites')) {
-      url = '$url?favourites=true';
-    } else if (query.containsKey('monthly')) {
-      List<String> month_year = query['monthly']!.split(',');
-      if (month_year.length != 2) throw Exception('Invalid date format when fetching records.');
-      String month = month_year[0];
-      String year = month_year[1];
-        url = '$url?month=$month&&year=$year';
+        if (query.isNotEmpty) {
+          if (query.containsKey('today')) {
+            url = '$url?freq=today';
+          } else if (query.containsKey('weekly')) {
+            url = '$url?freq=weekly';
+          } else if (query.containsKey('favourites')) {
+            url = '$url?favourites=true';
+          } else if (query.containsKey('monthly')) {
+            List<String> month_year = query['monthly']!.split(',');
+            if (month_year.length != 2)
+              throw Exception('Invalid date format when fetching records.');
+            String month = month_year[0];
+            String year = month_year[1];
+            url = '$url?month=$month&&year=$year';
+          }
+        }
+      } on Exception catch (e) {
+        debugPrint(e.toString());
       }
     }
-} on Exception catch (e) {
-  debugPrint(e.toString());
-}
-      }
 
     final res = await http.get(
       Uri.parse(url),
@@ -77,7 +81,7 @@ class RecordServices {
       }
 
       List<Record> allRecs = decoded.map((singleRecData) {
-        if (singleRecData is! Map<String, dynamic> ) {
+        if (singleRecData is! Map<String, dynamic>) {
           throw Exception('Unexpected data format');
         }
         return Record.fromJson(singleRecData);
@@ -152,6 +156,29 @@ class RecordServices {
 
     if (response.statusCode != 201) {
       throw Exception('Failed to delete record');
+    }
+  }
+
+  static Future<String?> scanPicture(String idToken, String base64) async {
+    final res = await http.post(
+      Uri.parse('$_baseUrl/name'),
+      headers: {
+        'Accept': '*/*',
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': '	application/json',
+        'Connection': 'keep-alive',
+      },
+      body: {'base64_photo': base64},
+    );
+    if (res.statusCode == 200) {
+      var recordData = jsonDecode(res.body);
+      if (recordData is! Map<String, String>) {
+        throw Exception('Unexpected data format');
+      }
+      return recordData['base64_photo'];
+    } else {
+      debugPrint(res.reasonPhrase);
+      throw Exception('Failed to fetch the record');
     }
   }
 }

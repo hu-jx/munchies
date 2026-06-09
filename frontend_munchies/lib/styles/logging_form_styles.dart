@@ -1,16 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-final inputTextStyle = TextStyle(
-    fontFamily: 'Poppins',
-    color: Colours.darkBrown,
-  );
-  
-final backgroundTextStyle = TextStyle(
-    fontFamily: 'Poppins',
-    color: Colours.darkBrown.withValues(alpha: 0.45),
-  );
 
 InputDecoration basicBoxDeco(String labelText) {
     return InputDecoration(

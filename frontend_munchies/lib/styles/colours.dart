@@ -7,4 +7,5 @@ class Colours {
   static const darkerBeige = Color(0xffF5EADC);
   static const lightPink = Color(0xffEB8D96);
   static const grey = Color(0xffA8A8A8);
+  static const lightBrown = Color(0xffA98379);
 }

@@ -3,7 +3,7 @@
 
 class Record {
   final String? record_id;
-  final String user_uid;
+  final String? user_uid;
   String itemName;
   DateTime date;
   int cost;
@@ -14,7 +14,7 @@ class Record {
 
   Record({
     this.record_id,
-    required this.user_uid,
+    this.user_uid,
     required this.itemName,
     required this.date,
     required this.cost,

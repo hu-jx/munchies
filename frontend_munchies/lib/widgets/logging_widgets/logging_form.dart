@@ -8,6 +8,7 @@ import 'package:frontend_munchies/models/category_item.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
 import 'package:frontend_munchies/styles/logging_form_styles.dart';
 import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/image_widgets.dart/image_selection_button.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -228,8 +229,8 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                         optionalInputdecorationtheme,
                       ),
                       ImageSelectionButton(
+                        boxSize: Size(width * 0.95, height * 0.3),
                         existing_base64: _imageField,
-                        backgroundTextStyle: backgroundTextStyle,
                         sendBack64: (base64) => setState(() {
                           _imageField = base64;
                         }),
@@ -300,8 +301,8 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                 }
                 _patchRecord(widget.record!);
               }
+              Navigator.of(context).pop();
             }
-            Navigator.of(context).pop();
           },
 
           style: OutlinedButton.styleFrom(

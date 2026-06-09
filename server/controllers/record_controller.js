@@ -2,7 +2,10 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/en-sg.js'
 import { Record } from "../models/record.js"
 import mongoose from 'mongoose'
-import { Query } from 'firebase-admin/firestore'
+import { config } from 'dotenv';
+import { ApiError, GoogleGenAI } from "@google/genai";
+config({ quiet: true })
+
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -226,4 +229,67 @@ export async function deleteRecord(req, res) {
         console.error("deleteRecord error: ", error)
         return res.status(500).json({ message: "Server error" }) //shdnt reveal real error in case attack??
     }
+}
+
+export async function getItemName(req, res) {
+    var delay = 2000;
+    for (let i = 1; i <= 5; i++) {
+        try {
+            if (i > 1) {
+                delay = delay * 2
+            }
+            console.log('Completed delay of', delay)
+            const { base64_photo } = req.body;
+            const imgType = checkMimeType(base64_photo)
+            console.log(imgType)
+            const GEMINI_API_KEY = process.env.GEMINI_API_KEY
+            const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+            const response = await ai.models.generateContent({
+                model: "gemini-3-flash-preview",
+                contents: [{
+                    inlineData: {
+                        mimeType: imgType,
+                        data: base64_photo
+                    }
+                },
+                    'Identify the item in the picture and return me only the item name to be as specific as you can.' +
+                    'If you are unable to map the item to a specific brand, return only the name of the food item. ' + 
+                    'You are strictly not allowed to return me any other description other than the name of the food item.' +  
+                    'IF YOU ARE NOT 100% SURE OF THE BRAND, DO NOT STATE IT IN YOUR RESPONSE.' +
+                    'If it is not a food item, return the exact phrase "No food detected"']
+            });
+            return res.status(200).json({
+                itemName: response.text
+            })
+        } catch (error) {
+            console.error("getItemName error: ", error)
+            if (error instanceof ApiError) {
+                await new Promise(res => setTimeout(res, delay))
+                console.log('Completed wait for ', delay)
+            } else {
+                return res.status(500).json({ message: "Server error" })
+            }
+        }
+    }
+    return res.status(500).json({message: "server error. failed to receive item name"})
+}
+
+function checkMimeType(base64) {
+    const signatures = {
+        iVBORw0KGgo: 'image/png',
+        '/9j/': 'image/jpeg',
+        iVBO: 'image/jpeg',
+        UklGR: 'image/webp'
+    }
+
+    // const first10Chara = base64.substring(0,10)
+    for (const sign of Object.keys(signatures)) {
+        console.log(sign)
+        if (base64.startsWith(sign)) {
+            return signatures[sign];
+        }
+    }
+
+    console.log(base64.substring(0, 5))
+    throw new Error('Invalid image format')
 }
