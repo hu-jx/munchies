@@ -13,12 +13,12 @@ dayjs.locale('en-sg')
 //Create following CRUD 
 export async function createRecord(req, res) {
     try {
-        var { user_uid, itemName, date, cost, photo, category, isFavourited, details } = req.body
+        var { user_uid, itemName, date, cost, photo, category, isFavourited, details, isVisible } = req.body
         if (photo != null) {
             photo = Buffer.from(photo, 'base64')
         }
         const new_record = Record(
-            { user_uid, itemName, date, cost, photo, category, isFavourited, details }
+            { user_uid, itemName, date, cost, photo, category, isFavourited, details, isVisible }
         )
         await new_record.save()
         return res.status(201).json({ message: "Successfully created new record" })
@@ -44,7 +44,7 @@ export async function getAllRecords(req, res) {
                 }]
             )
         }
-        var records_data = await records_data_query.sort('-date')
+        var records_data = await records_data_query.sort('-date -cost itemName')
 
         if (records_data.length == 0) {
             return res.status(204).json({ message: "No data found" })
@@ -180,9 +180,9 @@ export async function getRecord(req, res) {
 export async function updateRecord(req, res) {
     try {
         const { id } = req.params
-        var { itemName, date, cost, photo, category, isFavourited, details } = req.body
+        var { itemName, date, cost, photo, category, isFavourited, details, isVisible } = req.body
         console.log('I need to print this');
-        console.log(isFavourited)
+        console.log(isVisible)
         const record = await Record.findOne({ user_uid: req.uid, _id: new ObjectId(id) })
         if (record.length == 0) {
             res.status().json({ message: 'Record does not exist or you do not have the permission to access it.' })
@@ -190,7 +190,6 @@ export async function updateRecord(req, res) {
         if (photo != null) {
             photo = Buffer.from(photo, 'base64')
         }
-        console.log(category)
 
         //check if exists then assign 
         if (itemName) record.itemName = itemName
@@ -202,8 +201,9 @@ export async function updateRecord(req, res) {
         console.log(record.isFavourited);
         console.log(isFavourited)
         if (details) record.details = details
+        if (isVisible != null) record.isVisible = isVisible
 
-        console.log(record.category)
+        console.log(record.isVisible)
         //must save to the db 
         await record.save()
         return res.status(201).json({ message: "Successfully updated record" })

@@ -289,7 +289,7 @@ class _RegisterPageState extends State<RegisterPage> {
       if (!mounted) return;
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Homepage()),
+        MaterialPageRoute(builder: (context) => Homepage(), settings: RouteSettings(name: '/home')),
       );
     } catch (e) {
       setState(() {

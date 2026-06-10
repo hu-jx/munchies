@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 
@@ -13,7 +15,7 @@ final backgroundTextStyle = TextStyle(
 
 final importantTextStyle = TextStyle(
   fontFamily: 'Poppins',
-  color: Color.fromARGB(255, 175, 51, 51),
-  fontWeight: FontWeight.w700,
-  fontSize: 17
+  color: Colours.darkBrown,
+  fontWeight: FontWeight.w500,
+  fontSize: 16
 );

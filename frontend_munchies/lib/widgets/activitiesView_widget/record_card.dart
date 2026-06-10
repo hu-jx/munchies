@@ -77,12 +77,14 @@ class RecordCard extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  Text(
-                    itemName,
-                    style: TextStyle(
-                      fontFamily: 'Cherry_Bomb_One',
-                      color: Colours.darkBrown,
-                      fontSize: 20,
+                  Flexible(
+                    child: Text(
+                      itemName,
+                      style: TextStyle(
+                        fontFamily: 'Cherry_Bomb_One',
+                        color: Colours.darkBrown,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
                 ],

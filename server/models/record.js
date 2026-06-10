@@ -49,10 +49,18 @@ const recordSchema = new Schema({
         default: false,
         immutable: false
     },
+
     details: {
         type: String,
         required: false,
         trim: true
+    },
+
+    isVisible: {
+        type: Boolean,
+        required: true,
+        default: false,
+        immutable: false
     }
 },
     {

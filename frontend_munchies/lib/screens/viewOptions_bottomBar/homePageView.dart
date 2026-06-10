@@ -55,7 +55,7 @@ class _HomePageViewState extends State<HomePageView>
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: MediaQuery.of(context).orientation == Orientation.landscape ? Size.fromHeight(height * 0.22) : Size.fromHeight(height * 0.1),
+          preferredSize: MediaQuery.of(context).orientation == Orientation.landscape ? Size.fromHeight(height * 0.22) : Size.fromHeight(95),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.min,
@@ -113,7 +113,7 @@ class _HomePageViewState extends State<HomePageView>
                         PopupMenuItem<ActivityFilter>(
                           value: ActivityFilter.daily,
                           child: Text(
-                            'Daily',
+                            'Today',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               color: Colours.darkBrown,
@@ -123,7 +123,7 @@ class _HomePageViewState extends State<HomePageView>
                         PopupMenuItem<ActivityFilter>(
                           value: ActivityFilter.weekly,
                           child: Text(
-                            'Weekly',
+                            'This Week',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               color: Colours.darkBrown,

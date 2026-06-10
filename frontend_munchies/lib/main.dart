@@ -1,16 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/screens/scan_picture.dart';
-import 'package:frontend_munchies/screens/viewOptions_Track/favourites.dart';
 import 'package:frontend_munchies/screens/main_screen.dart';
 import 'package:frontend_munchies/screens/login.dart';
-import 'package:frontend_munchies/screens/register.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:frontend_munchies/screens/viewOptions_Track/tracking.dart';
-import 'package:frontend_munchies/screens/viewOptions_tabBar/calendar.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-// import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,16 +21,13 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/',
-      routes: {
-        // '/': (context) => const LoginPage(),
-        // '/': (context) => const Homepage(),
-        '/register': (context) => RegisterPage(),
-        '/track': (context) => TrackingPage(),
-        '/fav': (context) => FavouritesPage(),
-        '/calendar': (context) => CalendarView(),
-        '/': (context) => ScanPicture()
-      },
+      home: StreamBuilder(stream: FirebaseAuth.instance.authStateChanges(), 
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Homepage();
+        }
+        return LoginPage();
+      }),
     );
   }
 }

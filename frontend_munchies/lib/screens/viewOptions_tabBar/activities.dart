@@ -64,20 +64,11 @@ class _ActivitiesViewState extends State<ActivitiesView> {
     }
 
     return Container(
-      alignment: _isLoading ? Alignment.center : Alignment.topCenter,
+      alignment: (_isLoading || _recordDetails.isEmpty) ? Alignment.center : Alignment.topCenter,
       width: width,
       height: height * 0.80,
       color: Colours.lightBeige,
       child: _isLoading
-          // ? Text(
-          //     'Loading.......',
-          //     // "Nothing yet! \n Start tracking today!",
-          //     textAlign: TextAlign.center,
-          //     style: TextStyle(
-          //       fontFamily: 'Poppins',
-          //       color: Colours.darkBrown.withValues(alpha: 0.43),
-          //     ),
-          //   ) 
            ? CircularProgressIndicator(color: const Color.fromARGB(255, 183, 115, 125),)
           : (_recordDetails.isNotEmpty
                 ? ScrollConfiguration(

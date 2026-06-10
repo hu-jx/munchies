@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_debouncer/flutter_debouncer.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
@@ -19,6 +22,8 @@ class _CalendarViewState extends State<CalendarView> {
   DateTime _focusedDay = DateTime.now();
   List<Record> _recordDetails = [];
   bool _isLoading = false;
+  List<DateTime>? _dates;
+  final Debouncer _debouncer = Debouncer();
 
   @override
   void initState() {
@@ -57,6 +62,17 @@ class _CalendarViewState extends State<CalendarView> {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: TableCalendar(
+                    calendarBuilders: CalendarBuilders(
+                      defaultBuilder: (context, day, focusedDay) {
+                        if (_dates != null) {
+                          if (_dates!.any((date) => sameDate(date, day))) {
+                            debugPrint('Entered contains ');
+                            return Center(child: Icon(Icons.cookie_rounded, size: 30, color: Colours.greyPink,));
+                          }
+                        }
+                        return null;
+                      },
+                    ),
                     focusedDay: _focusedDay,
                     firstDay: DateTime(2000),
                     lastDay: DateTime(2100),
@@ -76,7 +92,6 @@ class _CalendarViewState extends State<CalendarView> {
                       todayTextStyle: GoogleFonts.poppins(
                         color: Colours.darkerBeige,
                         fontWeight: FontWeight(500),
-                  
                       ),
                       outsideTextStyle: backgroundTextStyle,
                       todayDecoration: BoxDecoration(
@@ -86,11 +101,15 @@ class _CalendarViewState extends State<CalendarView> {
                     ),
                     availableGestures: AvailableGestures.horizontalSwipe,
                     onPageChanged: (focusedDay) {
-                      setState(() {
+                      _debouncer.debounce(duration: Duration(milliseconds: 500), 
+                      onDebounce: () {
+                        setState(() {
                         _focusedDay = focusedDay;
                         getMonthlyRecords(_focusedDay);
                       });
                       debugPrint('${_focusedDay.month}-${_focusedDay.year}');
+                      });
+              
                     },
                     startingDayOfWeek: StartingDayOfWeek.sunday,
                     daysOfWeekStyle: DaysOfWeekStyle(
@@ -112,8 +131,6 @@ class _CalendarViewState extends State<CalendarView> {
                         color: Colours.darkBrown,
                         fontFamily: 'Poppins',
                         fontSize: 24,
-                        // decoration: TextDecoration.overline,
-                        // decorationColor: Colours.darkBrown
                       ),
                     ),
                   ],
@@ -131,22 +148,29 @@ class _CalendarViewState extends State<CalendarView> {
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: _isLoading ? [Text('Loading....', style: backgroundTextStyle,)] 
-                  : _recordDetails.isEmpty ? [ Text('No records found this month!', style: backgroundTextStyle)] :
-                   _recordDetails.map((record) {
-                    return RecordCard(
-                      date: record.date,
-                      cost: record.cost,
-                      itemName: record.itemName,
-                      recordId: record.record_id!,
-                    );
-                  }).toList(),
+                  children: _isLoading
+                      ? [Text('Loading....', style: backgroundTextStyle)]
+                      : _recordDetails.isEmpty
+                      ? [
+                          Text(
+                            'No records found this month!',
+                            style: backgroundTextStyle,
+                          ),
+                        ]
+                      : _recordDetails.map((record) {
+                          return RecordCard(
+                            date: record.date,
+                            cost: record.cost,
+                            itemName: record.itemName,
+                            recordId: record.record_id!,
+                          );
+                        }).toList(),
                 ),
-              )]
               ),
-  
+            ],
           ),
         ),
+      ),
     );
   }
 
@@ -163,10 +187,18 @@ class _CalendarViewState extends State<CalendarView> {
       context,
       listen: false,
     ).getFilteredRecord({'monthly': query});
+    List<DateTime> dates = data.map((rec) {
+      return rec.date;
+    }).toSet().toList() ;
     if (!mounted) return;
     setState(() {
       _isLoading = false;
       _recordDetails = data;
+      _dates = dates;
     });
+  }
+
+  bool sameDate(DateTime date1, DateTime date2) {
+    return date1.day == date2.day && date1.month == date2.month && date1.year == date2.year;
   }
 }

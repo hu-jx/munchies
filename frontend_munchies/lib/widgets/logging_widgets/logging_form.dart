@@ -11,6 +11,7 @@ import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/image_widgets.dart/image_selection_button.dart';
+import 'package:frontend_munchies/widgets/logging_widgets/visibility_toggle.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ class LoggingForm extends StatefulWidget {
 }
 
 class _LoggingFormState extends State<LoggingForm> with RouteAware {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   DateTime? _selectedDate;
   TextEditingController itemNameController = TextEditingController();
   TextEditingController dateController = TextEditingController();
@@ -33,8 +35,8 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   TextEditingController categoryController = TextEditingController();
   final RecordChanger recChange = RecordChanger();
   String? _imageField;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var _isFavourited = false;
+  var _isVisible = false;
   String? _errorMessage;
   CategoryItem? _selectedCategory;
   final Map<String, dynamic> _updates = {
@@ -45,6 +47,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     'category': null,
     'isFavourited': null,
     'details': null,
+    'isVisible': null
   };
 
   final List<CategoryItem> categories =
@@ -65,6 +68,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   late bool _originalFav;
   late String? _originalBase64;
   late String? _originalCategory;
+  late bool _originalVisibility;
   String? itemName;
   String? cost;
   String? details;
@@ -79,13 +83,18 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   void checkIfUpdate() {
     if (widget.record != null) {
       _originalFav = widget.record!.isFavourited;
+      _originalVisibility = widget.record!.isVisible;
       _selectedDate = widget.record!.date;
       dateController.text = formatDate(_selectedDate!);
+      _originalBase64 = widget.record!.photo;
+      //if the record is a real existing record
       if (widget.record?.record_id != null) {
         setState(() {
           _isFavourited = _originalFav;
-          _originalBase64 = widget.record!.photo;
-          _originalCategory = widget.record!.category;
+          _isVisible = _originalVisibility;
+          _originalCategory = widget.record!.category != 'null'
+              ? widget.record!.category
+              : '';
           if (_originalBase64 != null) _imageField = _originalBase64;
           itemNameController.text = widget.record!.itemName;
           costController.text = (widget.record!.cost / 100).toStringAsFixed(2);
@@ -103,13 +112,14 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
             categoryController.text = _selectedCategory?.labelText ?? '';
           }
         });
-        debugPrint('I am at check if update $_originalBase64');
+        debugPrint('I am at check if update $_originalVisibility');
       } else if (widget.record != null && widget.record?.record_id == null) {
-        //saving with favourite
+        //saving with favourite OR saving with AI
         setState(() {
           itemNameController.text = widget.record!.itemName;
           costController.text = (widget.record!.cost / 100).toStringAsFixed(2);
           _isFavourited = _originalFav;
+          if (_originalBase64 != null) _imageField = _originalBase64;
         });
       }
     }
@@ -158,6 +168,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   }
 
   void _saveRec(String itemName, String cost) async {
+    debugPrint("Visiblility: ${_isVisible.toString()}");
     try {
       await _recordChanger?.saveRecord(
         itemName,
@@ -167,6 +178,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
         _imageField,
         _isFavourited,
         details,
+        _isVisible,
       );
       if (!mounted) return;
       //change _errorMessage to be nothing on success
@@ -235,7 +247,13 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                           _imageField = base64;
                         }),
                       ),
+                      VisibilityToggle(original: widget.record?.isVisible,formKey: _formKey, sendVisibility: (boolean) {
+                        setState(() {
+                          _isVisible = boolean;
+                        });
+                      }),
                       _buildActionRow(width, height),
+
                       ShowErrorMessage(errorMessage: _errorMessage),
                     ],
                   ),
@@ -289,6 +307,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                 itemName = itemNameController.text;
                 cost = costController.text;
                 _saveRec(itemName!, cost!);
+              //if it is an update
               } else if (widget.record != null) {
                 if (_isFavourited != _originalFav) {
                   _updates['isFavourited'] = _isFavourited;
@@ -296,12 +315,18 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                 if (_imageField != _originalBase64) {
                   _updates['photo'] = _imageField;
                 }
-                if (_originalCategory != _selectedCategory) {
+                if (_originalCategory != _selectedCategory?.labelText) {
                   _updates['category'] = _selectedCategory?.labelText;
+                }
+                if (_isVisible != _originalVisibility) {
+                  _updates['isVisible'] = _isVisible;
                 }
                 _patchRecord(widget.record!);
               }
-              Navigator.of(context).pop();
+              if (!mounted) return;
+              Navigator.popUntil(context, (route) {
+                return route.settings.name == '/home' || route.isFirst;
+              });
             }
           },
 
@@ -513,3 +538,5 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     );
   }
 }
+
+

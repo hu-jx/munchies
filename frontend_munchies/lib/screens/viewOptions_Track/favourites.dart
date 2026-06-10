@@ -147,6 +147,7 @@ class _FavCard extends StatelessWidget {
                     date: DateTime.now(),
                     cost: record.cost,
                     isFavourited: true,
+                    isVisible: false
                   ),
                 ),
               ),
@@ -171,7 +172,8 @@ class _FavCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(record.itemName, style: textStyle),
+              Flexible(child: Text(record.itemName, style: textStyle)),
+              const SizedBox(width: 50,),
               Text((record.cost / 100).toStringAsFixed(2), style: textStyle),
             ],
           ),

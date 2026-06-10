@@ -11,6 +11,7 @@ class Record {
   String? category;
   bool isFavourited;
   String? details;
+  bool isVisible;
 
   Record({
     this.record_id,
@@ -21,7 +22,8 @@ class Record {
     this.photo,
     this.category,
     required this.isFavourited,
-    this.details
+    this.details,
+    required this.isVisible
   });
 
   factory Record.fromJson(Map<String, dynamic> json) {
@@ -34,7 +36,8 @@ class Record {
       isFavourited: bool.parse(json['isFavourited']?.toString() ?? 'false'),
       category: json['category']?.toString(),
       photo: json['photo']?.toString(),
-      details: json['details']?.toString()
+      details: json['details']?.toString(),
+      isVisible: bool.parse(json['isVisible']?.toString() ?? 'false')
     );
   }
 }

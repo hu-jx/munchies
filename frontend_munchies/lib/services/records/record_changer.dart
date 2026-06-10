@@ -7,14 +7,14 @@ import 'package:frontend_munchies/models/record.dart';
 class RecordChanger extends ChangeNotifier {
   String? idToken;
 
-//FIXME: ERROR HERE AFTER TIME DUE TO STALE IDTOKEN THAT IS NOT REFRESHED -> CACHED TOKEN HAS TO FOLLOW LIFECYLE OF FIREBASE TOKEN
   Future<void> getUserToken() async {
-    User? usr = FirebaseAuth.instance.currentUser;
-    if (usr == null) throw AuthException('Access Denied.');
-    String? currUserId = await usr.getIdToken(true);
-    if (currUserId == null) throw AuthException('Access Denied.');
-    if (currUserId.isEmpty) throw AuthException('Access Denied.');
-    idToken = currUserId;
+    FirebaseAuth.instance.idTokenChanges().listen((User? usr) async {
+      if (usr == null) {
+        throw AuthException('Access Denied');
+      } else {
+        idToken = await usr.getIdToken(true);
+      }
+    });
   }
 
   RecordChanger() {
@@ -39,7 +39,8 @@ class RecordChanger extends ChangeNotifier {
     String? selectedCategory,
     String? imageField,
     bool isFavourited,
-    String? details
+    String? details,
+    bool isVisible
   ) async {
     User? usr = FirebaseAuth.instance.currentUser;
     if (usr == null) throw AuthException('Access denied.');
@@ -51,7 +52,8 @@ class RecordChanger extends ChangeNotifier {
         category: selectedCategory.toString(),
         photo: imageField,
         isFavourited: isFavourited,
-        details: details
+        details: details,
+        isVisible: isVisible
       );
       await RecordServices.createRecord(idToken!, rec);
       notifyListeners();
@@ -59,6 +61,10 @@ class RecordChanger extends ChangeNotifier {
 
   Future<void> patchRecord(Record record, Map<String, dynamic> updates) async {
     if (idToken != null) {
+      if (updates['cost'] != null) {
+        debugPrint('The current updates["cost"] is ${updates['cost']}');
+        updates['cost'] = (double.parse(updates['cost']) * 100).toInt();
+      }
       await RecordServices.updateRecord(idToken!, record.record_id!, updates);
       notifyListeners();
     }
@@ -66,7 +72,6 @@ class RecordChanger extends ChangeNotifier {
 
   Future<Record> getRecord(String recordId) async {
     try {
-      getUserToken();
       if (idToken == null) throw AuthException('Access Denied');
       return RecordServices.getRecord(idToken!, recordId);
     } catch (e) {

@@ -152,7 +152,8 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Homepage()),
+        MaterialPageRoute(builder: (context) => Homepage(), 
+        settings: RouteSettings(name: '/home')),
       );
     } catch (e) {
       setState(() {

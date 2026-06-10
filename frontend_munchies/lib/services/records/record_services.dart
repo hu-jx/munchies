@@ -26,6 +26,7 @@ class RecordServices {
         'category': record.category,
         'photo': record.photo,
         'details': record.details,
+        'isVisible': record.isVisible
       }),
     );
 
@@ -52,8 +53,9 @@ class RecordServices {
             url = '$url?favourites=true';
           } else if (query.containsKey('monthly')) {
             List<String> month_year = query['monthly']!.split(',');
-            if (month_year.length != 2)
+            if (month_year.length != 2) {
               throw Exception('Invalid date format when fetching records.');
+            }
             String month = month_year[0];
             String year = month_year[1];
             url = '$url?month=$month&&year=$year';
@@ -168,17 +170,21 @@ class RecordServices {
         'Content-Type': '	application/json',
         'Connection': 'keep-alive',
       },
-      body: {'base64_photo': base64},
+      body: jsonEncode({'base64_photo': base64}),
     );
     if (res.statusCode == 200) {
+      debugPrint('Hit status code == 200');
       var recordData = jsonDecode(res.body);
-      if (recordData is! Map<String, String>) {
+      if (recordData is! Map<String, dynamic>) {
+        debugPrint('Exception thrown here');
         throw Exception('Unexpected data format');
       }
-      return recordData['base64_photo'];
+      debugPrint('Completed record data check');
+      debugPrint(recordData['itemName'].toString());
+      return recordData['itemName'];
     } else {
       debugPrint(res.reasonPhrase);
-      throw Exception('Failed to fetch the record');
+      throw Exception('Failed to scan the picture');
     }
   }
 }
