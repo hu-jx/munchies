@@ -98,7 +98,6 @@ class _HomePageViewState extends State<HomePageView>
                   initialValue: _selectedFilter,
                   //notify listener to call _fetch again when this change occurs 
                   onSelected: (ActivityFilter res) {
-                    debugPrint(res.toString());
                     setState(() {
                       if (res != _selectedFilter) {
                         currView = ActivitiesView(filter: res);
@@ -106,7 +105,6 @@ class _HomePageViewState extends State<HomePageView>
                       _selectedFilter = res;
 
                     });
-                    debugPrint(currView.filter.toString());
                   },
                   itemBuilder: (BuildContext context) =>
                       <PopupMenuEntry<ActivityFilter>>[

@@ -6,19 +6,22 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/category_item.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
-import 'package:frontend_munchies/styles/logging_form_styles.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/image_widgets.dart/image_selection_button.dart';
-import 'package:frontend_munchies/widgets/logging_widgets/visibility_toggle.dart';
+import 'package:frontend_munchies/widgets/logging_widgets/fields/categories.dart';
+import 'package:frontend_munchies/widgets/logging_widgets/fields/cost.dart';
+import 'package:frontend_munchies/widgets/logging_widgets/fields/date.dart';
+import 'package:frontend_munchies/widgets/logging_widgets/fields/details.dart';
+import 'package:frontend_munchies/widgets/logging_widgets/fields/item_name.dart';
+import 'package:frontend_munchies/widgets/logging_widgets/fields/others_row.dart';
+import 'package:frontend_munchies/widgets/logging_widgets/fields/visibility_toggle.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:provider/provider.dart';
 
 class LoggingForm extends StatefulWidget {
   final Record? record;
-
   const LoggingForm({super.key, this.record});
 
   @override
@@ -47,24 +50,8 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     'category': null,
     'isFavourited': null,
     'details': null,
-    'isVisible': null
+    'isVisible': null,
   };
-
-  final List<CategoryItem> categories =
-      [
-        'pastry',
-        'cakes',
-        'confectionery',
-        'frozen',
-        'fruits',
-        'healthier',
-        'beverages',
-      ].map((stringCat) {
-        return CategoryItem(
-          name: stringCat,
-          labelText: "${stringCat[0].toUpperCase()}${stringCat.substring(1)}",
-        );
-      }).toList();
   late bool _originalFav;
   late String? _originalBase64;
   late String? _originalCategory;
@@ -74,18 +61,12 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   String? details;
   RecordChanger? _recordChanger;
 
-  String formatDate(DateTime date) {
-    String month = date.month >= 10 ? "${date.month}" : "0${date.month}";
-    String day = date.day >= 10 ? "${date.day}" : "0${date.day}";
-    return "${date.year}-$month-$day";
-  }
-
   void checkIfUpdate() {
     if (widget.record != null) {
       _originalFav = widget.record!.isFavourited;
       _originalVisibility = widget.record!.isVisible;
       _selectedDate = widget.record!.date;
-      dateController.text = formatDate(_selectedDate!);
+      dateController.text = DateField.formatDate(_selectedDate!);
       _originalBase64 = widget.record!.photo;
       //if the record is a real existing record
       if (widget.record?.record_id != null) {
@@ -102,7 +83,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
             detailsController.text = widget.record!.details!;
           }
           if (_originalCategory != null) {
-            _selectedCategory = categories.firstWhere(
+            _selectedCategory = CategoryMenu.categories.firstWhere(
               (str) => str.labelText == _originalCategory,
               orElse: () => CategoryItem(
                 name: _originalCategory!,
@@ -112,7 +93,6 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
             categoryController.text = _selectedCategory?.labelText ?? '';
           }
         });
-        debugPrint('I am at check if update $_originalVisibility');
       } else if (widget.record != null && widget.record?.record_id == null) {
         //saving with favourite OR saving with AI
         setState(() {
@@ -168,11 +148,10 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   }
 
   void _saveRec(String itemName, String cost) async {
-    debugPrint("Visiblility: ${_isVisible.toString()}");
     try {
       await _recordChanger?.saveRecord(
         itemName,
-        formatDate(_selectedDate!.toLocal()),
+        DateField.formatDate(_selectedDate!.toLocal()),
         cost,
         _selectedCategory?.labelText,
         _imageField,
@@ -193,7 +172,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
       if (!mounted) return;
     } catch (e) {
       setState(() {
-        debugPrint(e.toString());
+        // debugPrint(e.toString());
         _errorMessage = "Unexpected error. Please try again later. ";
       });
     }
@@ -226,19 +205,31 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                     spacing: 12.0,
                     children: [
                       //ITEMNAME FIELD
-                      _buildItemNameField(basicBoxDeco),
+                      ItemName(itemNameController: itemNameController),
                       //DATE ROW
-                      _buildDateField(basicBoxDeco),
+                      DateField(
+                        dateController: dateController,
+                        sendBackDate: (date) {
+                          setState(() {
+                            _selectedDate = date;
+                          });
+                        },
+                      ),
                       //COST ROW
-                      _buildCostField(basicBoxDeco),
+                      CostField(costController: costController),
                       //OTHER DETAILS BEGIN
-                      _buildOthersRow(),
+                      OthersRow(),
                       //DETAILS
-                      _buildDetailsField(optionalInputdecorationtheme),
+                      DetailsField(detailsController: detailsController),
                       //CATEGORY
-                      _buildCatDropdown(
-                        constraints,
-                        optionalInputdecorationtheme,
+                      CategoryMenu(
+                        categoryController: categoryController,
+                        sendBackCat: (cat) {
+                          setState(() {
+                            _selectedCategory = cat;
+                          });
+                        },
+                        maxWidth: constraints.maxWidth,
                       ),
                       ImageSelectionButton(
                         boxSize: Size(width * 0.95, height * 0.3),
@@ -247,13 +238,16 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                           _imageField = base64;
                         }),
                       ),
-                      VisibilityToggle(original: widget.record?.isVisible,formKey: _formKey, sendVisibility: (boolean) {
-                        setState(() {
-                          _isVisible = boolean;
-                        });
-                      }),
+                      VisibilityToggle(
+                        original: widget.record?.isVisible,
+                        formKey: _formKey,
+                        sendVisibility: (boolean) {
+                          setState(() {
+                            _isVisible = boolean;
+                          });
+                        },
+                      ),
                       _buildActionRow(width, height),
-
                       ShowErrorMessage(errorMessage: _errorMessage),
                     ],
                   ),
@@ -263,35 +257,6 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
           ),
         );
       },
-    );
-  }
-
-  Row _buildCostField(InputDecoration Function(String labelText) basicBoxDeco) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Cost (\$)    ',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-            color: Color(0xff795A52),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: TextFormField(
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
-            controller: costController,
-            style: inputTextStyle,
-            decoration: basicBoxDeco('How much did you spend?'),
-            validator: (value) => ((value == null || value.isEmpty)
-                ? "Field cannot be empty"
-                : null),
-          ),
-        ),
-      ],
     );
   }
 
@@ -307,7 +272,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                 itemName = itemNameController.text;
                 cost = costController.text;
                 _saveRec(itemName!, cost!);
-              //if it is an update
+                //if it is an update
               } else if (widget.record != null) {
                 if (_isFavourited != _originalFav) {
                   _updates['isFavourited'] = _isFavourited;
@@ -364,7 +329,6 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   void _patchRecord(Record record) async {
     try {
       await _recordChanger?.patchRecord(record, _updates);
-      debugPrint("RECORD SERVICES SENT AND RETURNED");
 
       if (!mounted) return;
       //change _errorMessage to be nothing on success
@@ -380,163 +344,8 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = e.toString();
-        // TODO : CHANGE BACK "Unexpected error. Please try again later. ";
+        _errorMessage = "Unexpected error. Please try again later. ";
       });
     }
-  }
-
-  //MOVE CATEGORY SELECTOR TO NEW FILE
-  DropdownMenu<CategoryItem> _buildCatDropdown(
-    BoxConstraints constraints,
-    InputDecorationTheme optionalInputdecorationtheme,
-  ) {
-    return DropdownMenu<CategoryItem>(
-      trailingIcon: Icon(
-        Icons.arrow_drop_down_rounded,
-        color: Colours.darkBrown,
-      ),
-      selectedTrailingIcon: Icon(
-        Icons.arrow_drop_up_rounded,
-        color: Colours.darkBrown,
-      ),
-      menuHeight: 150,
-      menuStyle: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll<Color>(Colours.darkerBeige),
-      ),
-      width: constraints.maxWidth,
-      inputDecorationTheme: optionalInputdecorationtheme,
-      onSelected: (CategoryItem? cat) {
-        setState(() {
-          _selectedCategory = cat;
-        });
-        categoryController.text = _selectedCategory?.labelText ?? '';
-      },
-      controller: categoryController,
-      enableFilter: false,
-      requestFocusOnTap: false,
-      leadingIcon: const Icon(Icons.category_rounded, color: Colours.darkBrown),
-      label: Text(
-        "Add a category label",
-        textAlign: TextAlign.center,
-        style: backgroundTextStyle,
-      ),
-      dropdownMenuEntries: categories
-          .map((item) => DropdownMenuEntry(value: item, label: item.labelText))
-          .toList(),
-    );
-  }
-
-  //TODO: MOVE DETAILS TO NEW FIELD
-  TextFormField _buildDetailsField(
-    InputDecorationTheme optionalInputdecorationtheme,
-  ) {
-    return TextFormField(
-      style: inputTextStyle,
-      controller: detailsController,
-      decoration: InputDecoration(
-        labelText: 'Description',
-        labelStyle: backgroundTextStyle,
-      ).applyDefaults(optionalInputdecorationtheme),
-    );
-  }
-
-  Row _buildOthersRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 17.0, bottom: 0.0),
-          child: Text(
-            "OTHERS",
-            style: TextStyle(
-              fontFamily: 'Cherry_Bomb_One',
-              color: Colours.darkBrown,
-              fontSize: 26,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _selectDate() async {
-    final date = await showDatePicker(
-      context: context,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      initialDate: _selectedDate ?? DateTime.now(),
-    );
-    if (!mounted) return;
-
-    if (date != null) {
-      setState(() {
-        _selectedDate = date.toLocal();
-      });
-      dateController.text = formatDate(_selectedDate!);
-    }
-  }
-
-  Row _buildDateField(InputDecoration Function(String labelText) basicBoxDeco) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Date           ',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-            color: Color(0xff795A52),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: TextFormField(
-            controller: dateController,
-            style: inputTextStyle,
-            readOnly: true,
-            onTap: () => _selectDate(),
-            decoration: basicBoxDeco('Click to enter date!'),
-            validator: (value) => ((value == null || value.isEmpty)
-                ? "Field cannot be empty"
-                : null),
-          ),
-        ),
-      ],
-    );
-  }
-
-  //TODO: MOVE ITEMNAME FIELD TO NEW FILE
-  Row _buildItemNameField(
-    InputDecoration Function(String labelText) basicBoxDeco,
-  ) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          "munched",
-          style: TextStyle(
-            fontFamily: 'Cherry_Bomb_One',
-            fontSize: 24,
-            color: Colours.greyPink,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: TextFormField(
-            controller: itemNameController,
-            style: inputTextStyle,
-            decoration: basicBoxDeco('What did you have?'),
-            validator: (value) => ((value == null || value.isEmpty)
-                ? "Field cannot be empty"
-                : null),
-          ),
-        ),
-      ],
-    );
   }
 }
-
-

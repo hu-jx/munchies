@@ -42,7 +42,6 @@ class RecordServices {
   ) async {
     String url = '$_baseUrl/records';
     if (query != null) {
-      debugPrint('entered here');
       try {
         if (query.isNotEmpty) {
           if (query.containsKey('today')) {
@@ -126,8 +125,6 @@ class RecordServices {
     String id,
     Map<String, dynamic>? updates,
   ) async {
-    debugPrint("CALLED HERE IN RECORD SVC");
-    debugPrint(updates.toString());
     var headers = {
       'Authorization': 'Bearer $idToken',
       'Content-Type': 'application/json',
@@ -173,14 +170,10 @@ class RecordServices {
       body: jsonEncode({'base64_photo': base64}),
     );
     if (res.statusCode == 200) {
-      debugPrint('Hit status code == 200');
       var recordData = jsonDecode(res.body);
       if (recordData is! Map<String, dynamic>) {
-        debugPrint('Exception thrown here');
         throw Exception('Unexpected data format');
       }
-      debugPrint('Completed record data check');
-      debugPrint(recordData['itemName'].toString());
       return recordData['itemName'];
     } else {
       debugPrint(res.reasonPhrase);

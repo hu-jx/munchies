@@ -166,8 +166,6 @@ class _ScanPictureState extends State<ScanPicture> {
       String? idToken = await usr.getIdToken(true);
       if (idToken == null) throw AuthException('Access Denied');
       var itemName = await RecordServices.scanPicture(idToken, _imageField!);
-      debugPrint(itemName);
-      debugPrint(_imageField);
       if (itemName == null) {
         throw Exception('Could not proceed. Please try again later.');
       }
@@ -204,7 +202,6 @@ class _ScanPictureState extends State<ScanPicture> {
       );
     }
     String? itemname = await _scanPicture(_imageField ?? '');
-    debugPrint(itemname);
     if (!mounted) return;
     setState(() {
       _isLoading = false;

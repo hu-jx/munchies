@@ -62,7 +62,6 @@ class RecordChanger extends ChangeNotifier {
   Future<void> patchRecord(Record record, Map<String, dynamic> updates) async {
     if (idToken != null) {
       if (updates['cost'] != null) {
-        debugPrint('The current updates["cost"] is ${updates['cost']}');
         updates['cost'] = (double.parse(updates['cost']) * 100).toInt();
       }
       await RecordServices.updateRecord(idToken!, record.record_id!, updates);
@@ -97,5 +96,11 @@ class RecordChanger extends ChangeNotifier {
     } catch (e) {
       throw Exception(e.toString());
     }
+  }
+
+  Future<List<Record>> fetchAllRecords() async {
+    if (idToken == null) throw AuthException('Access Denied');
+    if (idToken!.isEmpty) throw AuthException('Access Denied');
+    return RecordServices.getAllRecords(idToken!, null);
   }
 }

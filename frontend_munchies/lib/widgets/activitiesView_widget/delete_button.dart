@@ -17,12 +17,9 @@ class DeleteButton extends StatelessWidget {
     return TextButton(
       onPressed: () async {
         await Provider.of<RecordChanger>(context, listen: false).deleteRec(recordId);
-        debugPrint('SUCCESS DELETE');
         if (!context.mounted) {
-          debugPrint('HIT HERE');
           return;
         }
-        debugPrint('PREPARING TO POP');
         Navigator.of(context).pop();
       },
       child: Row(

@@ -66,7 +66,6 @@ class _CalendarViewState extends State<CalendarView> {
                       defaultBuilder: (context, day, focusedDay) {
                         if (_dates != null) {
                           if (_dates!.any((date) => sameDate(date, day))) {
-                            debugPrint('Entered contains ');
                             return Center(child: Icon(Icons.cookie_rounded, size: 30, color: Colours.greyPink,));
                           }
                         }
@@ -107,7 +106,6 @@ class _CalendarViewState extends State<CalendarView> {
                         _focusedDay = focusedDay;
                         getMonthlyRecords(_focusedDay);
                       });
-                      debugPrint('${_focusedDay.month}-${_focusedDay.year}');
                       });
               
                     },

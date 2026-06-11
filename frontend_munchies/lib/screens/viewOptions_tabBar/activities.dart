@@ -1,9 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/record.dart';
-import 'package:frontend_munchies/services/auth/auth_exception.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
-import 'package:frontend_munchies/services/records/record_services.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/activitiesView_widget/record_card.dart';
@@ -101,12 +98,7 @@ class _ActivitiesViewState extends State<ActivitiesView> {
 
   Future<void> _fetchRecords() async {
     try {
-      User? usr = FirebaseAuth.instance.currentUser;
-      if (usr == null) throw AuthException('No permission to access.');
-      String? idToken = await usr.getIdToken();
-      if (idToken == null || idToken.isEmpty) {
-        throw AuthException('No permission to access. ');
-      }
+      List<Record>? data;
       setState(() {
         _isLoading = true;
       });
@@ -118,11 +110,18 @@ class _ActivitiesViewState extends State<ActivitiesView> {
       } else if (widget.filter == ActivityFilter.weekly) {
         query = {'weekly': 'weekly'};
       }
-      List<Record> data = await RecordServices.getAllRecords(idToken, query);
+      if (query != null) {
+        data = await Provider.of<RecordChanger>(context, listen: false).getFilteredRecord(query);
+      } else {
+        data = await Provider.of<RecordChanger>(context, listen: false).fetchAllRecords();
+      }
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _recordDetails = data;
+        if (data != null) {
+          if (data.isNotEmpty) _recordDetails = data;
+        }
+        
       });
     } on Exception catch (e) {
       _isLoading = false;

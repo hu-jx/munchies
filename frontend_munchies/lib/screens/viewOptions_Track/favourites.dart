@@ -116,7 +116,6 @@ class _FavouritesPageState extends State<FavouritesPage> {
         _isLoading = false;
       });
     } on Exception catch (e) {
-      debugPrint(e.toString());
       setState(() {
         _errorMessage = e.toString();
       });

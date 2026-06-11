@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/screens/scan_picture.dart';
+import 'package:frontend_munchies/screens/viewOptions_Track/scan_picture.dart';
 import 'package:frontend_munchies/screens/viewOptions_Track/favourites.dart';
 import 'package:frontend_munchies/screens/viewOptions_Track/tracking.dart';
 import 'package:frontend_munchies/screens/viewOptions_tabBar/activities.dart';
@@ -52,7 +52,6 @@ class _LoggingOptionsState extends State<LoggingOptions> {
         TextButton(
           onPressed: (() {
             Navigator.push(context, 
-            //TODO: CHANGE TO CORRECT PAGE
             MaterialPageRoute(builder: (context) => ScanPicture()));
           }),
           style: ButtonStyle(
