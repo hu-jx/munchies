@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/record.dart';
+import 'package:frontend_munchies/services/auth/auth_exception.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/services/records/record_services.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/activitiesView_widget/record_card.dart';
@@ -61,7 +64,7 @@ class _ActivitiesViewState extends State<ActivitiesView> {
     }
 
     return Container(
-      alignment: (_isLoading || _recordDetails.isEmpty) ? Alignment.center : Alignment.topCenter,
+      alignment: (_isLoading || _recordDetails.isEmpty)? Alignment.center : Alignment.topCenter,
       width: width,
       height: height * 0.80,
       color: Colours.lightBeige,
@@ -98,7 +101,12 @@ class _ActivitiesViewState extends State<ActivitiesView> {
 
   Future<void> _fetchRecords() async {
     try {
-      List<Record>? data;
+      User? usr = FirebaseAuth.instance.currentUser;
+      if (usr == null) throw AuthException('No permission to access.');
+      String? idToken = await usr.getIdToken();
+      if (idToken == null || idToken.isEmpty) {
+        throw AuthException('No permission to access. ');
+      }
       setState(() {
         _isLoading = true;
       });
@@ -110,18 +118,11 @@ class _ActivitiesViewState extends State<ActivitiesView> {
       } else if (widget.filter == ActivityFilter.weekly) {
         query = {'weekly': 'weekly'};
       }
-      if (query != null) {
-        data = await Provider.of<RecordChanger>(context, listen: false).getFilteredRecord(query);
-      } else {
-        data = await Provider.of<RecordChanger>(context, listen: false).fetchAllRecords();
-      }
+      List<Record> data = await RecordServices.getAllRecords(idToken, query);
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        if (data != null) {
-          if (data.isNotEmpty) _recordDetails = data;
-        }
-        
+        _recordDetails = data;
       });
     } on Exception catch (e) {
       _isLoading = false;

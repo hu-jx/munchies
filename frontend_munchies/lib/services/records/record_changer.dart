@@ -97,10 +97,4 @@ class RecordChanger extends ChangeNotifier {
       throw Exception(e.toString());
     }
   }
-
-  Future<List<Record>> fetchAllRecords() async {
-    if (idToken == null) throw AuthException('Access Denied');
-    if (idToken!.isEmpty) throw AuthException('Access Denied');
-    return RecordServices.getAllRecords(idToken!, null);
-  }
 }
