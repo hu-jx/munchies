@@ -20,6 +20,7 @@ class _HomePageViewState extends State<HomePageView>
 
   late TabController _tabController;
   // bool _isExpanded = false;
+  ActivitiesView currView = ActivitiesView(filter: ActivityFilter.all);
 
   @override
   void initState() {
@@ -37,26 +38,29 @@ class _HomePageViewState extends State<HomePageView>
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color(0xff696969).withValues(alpha: 0.1),
-        title: Align(
-          alignment: Alignment.bottomLeft,
-          child: Text(
-            "HOME",
-            style: TextStyle(
-              fontFamily: 'Cherry_Bomb_One',
-              fontSize: 60,
-              color: Colours.greyPink,
+        title: const Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: EdgeInsets.only(left:10.0, right: 10.0),
+            child: Text(
+              "HOME",
+              style: TextStyle(
+                fontFamily: 'Cherry_Bomb_One',
+                fontSize: 60,
+                color: Colours.greyPink,
+              ),
             ),
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(height * 0.10),
+          preferredSize: MediaQuery.of(context).orientation == Orientation.landscape ? Size.fromHeight(height * 0.22) : Size.fromHeight(95),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Flexible(
-                fit: FlexFit.tight,
+              Expanded(
                 child: TabBar(
                   dividerHeight: 0,
                   indicatorColor: Colours.greyPink,
@@ -92,9 +96,14 @@ class _HomePageViewState extends State<HomePageView>
                     color: Colours.greyPink,
                   ),
                   initialValue: _selectedFilter,
+                  //notify listener to call _fetch again when this change occurs 
                   onSelected: (ActivityFilter res) {
                     setState(() {
+                      if (res != _selectedFilter) {
+                        currView = ActivitiesView(filter: res);
+                      }
                       _selectedFilter = res;
+
                     });
                   },
                   itemBuilder: (BuildContext context) =>
@@ -102,7 +111,7 @@ class _HomePageViewState extends State<HomePageView>
                         PopupMenuItem<ActivityFilter>(
                           value: ActivityFilter.daily,
                           child: Text(
-                            'Daily',
+                            'Today',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               color: Colours.darkBrown,
@@ -112,7 +121,7 @@ class _HomePageViewState extends State<HomePageView>
                         PopupMenuItem<ActivityFilter>(
                           value: ActivityFilter.weekly,
                           child: Text(
-                            'Weekly',
+                            'This Week',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               color: Colours.darkBrown,
@@ -133,10 +142,10 @@ class _HomePageViewState extends State<HomePageView>
                 )
               else
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Icon(
-                    Icons.arrow_drop_down_rounded,
-                    size: 75,
+                    Icons.calendar_month_rounded,
+                    size: 59,
                     color: Colours.greyPink,
                   ),
                 ),
@@ -146,8 +155,10 @@ class _HomePageViewState extends State<HomePageView>
       ),
       backgroundColor: Colors.transparent,
       body: TabBarView(
+        key: ValueKey(currView),
         controller: _tabController,
-        children: [ActivitiesView(), CalendarView()],
+        //tabbarview does not update automatically 
+        children: [currView, CalendarView()],
       ),
     );
   }

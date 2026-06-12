@@ -191,3 +191,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 server/munchies-auth-firebase-key.json
+
+frontend_munchies/lib/widgets/ignore_widgets/*

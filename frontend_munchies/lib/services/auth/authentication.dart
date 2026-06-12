@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
-import 'package:frontend_munchies/services/api_services.dart';
-import 'package:frontend_munchies/services/auth_exception.dart';
+import 'package:frontend_munchies/services/auth/api_services.dart';
+import 'package:frontend_munchies/services/auth/auth_exception.dart';
 
 class Authentication {
   final _firebaseAuth = FirebaseAuth.instance;
-  final _apiServices = ApiServices();
+  final _apiServices = AuthServices();
 
   Future<UserProfile> login(String emailAddress, String password) async {
     try {
@@ -14,7 +14,7 @@ class Authentication {
         password: password,
       );
       final user = cred.user!;
-      final String? idToken = await user.getIdToken(true);
+      final String? idToken = await user.getIdToken();
       return _apiServices.fetchProfileData(idToken!);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -75,5 +75,9 @@ class Authentication {
           );
       }
     }
+  }
+
+  static Future<void> logout() async {
+    await FirebaseAuth.instance.signOut();
   }
 }

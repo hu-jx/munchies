@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_munchies/widgets/general_textfield.dart';
 import 'package:frontend_munchies/screens/register.dart';
 import 'package:frontend_munchies/widgets/button.dart';
-import 'package:frontend_munchies/services/authentication.dart';
+import 'package:frontend_munchies/services/auth/authentication.dart';
 // Use GoogleFonts.font_family to obtain desired font (e.g. GoogleFonts.poppins)
 
 class LoginPage extends StatefulWidget {
@@ -149,9 +149,11 @@ class _LoginPageState extends State<LoginPage> {
     try {
       //if successful, route to homepage
       await Authentication().login(emailController.text, pwController.text);
+      if (!mounted) return;
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Homepage()),
+        MaterialPageRoute(builder: (context) => Homepage(), 
+        settings: RouteSettings(name: '/home')),
       );
     } catch (e) {
       setState(() {

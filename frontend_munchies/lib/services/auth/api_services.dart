@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:http/http.dart' as http;
 
-class ApiServices {
+class AuthServices {
   static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   //GET http request

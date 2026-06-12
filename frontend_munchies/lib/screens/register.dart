@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/services/authentication.dart';
+import 'package:frontend_munchies/services/auth/authentication.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/general_textfield.dart';
 import 'package:frontend_munchies/widgets/pw_textfield.dart';
@@ -286,15 +286,15 @@ class _RegisterPageState extends State<RegisterPage> {
         fNameController.text,
         lNameController.text,
       );
+      if (!mounted) return;
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Homepage()),
+        MaterialPageRoute(builder: (context) => Homepage(), settings: RouteSettings(name: '/home')),
       );
     } catch (e) {
       setState(() {
         errorMessage = e.toString();
       });
     }
-    ;
   }
 }
