@@ -23,6 +23,7 @@ class _ScanPictureState extends State<ScanPicture> {
   String _errorMessage = '';
   bool _isLoading = false;
   bool _hasBanner = true;
+  bool _hasImageTypeBanner = true;
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -66,11 +67,10 @@ class _ScanPictureState extends State<ScanPicture> {
             behavior: ScrollBehavior().copyWith(overscroll: false),
             child: SingleChildScrollView(
               child: Column(
-                spacing: 15,
                 children: [
                   if (_hasBanner)
                     Padding(
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.only(top: 10.0, left: 8.0, right: 8.0),
                       child: MaterialBanner(
                         dividerColor: const Color.fromARGB(255, 210, 200, 188),
                         elevation: 4.0,
@@ -99,18 +99,50 @@ class _ScanPictureState extends State<ScanPicture> {
                           ),
                         ],
                       ),
-                    )
-                  else
+                    ),
+                    if (_hasImageTypeBanner) 
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 2.0),
+                      child: MaterialBanner(
+                        dividerColor: const Color.fromARGB(255, 210, 200, 188),
+                        elevation: 4.0,
+                        leading: Icon(
+                          Icons.photo,
+                          color: Colours.greyPink,
+                          size: 30,
+                        ),
+                        backgroundColor: Colours.darkerBeige,
+                        content: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'Supported image files:\n .png, .jpeg, .webp',
+                            style: importantTextStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _hasImageTypeBanner = false;
+                              });
+                            },
+                            child: Text('DISMISS', style: inputTextStyle),
+                          ),
+                        ],
+                      ),
+                    ) 
+                    else
                     Padding(
                       padding: const EdgeInsets.only(left: 20.0, top: 20.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
+                          Text( 
                             'Preview your image: ',
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              fontSize: 18,
+                              fontSize: 16,
                               color: Colours.darkBrown,
                               fontWeight: FontWeight.w500,
                             ),
@@ -118,6 +150,7 @@ class _ScanPictureState extends State<ScanPicture> {
                         ],
                       ),
                     ),
+                    SizedBox(height: 15,),
                   ImageSelectionButton(
                     boxSize: Size(width * 0.95, height * 0.55),
                     sendBack64: (base64) {
@@ -126,6 +159,7 @@ class _ScanPictureState extends State<ScanPicture> {
                       });
                     },
                   ),
+                  SizedBox(height: 20,),
                   TextButton(
                     onPressed: () => _onScanButtonPressed(),
                     style: OutlinedButton.styleFrom(
@@ -149,7 +183,7 @@ class _ScanPictureState extends State<ScanPicture> {
                           ),
                           child: ShowErrorMessage(errorMessage: _errorMessage),
                         )
-                      : Row(),
+                      : SizedBox(height: 50,),
                 ],
               ),
             ),
@@ -195,19 +229,42 @@ class _ScanPictureState extends State<ScanPicture> {
         builder: (context) => Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [CircularProgressIndicator(color: Colours.greyPink,backgroundColor: Colours.lightBeige,)],
+            children: [
+              CircularProgressIndicator(
+                color: Colours.greyPink,
+                backgroundColor: Colours.lightBeige,
+              ),
+            ],
           ),
         ),
-        barrierDismissible: false
+        barrierDismissible: false,
       );
     }
     String? itemname = await _scanPicture(_imageField ?? '');
+    itemname = itemname?.trim();
+    if (!mounted) return;
+    if (itemname == null || itemname == "No food detected") {
+        Navigator.of(context).pop();
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(
+                'No food was detected in the image.\n Either try again or record manually',
+              ),
+            );
+          },
+        );
+        return;
+      }
     if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
-     //closing the loading screen dialog and so that when press back go back to home not scan again 
-    Navigator.of(context)..pop()..pop();
+    //closing the loading screen dialog and so that when press back go back to home not scan again
+    Navigator.of(context)
+      ..pop()
+      ..pop();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -219,7 +276,7 @@ class _ScanPictureState extends State<ScanPicture> {
               cost: 0,
               isFavourited: false,
               photo: _imageField,
-              isVisible: false
+              isVisible: false,
             ),
           ),
         ),

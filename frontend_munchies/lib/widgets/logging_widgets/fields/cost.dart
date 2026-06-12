@@ -14,7 +14,7 @@ class CostField extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Cost (\$)    ',
+          'Cost           ',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w500,
             fontSize: 16,
@@ -27,7 +27,7 @@ class CostField extends StatelessWidget {
             keyboardType: TextInputType.numberWithOptions(decimal: true),
             controller: costController,
             style: inputTextStyle,
-            decoration: basicBoxDeco('How much did you spend?'),
+            decoration: basicBoxDeco('How much did you spend?').copyWith(prefixText: '\$', prefixStyle: inputTextStyle),
             validator: (value) => ((value == null || value.isEmpty)
                 ? "Field cannot be empty"
                 : null),
