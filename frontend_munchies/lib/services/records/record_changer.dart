@@ -17,7 +17,7 @@ class RecordChanger extends ChangeNotifier {
   }
 
   Future<void> deleteRec(String recordId) async {
-    getUserToken();
+    await getUserToken();
     if (idToken!.isNotEmpty) {
       await RecordServices.deleteRecord(idToken!, recordId);
       notifyListeners();
@@ -37,7 +37,7 @@ class RecordChanger extends ChangeNotifier {
     String? details,
     bool isVisible,
   ) async {
-    getUserToken();
+    await getUserToken();
     User? usr = FirebaseAuth.instance.currentUser;
     if (usr == null) throw AuthException('Access denied.');
     Record rec = Record(
@@ -56,7 +56,7 @@ class RecordChanger extends ChangeNotifier {
   }
 
   Future<void> patchRecord(Record record, Map<String, dynamic> updates) async {
-    getUserToken();
+    await getUserToken();
     if (idToken != null) {
       if (updates['cost'] != null) {
         updates['cost'] = (double.parse(updates['cost']) * 100).toInt();
@@ -68,7 +68,7 @@ class RecordChanger extends ChangeNotifier {
 
   Future<Record> getRecord(String recordId) async {
     debugPrint("FUNCTIO CALLED");
-    getUserToken();
+    await getUserToken();
     try {
       if (idToken == null) throw AuthException('Access Denied');
       return RecordServices.getRecord(idToken!, recordId);
@@ -78,7 +78,7 @@ class RecordChanger extends ChangeNotifier {
   }
 
   Future<List<Record>> getFilteredRecord(Map<String, String> query) async {
-    getUserToken();
+    await getUserToken();
     try {
       if (idToken == null) throw AuthException('Access Denied');
       if (idToken!.isEmpty) throw AuthException('Access Denied');
