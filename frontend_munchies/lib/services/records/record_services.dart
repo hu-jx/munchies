@@ -6,8 +6,7 @@ import 'package:frontend_munchies/models/record.dart';
 import 'package:http/http.dart' as http;
 
 class RecordServices {
-  //TODO: REMEMBER TO CHANGE BASEURL BACK TO RENDER AFTW
-  static const String _baseUrl = "http://10.0.2.2:3000/api";
+  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   //POST http request (createRec)
   static Future<void> createRecord(String idToken, Record record) async {
@@ -92,6 +91,7 @@ class RecordServices {
       if (res.statusCode == 204) {
         return [];
       }
+      debugPrint(res.reasonPhrase);
       throw Exception('Failed to fetch records data');
     }
   }
@@ -136,7 +136,7 @@ class RecordServices {
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode != 201) {
-      //print(response.reasonPhrase);
+      debugPrint(response.reasonPhrase);
       throw Exception('Failed to update profile');
     }
   }
@@ -154,6 +154,7 @@ class RecordServices {
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode != 201) {
+      debugPrint(response.reasonPhrase);
       throw Exception('Failed to delete record');
     }
   }
