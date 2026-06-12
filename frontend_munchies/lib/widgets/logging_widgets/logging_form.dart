@@ -149,6 +149,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
 
   void _saveRec(String itemName, String cost) async {
     try {
+      details = detailsController.text;
       await _recordChanger?.saveRecord(
         itemName,
         DateField.formatDate(_selectedDate!.toLocal()),
@@ -164,10 +165,14 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
       setState(() {
         _errorMessage = null;
       });
+      Navigator.popUntil(context, (route) {
+        return route.settings.name == '/home' || route.isFirst;
+      });
     } on FormatException {
       setState(() {
         _errorMessage =
-            "Remember: use date picker for Date and key in a valid value for cost";
+            "Remember: use date picker for Date and key in a valid value for cost.\n" 
+            "Example of valid values: 4.80, 4. Do not include special characters like -, \$";
       });
       if (!mounted) return;
     } catch (e) {
@@ -270,7 +275,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
             if (success) {
               if (widget.record == null || widget.record?.record_id == null) {
                 itemName = itemNameController.text;
-                cost = costController.text;
+                cost = costController.text.trim();
                 _saveRec(itemName!, cost!);
                 //if it is an update
               } else if (widget.record != null) {
@@ -288,10 +293,6 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                 }
                 _patchRecord(widget.record!);
               }
-              if (!mounted) return;
-              Navigator.popUntil(context, (route) {
-                return route.settings.name == '/home' || route.isFirst;
-              });
             }
           },
 
@@ -335,11 +336,15 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
       setState(() {
         _errorMessage = null;
       });
+      Navigator.popUntil(context, (route) {
+        return route.settings.name == '/home' || route.isFirst;
+      });
     } on FormatException {
       if (!mounted) return;
       setState(() {
         _errorMessage =
-            "Remember: use date picker for Date and key in a valid value for cost";
+            "Remember: use date picker for Date and key in a valid value for cost.\n" 
+            "Example of valid values: 4.80, 4. Do not include special characters like -, \$";
       });
     } catch (e) {
       if (!mounted) return;

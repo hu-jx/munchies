@@ -38,6 +38,7 @@ class _LoggingOptionsState extends State<LoggingOptions> {
     
         TextButton(
           onPressed: (() {
+            Navigator.pop(context); 
             Navigator.push(context, 
             MaterialPageRoute(builder: (context) => FavouritesPage()));
           }),
@@ -51,6 +52,7 @@ class _LoggingOptionsState extends State<LoggingOptions> {
     
         TextButton(
           onPressed: (() {
+            Navigator.pop(context); 
             Navigator.push(context, 
             MaterialPageRoute(builder: (context) => ScanPicture()));
           }),
