@@ -181,8 +181,6 @@ export async function updateRecord(req, res) {
     try {
         const { id } = req.params
         var { itemName, date, cost, photo, category, isFavourited, details, isVisible } = req.body
-        console.log('I need to print this');
-        console.log(isVisible)
         const record = await Record.findOne({ user_uid: req.uid, _id: new ObjectId(id) })
         if (record.length == 0) {
             res.status().json({ message: 'Record does not exist or you do not have the permission to access it.' })
@@ -198,12 +196,9 @@ export async function updateRecord(req, res) {
         if (photo) record.photo = photo
         if (category) record.category = category
         if (isFavourited != null) record.isFavourited = isFavourited
-        console.log(record.isFavourited);
-        console.log(isFavourited)
         if (details) record.details = details
         if (isVisible != null) record.isVisible = isVisible
 
-        console.log(record.isVisible)
         //must save to the db 
         await record.save()
         return res.status(201).json({ message: "Successfully updated record" })
@@ -218,7 +213,6 @@ export async function deleteRecord(req, res) {
         const { id } = req.params
         //check if exists first -> shd not return success if it doenst even exist 
         var count = await Record.countDocuments({ user_uid: req.uid, _id: new ObjectId(id) })
-        console.log(count);
         if (count > 0) {
             await Record.findOneAndDelete({ user_uid: req.uid, _id: id })
         } else {
@@ -238,10 +232,8 @@ export async function getItemName(req, res) {
             if (i > 1) {
                 delay = delay * 2
             }
-            console.log('Completed delay of', delay)
             const { base64_photo } = req.body;
             const imgType = checkMimeType(base64_photo)
-            console.log(imgType)
             const GEMINI_API_KEY = process.env.GEMINI_API_KEY
             const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
             const response = await ai.models.generateContent({
@@ -265,7 +257,6 @@ export async function getItemName(req, res) {
             console.error("getItemName error: ", error)
             if (error instanceof ApiError) {
                 await new Promise(res => setTimeout(res, delay))
-                console.log('Completed wait for ', delay)
             } else {
                 return res.status(500).json({ message: "Server error" })
             }
@@ -284,12 +275,9 @@ function checkMimeType(base64) {
 
     // const first10Chara = base64.substring(0,10)
     for (const sign of Object.keys(signatures)) {
-        console.log(sign)
         if (base64.startsWith(sign)) {
             return signatures[sign];
         }
     }
-
-    console.log(base64.substring(0, 5))
     throw new Error('Invalid image format')
 }

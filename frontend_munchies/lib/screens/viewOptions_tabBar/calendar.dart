@@ -100,7 +100,7 @@ class _CalendarViewState extends State<CalendarView> {
                     ),
                     availableGestures: AvailableGestures.horizontalSwipe,
                     onPageChanged: (focusedDay) {
-                      _debouncer.debounce(duration: Duration(milliseconds: 500), 
+                      _debouncer.debounce(duration: Duration(milliseconds: 800), 
                       onDebounce: () {
                         setState(() {
                         _focusedDay = focusedDay;

@@ -26,7 +26,7 @@ class RecordCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 8.0, bottom: 8.0),
       child: ElevatedButton(
         onPressed: () {},
         onLongPress: () => _onRecordPressed(context),
@@ -43,6 +43,7 @@ class RecordCard extends StatelessWidget {
               base64Image != null
                   ? Row(children: [convertBase64(base64Image!)])
                   : Row(),
+                  base64Image != null ? SizedBox(height: 10,) : Row(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
