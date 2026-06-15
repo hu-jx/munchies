@@ -4,22 +4,37 @@ import { Record } from "../models/record.js"
 import mongoose from 'mongoose'
 import { config } from 'dotenv';
 import { ApiError, GoogleGenAI } from "@google/genai";
+import cloudinary from '../config/cloudinary.js'
+import { extractPublicId } from 'cloudinary-build-url'
 config({ quiet: true })
-
-
+import fs from 'fs'
 const ObjectId = mongoose.Types.ObjectId
 
 dayjs.locale('en-sg')
 //Create following CRUD 
 export async function createRecord(req, res) {
     try {
-        var { user_uid, itemName, date, cost, photo, category, isFavourited, details, isVisible } = req.body
-        if (photo != null) {
-            photo = Buffer.from(photo, 'base64')
+        var { user_uid, itemName, date, cost, category, isFavourited, details, isVisible } = req.body
+            //TODO: UPLOAD FILE ONTO CLOUDINARY INSTEAD
+            // photo = Buffer.from(photo, 'base64')
+        var url;
+        if (req.file != null) {
+            const { path } = req.file
+            const photo = await cloudinary.uploader.upload(req.file.path, {folder: 'uploads'})
+            url = photo.secure_url
+            fs.unlinkSync(path)
         }
-        const new_record = Record(
-            { user_uid, itemName, date, cost, photo, category, isFavourited, details, isVisible }
-        )
+        const new_record = new Record({
+            user_uid: user_uid,
+            itemName: itemName,
+            date: date,
+            cost: cost,
+            category: category,
+            isFavourited: isFavourited,
+            details: details,
+            isVisible: isVisible,
+            photo: url
+        })
         await new_record.save()
         return res.status(201).json({ message: "Successfully created new record" })
     } catch (error) {
@@ -49,13 +64,14 @@ export async function getAllRecords(req, res) {
         if (records_data.length == 0) {
             return res.status(204).json({ message: "No data found" })
         }
-        records_data = records_data.map((r) => {
-            const base64_photo = r.photo ? r.photo.toString('base64') : null;
-            return {
-                ...r,
-                photo: base64_photo,
-            };
-        });
+        // records_data = records_data.map((r) => {
+        //     //TODO: JUST PASS URL OVER HERE. NO NEED FOR ANY DECODING OF BASE64
+        //     const base64_photo = r.photo ? r.photo.toString('base64') : null;
+        //     return {
+        //         ...r,
+        //         photo: base64_photo,
+        //     };
+        // });
         return res.status(200).json(records_data)
     } catch (error) {
         console.error("getAllRecords error: ", error)
@@ -164,12 +180,18 @@ export async function getRecord(req, res) {
         if (records_data.length == 0) {
             res.status().json({ message: 'Record does not exist or you do not have the permission to access it.' })
         }
-        const obj = records_data.toObject();
-        const base64_photo = obj.photo ? obj.photo.toString('base64') : null;
-        records_data = {
-            ...obj,
-            photo: base64_photo
-        }
+        // if (records_data.photo) {
+        //     console.log(records_data.photo)
+        // } else {
+        //     console.log("NO PHOTO")
+        // }
+        // const obj = records_data.toObject();
+        //TODO: JUST PASS NETWORK URL HERE. NO NEED FOR DECODING BASE64
+        // const base64_photo = obj.photo ? obj.photo.toString('base64') : null;
+        // records_data = {
+        //     ...obj,
+        //     photo: base64_photo
+        // }
         return res.status(200).json(records_data)
     } catch (error) {
         console.error("getRecord error: ", error)
@@ -180,20 +202,24 @@ export async function getRecord(req, res) {
 export async function updateRecord(req, res) {
     try {
         const { id } = req.params
-        var { itemName, date, cost, photo, category, isFavourited, details, isVisible } = req.body
+        var { itemName, date, cost, category, isFavourited, details, isVisible } = req.body
         const record = await Record.findOne({ user_uid: req.uid, _id: new ObjectId(id) })
         if (record.length == 0) {
             res.status().json({ message: 'Record does not exist or you do not have the permission to access it.' })
         }
-        if (photo != null) {
-            photo = Buffer.from(photo, 'base64')
+        var photo_url;
+        if (req.file != null) {
+            const { path } = req.file
+            const photo = await cloudinary.uploader.upload(req.file.path, {folder: 'uploads'})
+            photo_url = photo.secure_url
+            fs.unlinkSync(path)
         }
 
         //check if exists then assign 
         if (itemName) record.itemName = itemName
         if (date) record.date = date
         if (cost) record.cost = cost
-        if (photo) record.photo = photo
+        if (photo_url) record.photo = photo_url
         if (category) record.category = category
         if (isFavourited != null) record.isFavourited = isFavourited
         if (details) record.details = details
@@ -212,8 +238,13 @@ export async function deleteRecord(req, res) {
     try {
         const { id } = req.params
         //check if exists first -> shd not return success if it doenst even exist 
-        var count = await Record.countDocuments({ user_uid: req.uid, _id: new ObjectId(id) })
-        if (count > 0) {
+        var record = await Record.findOne({ user_uid: req.uid, _id: new ObjectId(id) })
+        if (record != null) {
+            //TODO: DELETE THE IMAGE FROM CLOUDINARY IF THERE IS AN IMAGE. CHANGE COUNTDOCUMENT TO FINDONE INSTEAD 
+            if (record.photo != null) {
+                const cloudinary_id = extractPublicId(record.photo)
+                await cloudinary.uploader.destroy(cloudinary_id)
+            }
             await Record.findOneAndDelete({ user_uid: req.uid, _id: id })
         } else {
             throw new Error('Document does not exist')
@@ -221,7 +252,7 @@ export async function deleteRecord(req, res) {
         return res.status(201).json({ message: "Successfully deleted record" })
     } catch (error) {
         console.error("deleteRecord error: ", error)
-        return res.status(500).json({ message: "Server error" }) //shdnt reveal real error in case attack??
+        return res.status(500).json({ message: "Server error" })
     }
 }
 

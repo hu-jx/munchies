@@ -1,4 +1,5 @@
-import 'dart:convert';
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/activitiesView_widget/record_card_actions.dart';
@@ -7,7 +8,7 @@ class RecordCard extends StatelessWidget {
   final DateTime date;
   final int cost;
   final String itemName;
-  final String? base64Image;
+  final String? image_url;
   final String recordId;
 
   const RecordCard({
@@ -16,34 +17,54 @@ class RecordCard extends StatelessWidget {
     required this.cost,
     required this.itemName,
     required this.recordId,
-    this.base64Image,
+    this.image_url,
   });
-
-  Image convertBase64(String base64) {
-    return Image.memory(base64Decode(base64), width: 100,);
-  }
 
   @override
   Widget build(BuildContext context) {
+    // debugPrint(image_url);
+
     return Padding(
-      padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 8.0, bottom: 8.0),
+      padding: const EdgeInsets.only(
+        left: 15.0,
+        right: 15.0,
+        top: 8.0,
+        bottom: 8.0,
+      ),
       child: ElevatedButton(
         onPressed: () {},
         onLongPress: () => _onRecordPressed(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colours.darkerBeige,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0),),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
           side: BorderSide(color: Colours.darkerBeige),
-          foregroundColor: Color(0xffA98379)),
+          foregroundColor: Color(0xffA98379),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              base64Image != null
-                  ? Row(children: [convertBase64(base64Image!)])
+              image_url != null
+                  //TODO: SWAP OUT FOR IMAGE.NETWORK
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 200,
+                          width: 278,
+                          child: Image.network(
+                            image_url!,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.centerLeft,
+                          ),
+                        ),
+                      ],
+                    )
                   : Row(),
-                  base64Image != null ? SizedBox(height: 10,) : Row(),
+              image_url != null ? SizedBox(height: 10) : Row(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -105,4 +126,3 @@ class RecordCard extends StatelessWidget {
     );
   }
 }
-

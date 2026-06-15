@@ -3,6 +3,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:core';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/category_item.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
@@ -37,7 +38,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   TextEditingController detailsController = TextEditingController();
   TextEditingController categoryController = TextEditingController();
   final RecordChanger recChange = RecordChanger();
-  String? _imageField;
+  File? _imageField;
   var _isFavourited = false;
   var _isVisible = false;
   String? _errorMessage;
@@ -53,13 +54,14 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
     'isVisible': null,
   };
   late bool _originalFav;
-  late String? _originalBase64;
   late String? _originalCategory;
   late bool _originalVisibility;
   String? itemName;
   String? cost;
   String? details;
   RecordChanger? _recordChanger;
+  
+  bool _isLoading = false;
 
   void checkIfUpdate() {
     if (widget.record != null) {
@@ -67,7 +69,8 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
       _originalVisibility = widget.record!.isVisible;
       _selectedDate = widget.record!.date;
       dateController.text = DateField.formatDate(_selectedDate!);
-      _originalBase64 = widget.record!.photo;
+      //FIXME: CAN DELETE THIS LINE. ORIGINAL PIC WILL NOT BE ALTERED
+      // _originalBase64 = widget.record!.photo_URL;
       //if the record is a real existing record
       if (widget.record?.record_id != null) {
         setState(() {
@@ -76,7 +79,9 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
           _originalCategory = widget.record!.category != 'null'
               ? widget.record!.category
               : '';
-          if (_originalBase64 != null) _imageField = _originalBase64;
+              //FIXME: CAN DELETE THIS LINE. ORIGINAL PIC WILL NOT BE ALTERED ->
+              // UPDATES ONLY GETS SMT WHEN WE HAVE A NEW FILE FOR UPLOAD
+          // if (_originalBase64 != null) _imageField = _originalBase64;
           itemNameController.text = widget.record!.itemName;
           costController.text = (widget.record!.cost / 100).toStringAsFixed(2);
           if (widget.record!.details != null) {
@@ -99,7 +104,9 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
           itemNameController.text = widget.record!.itemName;
           costController.text = (widget.record!.cost / 100).toStringAsFixed(2);
           _isFavourited = _originalFav;
-          if (_originalBase64 != null) _imageField = _originalBase64;
+          //FIXME: CAN DELETE THIS LINE. ORIGINAL PIC WILL NOT BE ALTERED ->
+          // UPDATES ONLY GETS SMT WHEN WE HAVE A NEW FILE FOR UPLOAD
+          // if (_originalBase64 != null) _imageField = _originalBase64;
         });
       }
     }
@@ -150,11 +157,36 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
   void _saveRec(String itemName, String cost) async {
     try {
       details = detailsController.text;
+      setState(() {
+        _isLoading = true;
+      });
+      if (_isLoading) {
+      showDialog(
+        context: context,
+        builder: (context) => Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 50,
+                width: 50,
+                child: CircularProgressIndicator(
+                  color: Colours.greyPink,
+                  
+                ),
+              ),
+            ],
+          ),
+        ),
+        barrierDismissible: false,
+      );
+    }
       await _recordChanger?.saveRecord(
         itemName,
         DateField.formatDate(_selectedDate!.toLocal()),
         cost,
         _selectedCategory?.labelText,
+        //TODO: PASS THE FILE FROM IMAGESELECTIONBUTTON HERE
         _imageField,
         _isFavourited,
         details,
@@ -164,6 +196,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
       //change _errorMessage to be nothing on success
       setState(() {
         _errorMessage = null;
+        _isLoading = false;
       });
       Navigator.popUntil(context, (route) {
         return route.settings.name == '/home' || route.isFirst;
@@ -238,9 +271,10 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                       ),
                       ImageSelectionButton(
                         boxSize: Size(width * 0.95, height * 0.3),
-                        existing_base64: _imageField,
-                        sendBack64: (base64) => setState(() {
-                          _imageField = base64;
+                        existing_url: widget.record?.photo_URL,
+                        existing_photo_file: widget.record?.photo_file,
+                        sendBackPhotoFile: (photo_file) => setState(() {
+                          _imageField = photo_file;
                         }),
                       ),
                       VisibilityToggle(
@@ -282,7 +316,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
                 if (_isFavourited != _originalFav) {
                   _updates['isFavourited'] = _isFavourited;
                 }
-                if (_imageField != _originalBase64) {
+                if (_imageField != null) {
                   _updates['photo'] = _imageField;
                 }
                 if (_originalCategory != _selectedCategory?.labelText) {
@@ -329,12 +363,35 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
 
   void _patchRecord(Record record) async {
     try {
+      if (_imageField != null) {
+        _updates['photo_file'] = _imageField;
+      }
+      setState(() {
+        _isLoading = true;
+      });
+      if (_isLoading) {
+      showDialog(
+        context: context,
+        builder: (context) => Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(
+                color: Colours.greyPink,
+              ),
+            ],
+          ),
+        ),
+        barrierDismissible: false,
+      );
+    }
       await _recordChanger?.patchRecord(record, _updates);
 
       if (!mounted) return;
       //change _errorMessage to be nothing on success
       setState(() {
         _errorMessage = null;
+        _isLoading = false;
       });
       Navigator.popUntil(context, (route) {
         return route.settings.name == '/home' || route.isFirst;

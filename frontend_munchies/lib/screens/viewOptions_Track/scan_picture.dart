@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/viewOptions_Track/tracking.dart';
@@ -19,7 +22,7 @@ class ScanPicture extends StatefulWidget {
 }
 
 class _ScanPictureState extends State<ScanPicture> {
-  String? _imageField;
+  File? _imageField;
   String _errorMessage = '';
   bool _isLoading = false;
   bool _hasBanner = true;
@@ -153,10 +156,12 @@ class _ScanPictureState extends State<ScanPicture> {
                     SizedBox(height: 15,),
                   ImageSelectionButton(
                     boxSize: Size(width * 0.95, height * 0.55),
-                    sendBack64: (base64) {
+                    //TODO: CHANGE TO SENDBACKFILE. WHEN WE PREPARE TO SCAN, WE WILL CONVERT TO BASE64
+                    sendBackPhotoFile: (photo_file) {
                       setState(() {
-                        _imageField = base64;
+                        _imageField = photo_file;
                       });
+                      // debugPrint(_imageField.toString());
                     },
                   ),
                   SizedBox(height: 20,),
@@ -199,7 +204,7 @@ class _ScanPictureState extends State<ScanPicture> {
       if (usr == null) throw AuthException('Access Denied');
       String? idToken = await usr.getIdToken(true);
       if (idToken == null) throw AuthException('Access Denied');
-      var itemName = await RecordServices.scanPicture(idToken, _imageField!);
+      var itemName = await RecordServices.scanPicture(idToken, base64);
       if (itemName == null) {
         throw Exception('Could not proceed. Please try again later.');
       }
@@ -240,7 +245,8 @@ class _ScanPictureState extends State<ScanPicture> {
         barrierDismissible: false,
       );
     }
-    String? itemname = await _scanPicture(_imageField ?? '');
+    String base64 = base64Encode(_imageField!.readAsBytesSync());
+    String? itemname = await _scanPicture(base64);
     itemname = itemname?.trim();
     if (!mounted) return;
     if (itemname == null || itemname == "No food detected") {
@@ -261,6 +267,7 @@ class _ScanPictureState extends State<ScanPicture> {
     setState(() {
       _isLoading = false;
     });
+    // debugPrint("POST SCAN ${_imageField.toString()}");
     //closing the loading screen dialog and so that when press back go back to home not scan again
     Navigator.of(context)
       ..pop()
@@ -275,7 +282,8 @@ class _ScanPictureState extends State<ScanPicture> {
               date: DateTime.now(),
               cost: 0,
               isFavourited: false,
-              photo: _imageField,
+              //FIXME: THIS WILL BE A PHOTO_FILE SENT TO THE LOGGING FORM. 
+              photo_file: _imageField,
               isVisible: false,
             ),
           ),

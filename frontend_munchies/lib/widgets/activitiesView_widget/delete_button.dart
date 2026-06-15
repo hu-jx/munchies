@@ -15,12 +15,13 @@ class DeleteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () async {
+      onPressed: () async {        
         await Provider.of<RecordChanger>(context, listen: false).deleteRec(recordId);
         if (!context.mounted) {
           return;
         }
         Navigator.of(context).pop();
+
       },
       child: Row(
         mainAxisAlignment: .spaceBetween,
