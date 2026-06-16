@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/viewSelector.dart';
+import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/view_selector.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardViewModel/dashboard_view_model.dart';
-import 'package:frontend_munchies/screens/dashboardFeature/viewOpt.dart';
+import 'package:frontend_munchies/screens/dashboardFeature/view_opt.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/dashboard_main.dart';
 
 class DashboardView extends StatelessWidget {
@@ -113,7 +113,7 @@ class DashboardView extends StatelessWidget {
           onChangeView(item);
         },
         itemBuilder: (BuildContext context) =>
-            PopUpButtonOptions(model.selectedView),
+            popUpButtonOptions(model.selectedView),
         //customising button appearance
         child: Stack(
           alignment: AlignmentGeometry.centerEnd,

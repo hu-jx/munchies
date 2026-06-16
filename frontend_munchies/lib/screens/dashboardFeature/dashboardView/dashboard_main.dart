@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardViewModel/dashboard_view_model.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/date_helpers.dart';
-import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/pieChartBuilder.dart';
+import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/pie_chart_builder.dart';
 
 class DashboardMain extends StatelessWidget {
   DashboardViewModel model;

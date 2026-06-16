@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/screens/dashboardFeature/viewOpt.dart';
+import 'package:frontend_munchies/screens/dashboardFeature/view_opt.dart';
 
 class PieChartBuilder extends StatefulWidget {
   final List summaryData;
@@ -37,8 +37,6 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
   Map<String, Color> colourMap = {"Beverages": Colours.pieRed};
 
   List<dynamic> prepPieData(List listCopy, String sortBy) {
-    print("RAW INPUT: ${listCopy}");
-
     listCopy = listCopy.map((entry) {
       return {
         "_id": {
@@ -94,7 +92,6 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
     Size size = MediaQuery.of(context).size;
     double height = size.height;
 
-    print(widget.selectedView);
     List<dynamic> preppedData = List<dynamic>.from(
       prepPieData(listCopy, widget.sortBy),
     );
@@ -117,7 +114,7 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
+            SizedBox(
               height: 10,
               width: 10,
               //color: colourList[preppedData.indexOf(cate)],
