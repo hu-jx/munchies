@@ -1,0 +1,185 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/screens/dashboardFeature/viewOpt.dart';
+
+class PieChartBuilder extends StatefulWidget {
+  final List summaryData;
+  final List categoryData;
+  final ViewOpt selectedView;
+  final String sortBy;
+  final DateTime chosenDate;
+
+  PieChartBuilder({
+    super.key,
+    required this.summaryData,
+    required this.categoryData,
+    required this.selectedView,
+    required this.sortBy,
+    required this.chosenDate,
+  });
+
+  @override
+  State<PieChartBuilder> createState() => _PieChartBuilderState();
+}
+
+class _PieChartBuilderState extends State<PieChartBuilder> {
+  //sortBy options, only can be costPerCat or numPerCat
+  List<Color> colourList = [
+    Colours.pieRed,
+    Colours.pieOrange,
+    Colours.pieYellow,
+    Colours.pieBlue,
+    Colours.piePurple,
+  ];
+
+  Map<String, Color> colourMap = {"Beverages": Colours.pieRed};
+
+  List<dynamic> prepPieData(List listCopy, String sortBy) {
+    print("RAW INPUT: ${listCopy}");
+
+    listCopy = listCopy.map((entry) {
+      return {
+        "_id": {
+          "category": (entry["_id"]["category"] == "null")
+              ? "Uncategorised"
+              : entry["_id"]["category"],
+        },
+        "costPerCat": entry["costPerCat"],
+        "numPerCat": entry["numPerCat"],
+      };
+    }).toList();
+
+    listCopy.sort((a, b) => b[sortBy].compareTo(a[sortBy]));
+
+    /*
+    //final listCopy = List<dynamic>.from(widget.categoryData);
+    listCopy.sort((a, b) => b[sortBy].compareTo(a[sortBy]));
+    final top4cate = listCopy.take(4).toList();
+
+    double othersVal = 0;
+
+    for (final cate in widget.categoryData) {
+      if (!listCopy.contains(cate)) {
+        othersVal += cate[sortBy];
+      }
+    }
+
+    if (othersVal > 0) {
+      top4cate.add({
+        "_id": {"category": "Others"},
+        sortBy: othersVal,
+      });
+    }
+    print("OUTPUT: ${top4cate}");
+    return top4cate;
+    */
+    return listCopy;
+  }
+
+  num calcTotal(List list) {
+    num total = 0;
+    for (final item in list) {
+      total += item[widget.sortBy];
+    }
+    return total;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final listCopy = List<dynamic>.from(widget.categoryData);
+    
+
+    Size size = MediaQuery.of(context).size;
+    double height = size.height;
+
+    print(widget.selectedView);
+    List<dynamic> preppedData = List<dynamic>.from(
+      prepPieData(listCopy, widget.sortBy),
+    );
+
+    num total = calcTotal(listCopy);
+
+    List<PieChartSectionData> sectionList = preppedData.map((cate) {
+      return PieChartSectionData(
+        value: cate[widget.sortBy].toDouble(),
+        //title: cate["_id"]["category"],
+        title: (cate[widget.sortBy].toDouble()/total * 100).round().toString() + "%",
+        color: colourList[preppedData.indexOf(cate)],
+        radius: 100,
+      );
+    }).toList();
+
+    List<Widget> legend = prepPieData(listCopy, widget.sortBy).map((cate) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 70.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              height: 10,
+              width: 10,
+              //color: colourList[preppedData.indexOf(cate)],
+            ),
+            Text(
+              cate["_id"]["category"].toString(),
+              style: TextStyle(
+                fontFamily: "Poppins",
+                color: Colours.lightBrown,
+              ),
+            ),
+            Text(
+              (widget.sortBy == "costPerCat") ?
+              "\$" + (cate[widget.sortBy]/100).toString() : 
+              cate[widget.sortBy].toString(),
+              style: TextStyle(
+                fontFamily: "Poppins",
+                color: Colours.lightBrown,
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
+
+    return Container(
+      height: height * 0.44,
+      color: Colours.darkerBeige,
+      child: Column(
+        children: [
+          SizedBox(height: 15),
+          Text(
+            (widget.sortBy == "costPerCat") ? "Expenses" : "Frequency",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              fontFamily: "Poppins",
+              color: Colours.darkBrown,
+            ),
+          ),
+          Text(
+            (widget.sortBy == "costPerCat")
+                ? "Amount spent on each category per week"
+                : "Number purchased per week",
+            style: TextStyle(fontFamily: "Poppins", color: Colours.lightBrown),
+          ),
+          SizedBox(height: 15),
+          SizedBox(
+            height: 200,
+            child: PieChart(
+              //issue fixing
+              key: ValueKey(
+                widget.selectedView.toString() + widget.chosenDate.toString(),
+              ),
+              PieChartData(sections: sectionList),
+            ),
+          ),
+          SizedBox(height: 15),
+          ...legend,
+          //for testing Text("legend"),
+        ],
+      ),
+    );
+  }
+}
