@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/screens/dashboardFeature/viewOpt.dart';
+import 'package:frontend_munchies/screens/dashboardFeature/view_opt.dart';
 
 String getLabel(ViewOpt view) {
   switch (view) {
@@ -15,7 +15,7 @@ String getLabel(ViewOpt view) {
   }
 }
 
-List<PopupMenuEntry<ViewOpt>> PopUpButtonOptions(ViewOpt selectedView) {
+List<PopupMenuEntry<ViewOpt>> popUpButtonOptions(ViewOpt selectedView) {
 return [
         const PopupMenuItem<ViewOpt>(
           value: ViewOpt.weekly,

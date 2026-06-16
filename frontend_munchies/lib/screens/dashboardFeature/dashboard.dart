@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:frontend_munchies/screens/viewOptions_bottomBar/dashboard_view.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardViewModel/dashboard_view_model.dart';
-import 'package:frontend_munchies/screens/dashboardFeature/viewOpt.dart';
+import 'package:frontend_munchies/screens/dashboardFeature/view_opt.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/dashboard_base.dart';
 
 class Dashboard extends StatefulWidget {
@@ -19,13 +19,13 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void onBackButton(DateTime date) async {
-    model.BackButton(date);
+    model.backButton(date);
     await model.getData();
     setState(() {});
   }
 
   void onForwardButton(DateTime date) async {
-    model.ForwardButton(date);
+    model.forwardButton(date);
     await model.getData();
     setState(() {});
   }

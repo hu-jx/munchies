@@ -1,4 +1,4 @@
-import 'package:frontend_munchies/screens/dashboardFeature/viewOpt.dart';
+import 'package:frontend_munchies/screens/dashboardFeature/view_opt.dart';
 
 DateTime goForward(ViewOpt selectedView, DateTime chosenDate) {
   if (selectedView == ViewOpt.weekly) {
