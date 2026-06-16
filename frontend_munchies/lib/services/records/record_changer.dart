@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/services/auth/auth_exception.dart';
@@ -32,7 +34,7 @@ class RecordChanger extends ChangeNotifier {
     String date,
     String cost,
     String? selectedCategory,
-    String? imageField,
+    File? imageField,
     bool isFavourited,
     String? details,
     bool isVisible,
@@ -45,8 +47,8 @@ class RecordChanger extends ChangeNotifier {
       itemName: itemName,
       date: DateTime.parse(date),
       cost: (double.parse(cost) * 100).toInt(),
-      category: selectedCategory.toString(),
-      photo: imageField,
+      category: selectedCategory,
+      photo_file: imageField,
       isFavourited: isFavourited,
       details: details,
       isVisible: isVisible,
@@ -67,7 +69,7 @@ class RecordChanger extends ChangeNotifier {
   }
 
   Future<Record> getRecord(String recordId) async {
-    debugPrint("FUNCTIO CALLED");
+    // debugPrint("FUNCTIO CALLED");
     await getUserToken();
     try {
       if (idToken == null) throw AuthException('Access Denied');

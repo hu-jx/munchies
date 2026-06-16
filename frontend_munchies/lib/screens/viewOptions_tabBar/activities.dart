@@ -82,7 +82,8 @@ class _ActivitiesViewState extends State<ActivitiesView> {
                           itemName: rec.itemName,
                           date: rec.date,
                           cost: rec.cost,
-                          base64Image: rec.photo,
+                          //CHANGE THIS INTO URL
+                          image_url: rec.photo_URL,
                         );
                       }).toList(),
                     ),

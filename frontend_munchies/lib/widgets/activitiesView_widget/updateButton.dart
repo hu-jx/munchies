@@ -20,6 +20,7 @@ class UpdateButton extends StatelessWidget {
       onPressed: () async {
         Record rec = await Provider.of<RecordChanger>(context, listen: false).getRecord(recordId);
         if (!context.mounted) return;
+        Navigator.of(context).pop();
         Navigator.push(
           context,
           //tracking page takes in an optional logging form. if logging form exists, use as child, else create new one

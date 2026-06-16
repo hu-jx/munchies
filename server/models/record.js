@@ -29,9 +29,9 @@ const recordSchema = new Schema({
         required: true
     },
 
-    //convert to Base64 for use
+    //save URL
     photo: {
-        type: Buffer,
+        type: String,
         required: false,
         default: null
     },

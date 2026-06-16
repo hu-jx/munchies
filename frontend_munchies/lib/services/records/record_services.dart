@@ -1,11 +1,13 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:http/http.dart' as http;
 
 class RecordServices {
+  //TODO: CHANGE TO LOCAL HOST IF USING LOCAL SERVER
   static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
   //static const String _baseUrl = "http://10.0.2.2:3000/api";
 
@@ -30,8 +32,33 @@ class RecordServices {
       }),
     );
 
-    if (res.statusCode != 201) {
-      throw Exception('Failed to create profile');
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 201) {
+      debugPrint(await response.stream.bytesToString());
+    } else {
+      debugPrint(response.reasonPhrase);
+    }
+
+    //   headers: {
+    //     'Authorization': 'Bearer $idToken',
+    //     'Content-type': 'application/json',
+    //   },
+    //   body: jsonEncode({
+    //     'user_uid': record.user_uid,
+    //     'itemName': record.itemName,
+    //     'date': record.date.toIso8601String(),
+    //     'cost': record.cost,
+    //     'isFavourited': record.isFavourited,
+    //     'category': record.category,
+    //     'photo_URL': record.photo_URL,
+    //     'details': record.details,
+    //     'isVisible': record.isVisible
+    //   }),
+    // );
+
+    if (response.statusCode != 201) {
+      throw Exception('Failed to create record');
     }
   }
 
@@ -124,14 +151,24 @@ class RecordServices {
   static Future<void> updateRecord(
     String idToken,
     String id,
-    Map<String, dynamic>? updates,
+    Map<String, dynamic> updates,
   ) async {
+    //TODO: SEND MULTIPART ACROSS
     var headers = {
       'Authorization': 'Bearer $idToken',
       'Content-Type': 'application/json',
     };
-    var request = http.Request('PATCH', Uri.parse('$_baseUrl/records/$id'));
-    request.body = json.encode(updates);
+    var request = http.MultipartRequest('PATCH', Uri.parse('$_baseUrl/records/$id'));
+    if (updates.containsKey('photo_file') && updates['photo_file'] is File)  {
+      request.files.add(
+        await http.MultipartFile.fromPath('photo', updates['photo_file'].path),
+      );
+    }
+    updates['photo'] = null;
+    updates.removeWhere((key, value) => value == null);
+    Map<String, String> data = updates.map((key, value) => MapEntry(key, value.toString()));
+
+    request.fields.addAll(data);
     request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();

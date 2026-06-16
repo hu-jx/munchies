@@ -93,11 +93,12 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ],
           ),
+          //disable button while trying to log in to prevent multiple navigation. 
+          //enable button once logged in
           AppButton(
             text: 'Login',
-            onPressed: () {
-              tryLogin();
-            },
+            onPressed: tryLogin,
+            size: Size(298, 48),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -145,11 +146,15 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void tryLogin() async {
+  Future<void> tryLogin() async {
     try {
+      debugPrint("CALLED");
       //if successful, route to homepage
       await Authentication().login(emailController.text, pwController.text);
       if (!mounted) return;
+      setState(() {
+        errorMessage = null;
+      });
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Homepage(), 

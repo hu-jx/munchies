@@ -1,8 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
@@ -12,14 +10,16 @@ import 'package:image_picker/image_picker.dart';
 class ImageSelectionButton extends StatefulWidget {
   const ImageSelectionButton({
     super.key,
-    required this.sendBack64,
+    required this.sendBackPhotoFile,
     required this.boxSize,
-    this.existing_base64
+    this.existing_url,
+    this.existing_photo_file
   });
 
-  final Function(String? base64) sendBack64;
-  final String? existing_base64;
+  final Function(File? photo_file) sendBackPhotoFile;
+  final String? existing_url;
   final Size boxSize;
+  final File? existing_photo_file;
 
   @override
   State<ImageSelectionButton> createState() => _ImageSelectionButtonState();
@@ -27,23 +27,29 @@ class ImageSelectionButton extends StatefulWidget {
 
 class _ImageSelectionButtonState extends State<ImageSelectionButton> {
   Image? image;
-  void checkIfUpdate(double width, double height) {
-    if (widget.existing_base64 != null) {
+  void checkIfUpdate() {
+    // debugPrint(widget.existing_photo_file.toString());
+    if (widget.existing_url != null) {
     setState(() {
-      base64_image = widget.existing_base64;
-      image = Image.memory(base64Decode(widget.existing_base64!), fit: BoxFit.contain);
+      image = Image.network(widget.existing_url!, fit: BoxFit.contain);
+    });
+  }
+  if (widget.existing_photo_file != null) {
+    setState(() {
+      image = Image.file(widget.existing_photo_file!);
     });
   }
 }
+
+@override
+  void initState() {
+    super.initState();
+    checkIfUpdate();
+  }
   
-  String? base64_image;
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    checkIfUpdate(width, height);
-
       return ElevatedButton(
         onPressed: () {
           _onImagePickerPressed(context);
@@ -62,7 +68,7 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
           elevation: WidgetStatePropertyAll(0.0),
         ),
         clipBehavior: Clip.antiAlias,
-        child: (base64_image == null) ?
+        child: (image == null) ?
            Text(
           "Add a photo!",
           textAlign: TextAlign.center,
@@ -123,14 +129,13 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
     final imagePicker = ImagePicker();
     XFile? selected = await imagePicker.pickImage(source: source);
     if (selected == null) return;
-    Uint8List imageBytes = await (File(selected.path)).readAsBytes();
-    String base64 = base64Encode(imageBytes);
     if (mounted) {
       setState(() {
       image = Image.file(File(selected.path), fit: BoxFit.contain);
-      base64_image = base64;
     });
     }
-    widget.sendBack64.call(base64);
+
+    //TODO: SEND BACK THE FILE TO LOGGING FORM
+    widget.sendBackPhotoFile.call(File(selected.path));
   }
 }

@@ -1,17 +1,20 @@
 
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:io';
+
 class Record {
   final String? record_id;
   final String? user_uid;
   String itemName;
   DateTime date;
   int cost;
-  String? photo;
+  String? photo_URL;
   String? category;
   bool isFavourited;
   String? details;
   bool isVisible;
+  File? photo_file;
 
   Record({
     this.record_id,
@@ -19,11 +22,12 @@ class Record {
     required this.itemName,
     required this.date,
     required this.cost,
-    this.photo,
+    this.photo_URL,
     this.category,
     required this.isFavourited,
     this.details,
-    required this.isVisible
+    required this.isVisible,
+    this.photo_file
   });
 
   factory Record.fromJson(Map<String, dynamic> json) {
@@ -35,7 +39,7 @@ class Record {
       cost: int.parse(json['cost']?.toString() ?? "0"),
       isFavourited: bool.parse(json['isFavourited']?.toString() ?? 'false'),
       category: json['category']?.toString(),
-      photo: json['photo']?.toString(),
+      photo_URL: json['photo']?.toString(),
       details: json['details']?.toString(),
       isVisible: bool.parse(json['isVisible']?.toString() ?? 'false')
     );

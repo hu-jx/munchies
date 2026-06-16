@@ -158,11 +158,12 @@ class _RegisterPageState extends State<RegisterPage> {
           Center(
             child: AppButton(
               text: 'Sign up now!',
-              onPressed: () {
+              onPressed: () async {
                 if (formKey.currentState?.validate() == true) {
-                  tryRegister();
+                  await tryRegister();
                 }
               },
+              size: Size(298, 48),
             ),
           ),
           Row(
@@ -278,7 +279,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void tryRegister() async {
+  Future<void> tryRegister() async {
     try {
       await Authentication().register(
         emailController.text,
@@ -287,6 +288,9 @@ class _RegisterPageState extends State<RegisterPage> {
         lNameController.text,
       );
       if (!mounted) return;
+      setState(() {
+        errorMessage = null;
+      });
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Homepage(), settings: RouteSettings(name: '/home')),
