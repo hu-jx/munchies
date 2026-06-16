@@ -181,6 +181,7 @@ class _LoggingFormState extends State<LoggingForm> with RouteAware {
         barrierDismissible: false,
       );
     }
+    debugPrint(_imageField.toString());
       await _recordChanger?.saveRecord(
         itemName,
         DateField.formatDate(_selectedDate!.toLocal()),

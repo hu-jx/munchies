@@ -1,7 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
@@ -44,12 +43,15 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
 @override
   void initState() {
     super.initState();
-    checkIfUpdate();
-  }
+    // if (widget.existing_photo_file != null) {
+    //     widget.sendBackPhotoFile.call(widget.existing_photo_file);
+    }
   
 
   @override
   Widget build(BuildContext context) {
+    checkIfUpdate();
+    
       return ElevatedButton(
         onPressed: () {
           _onImagePickerPressed(context);
