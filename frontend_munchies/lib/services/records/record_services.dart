@@ -9,28 +9,30 @@ import 'package:http/http.dart' as http;
 class RecordServices {
   //TODO: CHANGE TO LOCAL HOST IF USING LOCAL SERVER
   static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
-  //static const String _baseUrl = "http://10.0.2.2:3000/api";
+  // static const String _baseUrl = "http://10.0.2.2:3000/api";
 
   //POST http request (createRec)
   static Future<void> createRecord(String idToken, Record record) async {
-    final res = await http.post(
-      Uri.parse('$_baseUrl/records'),
-      headers: {
-        'Authorization': 'Bearer $idToken',
-        'Content-type': 'application/json',
-      },
-      body: jsonEncode({
-        'user_uid': record.user_uid,
-        'itemName': record.itemName,
-        'date': record.date.toIso8601String(),
-        'cost': record.cost,
-        'isFavourited': record.isFavourited,
-        'category': record.category,
-        'photo': record.photo,
-        'details': record.details,
-        'isVisible': record.isVisible,
-      }),
-    );
+    var request = http.MultipartRequest('POST', Uri.parse('$_baseUrl/records'));
+    var headers = {'Authorization': 'Bearer $idToken'};
+    Map<String, String> data = {
+      'user_uid': record.user_uid ?? '',
+      'itemName': record.itemName,
+      'cost': record.cost.toString(),
+      'date': record.date.toIso8601String(),
+      'isFavourited': record.isFavourited.toString(),
+      'category': record.category ?? '',
+      'details': record.details ?? '',
+      'isVisible': record.isVisible.toString(),
+    };
+    data.removeWhere((key, val) => val.isEmpty);
+    request.fields.addAll(data);
+    if (record.photo_file?.path != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath('photo', record.photo_file!.path),
+      );
+    }
+    request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
 
@@ -158,15 +160,20 @@ class RecordServices {
       'Authorization': 'Bearer $idToken',
       'Content-Type': 'application/json',
     };
-    var request = http.MultipartRequest('PATCH', Uri.parse('$_baseUrl/records/$id'));
-    if (updates.containsKey('photo_file') && updates['photo_file'] is File)  {
+    var request = http.MultipartRequest(
+      'PATCH',
+      Uri.parse('$_baseUrl/records/$id'),
+    );
+    if (updates.containsKey('photo_file') && updates['photo_file'] is File) {
       request.files.add(
         await http.MultipartFile.fromPath('photo', updates['photo_file'].path),
       );
     }
     updates['photo'] = null;
     updates.removeWhere((key, value) => value == null);
-    Map<String, String> data = updates.map((key, value) => MapEntry(key, value.toString()));
+    Map<String, String> data = updates.map(
+      (key, value) => MapEntry(key, value.toString()),
+    );
 
     request.fields.addAll(data);
     request.headers.addAll(headers);
@@ -220,7 +227,6 @@ class RecordServices {
     }
   }
 
-
   static Future<Map<String, dynamic>> getDashboardData({
     required String idToken,
     required String user_uid,
@@ -241,9 +247,8 @@ class RecordServices {
       },
     );
     print("STATUS: ${res.statusCode}");
-print("BODY: ${res.body}");
+    print("BODY: ${res.body}");
     //error here
     return jsonDecode(res.body);
   }
-
 }
