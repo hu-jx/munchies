@@ -6,8 +6,7 @@ import 'package:frontend_munchies/models/record.dart';
 import 'package:http/http.dart' as http;
 
 class RecordServices {
-  //static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
-  static const String _baseUrl = "http://10.0.2.2:3000/api";
+  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   //POST http request (createRec)
   static Future<void> createRecord(String idToken, Record record) async {
@@ -26,7 +25,7 @@ class RecordServices {
         'category': record.category,
         'photo': record.photo,
         'details': record.details,
-        'isVisible': record.isVisible,
+        'isVisible': record.isVisible
       }),
     );
 
@@ -182,29 +181,4 @@ class RecordServices {
       throw Exception('Failed to scan the picture');
     }
   }
-
-
-  static Future<Map<String, dynamic>> getDashboardData({
-    required String idToken,
-    required String user_uid,
-    required String startDate,
-    required String endDate,
-    required String view,
-  }) async {
-    //make API call here
-    String url =
-        '$_baseUrl/dashboard?startDate=$startDate&endDate=$endDate&view=$view&user_uid=$user_uid';
-    final res = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Accept': '*/*',
-        'Authorization': 'Bearer $idToken',
-        'Content-Type': '	application/json',
-        'Connection': 'keep-alive',
-      },
-    );
-    //error here
-    return jsonDecode(res.body);
-  }
-
 }

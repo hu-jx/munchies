@@ -244,11 +244,11 @@ export async function getItemName(req, res) {
                         data: base64_photo
                     }
                 },
-                'Identify the item in the picture and return me only the item name to be as specific as you can.' +
-                'If you are unable to map the item to a specific brand, return only the name of the food item. ' +
-                'You are strictly not allowed to return me any other description other than the name of the food item.' +
-                'IF YOU ARE NOT 100% SURE OF THE BRAND, DO NOT STATE IT IN YOUR RESPONSE.' +
-                'If it is not a food item, return the exact phrase "No food detected"']
+                    'Identify the item in the picture and return me only the item name to be as specific as you can.' +
+                    'If you are unable to map the item to a specific brand, return only the name of the food item. ' + 
+                    'You are strictly not allowed to return me any other description other than the name of the food item.' +  
+                    'IF YOU ARE NOT 100% SURE OF THE BRAND, DO NOT STATE IT IN YOUR RESPONSE.' +
+                    'If it is not a food item, return the exact phrase "No food detected"']
             });
             return res.status(200).json({
                 itemName: response.text
@@ -262,7 +262,7 @@ export async function getItemName(req, res) {
             }
         }
     }
-    return res.status(500).json({ message: "server error. failed to receive item name" })
+    return res.status(500).json({message: "server error. failed to receive item name"})
 }
 
 function checkMimeType(base64) {
@@ -281,78 +281,3 @@ function checkMimeType(base64) {
     }
     throw new Error('Invalid image format')
 }
-
-export async function getDashboardData(req, res) {
-    try {
-        var { user_uid, startDate, endDate, view } = req.query
-        var dateFormat;
-        if (view === 'weekly') {
-            dateFormat = "day"
-        } else if (view === 'monthly') {
-            //temp before i figure out how to group in weeks
-            dateFormat = "week"
-        } else if (view === 'annually') {
-            dateFormat = "month"
-        }
-
-        console.log("Querying:", { user_uid, startDate, endDate })
-        console.log("Date objects:", new Date(startDate), new Date(endDate))
-        console.log("view:", view, "dateFormat:", dateFormat)
-
-
-        const timeData = await Record.aggregate([
-            {
-                $match: {
-                    user_uid: user_uid,
-                    date: {
-                        $gte: new Date(startDate),
-                        $lte: new Date(endDate)
-                    }
-                }
-            },
-            {
-                $group: {
-                    //group by day/week/month, totalCost and Num for that period
-                    _id: { $dateTrunc: { date: "$date", unit: dateFormat } },
-                    totalCost: { $sum: '$cost' },
-                    totalNum: { $sum: 1 }
-
-                },
-            },
-            {
-                $sort: { _id: -1 }
-            }
-        ])
-
-        const catData = await Record.aggregate([
-            {
-                //group by category, the totalCatCost and totalCatNum
-                $match: {
-                    user_uid: user_uid,
-                    date: {
-                        $gte: new Date(startDate),
-                        $lte: new Date(endDate)
-                    }
-                }
-            },
-            {
-                $group: {
-                    _id: { category: '$category'},
-                    costPerCat: { $sum: '$cost' },
-                    numPerCat: { $sum: 1}
-                }
-            }        
-        ])
-
-        res.json({
-            summary: timeData,
-            catData: catData
-            })
-
-    } catch (error) {
-        console.error("getDashboardData error: ", error)
-        return res.status(500).json({ message: "Server error" });
-    }
-}
-
-//http://localhost:3000/api/dashboard?startDate=2026-06-01&endDate=2026-06-30&viewMode=weekly&user_uid=BqCmKTsSE3dNmEzpJ6No9zCD3ZN2 

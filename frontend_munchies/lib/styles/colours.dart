@@ -8,11 +8,4 @@ class Colours {
   static const lightPink = Color(0xffEB8D96);
   static const grey = Color(0xffA8A8A8);
   static const lightBrown = Color(0xffA98379);
-  static const mutedPink = Color(0xffD0A09F);
-  static const pieRed = Color(0xffF8B1B1);
-  static const pieOrange = Color(0xffF8C494);
-  static const pieYellow = Color(0xffFDFABB);
-  static const pieBlue = Color(0xffC8F7FF);
-  static const piePurple = Color(0xffEED7FF);
-
 }
