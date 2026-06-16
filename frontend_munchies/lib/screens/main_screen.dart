@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+//import 'package:frontend_munchies/screens/viewOptions_bottomBar/dashboard_view.dart';
+import 'package:frontend_munchies/screens/dashboardFeature/dashboard.dart';
 import 'package:frontend_munchies/screens/viewOptions_bottomBar/homePageView.dart';
 import 'package:frontend_munchies/screens/viewOptions_bottomBar/profile_view.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
@@ -28,7 +30,9 @@ class _HomepageState extends State<Homepage> {
 
   final List<Widget> _viewOptions = [
     HomePageView(),
-    const Center(child: Text('Dashboard. Not yet implemented.')),
+    //DashboardView(),
+    Dashboard(),
+    //const Center(child: Text('Dashboard. Not yet implemented.')),
     const Center(child: Text('Track. Not yet implemented.')),
     const Center(child: Text('Feed. Not yet implemented.')),
     ProfileView(),

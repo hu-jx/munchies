@@ -78,7 +78,7 @@ class RecordChanger extends ChangeNotifier {
   }
 
   Future<List<Record>> getFilteredRecord(Map<String, String> query) async {
-    getUserToken();
+    await getUserToken();
     try {
       if (idToken == null) throw AuthException('Access Denied');
       if (idToken!.isEmpty) throw AuthException('Access Denied');
