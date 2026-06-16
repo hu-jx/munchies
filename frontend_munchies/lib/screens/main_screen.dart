@@ -5,7 +5,7 @@ import 'package:frontend_munchies/screens/viewOptions_bottomBar/homePageView.dar
 import 'package:frontend_munchies/screens/viewOptions_bottomBar/profile_view.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/widgets/logging_widgets/logging_options.dart';
+import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/logging_options.dart';
 import 'package:popover/popover.dart';
 import 'package:provider/provider.dart';
 

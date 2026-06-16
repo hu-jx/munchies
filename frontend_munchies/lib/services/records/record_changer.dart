@@ -8,6 +8,9 @@ import 'package:frontend_munchies/models/record.dart';
 
 class RecordChanger extends ChangeNotifier {
   String? idToken;
+  List<Record> records = [];
+  bool isLoading = false;
+  String? errorMessage;
 
   Future<void> getUserToken() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -16,16 +19,14 @@ class RecordChanger extends ChangeNotifier {
     if (idToken != newToken || idToken == null) {
       idToken = newToken;
     }
+    if (idToken == null) throw AuthException('Access Denied');
+    if (idToken!.isEmpty) throw AuthException('Access Denied');
   }
 
   Future<void> deleteRec(String recordId) async {
     await getUserToken();
-    if (idToken!.isNotEmpty) {
-      await RecordServices.deleteRecord(idToken!, recordId);
-      notifyListeners();
-    } else {
-      throw AuthException('Access Denied.');
-    }
+    await RecordServices.deleteRecord(idToken!, recordId);
+    notifyListeners();
   }
 
   //add save here
@@ -59,31 +60,23 @@ class RecordChanger extends ChangeNotifier {
 
   Future<void> patchRecord(Record record, Map<String, dynamic> updates) async {
     await getUserToken();
-    if (idToken != null) {
-      if (updates['cost'] != null) {
-        updates['cost'] = (double.parse(updates['cost']) * 100).toInt();
-      }
-      await RecordServices.updateRecord(idToken!, record.record_id!, updates);
-      notifyListeners();
+    if (updates['cost'] != null) {
+      updates['cost'] = (double.parse(updates['cost']) * 100).toInt();
     }
+    await RecordServices.updateRecord(idToken!, record.record_id!, updates);
+    notifyListeners();
   }
 
   Future<Record> getRecord(String recordId) async {
     // debugPrint("FUNCTIO CALLED");
     await getUserToken();
-    try {
-      if (idToken == null) throw AuthException('Access Denied');
-      return RecordServices.getRecord(idToken!, recordId);
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+    if (idToken == null) throw AuthException('Access Denied');
+    return RecordServices.getRecord(idToken!, recordId);
   }
 
   Future<List<Record>> getFilteredRecord(Map<String, String> query) async {
     await getUserToken();
     try {
-      if (idToken == null) throw AuthException('Access Denied');
-      if (idToken!.isEmpty) throw AuthException('Access Denied');
       Map<String, dynamic> validQueries = {
         'today': 'today',
         'weekly': 'weekly',
@@ -91,7 +84,7 @@ class RecordChanger extends ChangeNotifier {
         'monthly': 'month,year',
       };
       if (query.keys.length > 1) {
-         throw Exception('Access Denied in querying records.');
+        throw Exception('Access Denied in querying records.');
       }
       if (!validQueries.keys.contains(query.keys.toList()[0])) {
         throw Exception('Not a valid query.');
@@ -99,6 +92,19 @@ class RecordChanger extends ChangeNotifier {
       return RecordServices.getAllRecords(idToken!, query);
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  Future<void> fetchAllRecords(Map<String, String>? query) async {
+    try {
+      await getUserToken();
+      isLoading = true;
+      List<Record> data = await RecordServices.getAllRecords(idToken!, query);
+      isLoading = false;
+      records = data;
+    } on Exception catch (e) {
+      isLoading = false;
+      errorMessage = e.toString();
     }
   }
 }

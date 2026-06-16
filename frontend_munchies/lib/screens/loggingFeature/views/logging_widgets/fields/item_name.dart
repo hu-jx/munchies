@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/logging_form_styles.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
+import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
 
 class ItemName extends StatelessWidget {
   final TextEditingController itemNameController;
-  const ItemName({super.key, required this.itemNameController});
+  final LoggingViewModel lvm;
+  const ItemName({super.key, required this.itemNameController, required this.lvm});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,7 @@ class ItemName extends StatelessWidget {
         const SizedBox(width: 16),
         Expanded(
           child: TextFormField(
+            onChanged: (value) => lvm.setItemName(value),
             controller: itemNameController,
             style: inputTextStyle,
             decoration: basicBoxDeco('What did you have?'),

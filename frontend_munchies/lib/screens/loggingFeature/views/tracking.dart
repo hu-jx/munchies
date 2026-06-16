@@ -1,7 +1,7 @@
 //this is the default tracking page
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/widgets/logging_widgets/logging_form.dart';
+import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/logging_form.dart';
 
 class TrackingPage extends StatefulWidget {
   final LoggingForm? loggingForm;

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/logging_form_styles.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
+import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CostField extends StatelessWidget {
   final TextEditingController costController;
-  const CostField({super.key, required this.costController});
+  final LoggingViewModel lvm;
+  const CostField({super.key, required this.costController, required this.lvm});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,7 @@ class CostField extends StatelessWidget {
         const SizedBox(width: 16),
         Expanded(
           child: TextFormField(
+            onChanged: (value) => lvm.setCost(value),
             keyboardType: TextInputType.numberWithOptions(decimal: true),
             controller: costController,
             style: inputTextStyle,
