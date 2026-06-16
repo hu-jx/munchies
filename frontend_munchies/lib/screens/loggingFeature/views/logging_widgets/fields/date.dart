@@ -5,10 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 class DateField extends StatefulWidget {
   final TextEditingController dateController;
-  final Function sendBackDate;
-  const DateField({super.key, required this.dateController, required this.sendBackDate});
+  final Function(DateTime date) sendBackDate;
+  const DateField({
+    super.key,
+    required this.dateController,
+    required this.sendBackDate,
+  });
 
-  static String formatDate(DateTime date) {
+  static String? formatDate(DateTime? date) {
+    if (date == null) return null;
     String month = date.month >= 10 ? "${date.month}" : "0${date.month}";
     String day = date.day >= 10 ? "${date.day}" : "0${date.day}";
     return "${date.year}-$month-$day";
@@ -51,21 +56,15 @@ class _DateFieldState extends State<DateField> {
     );
   }
 
-    Future<void> _selectDate() async {
+  Future<void> _selectDate() async {
     final date = await showDatePicker(
       context: context,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       initialDate: _selectedDate ?? DateTime.now(),
     );
-    if (!mounted) return;
-
     if (date != null) {
-      setState(() {
-        _selectedDate = date.toLocal();
-        widget.sendBackDate(_selectedDate);
-      });
-      widget.dateController.text = DateField.formatDate(_selectedDate!);
+      widget.sendBackDate.call(date);
     }
   }
 }

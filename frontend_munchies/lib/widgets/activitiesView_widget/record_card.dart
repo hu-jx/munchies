@@ -22,8 +22,6 @@ class RecordCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // debugPrint(image_url);
-
     return Padding(
       padding: const EdgeInsets.only(
         left: 15.0,
@@ -48,7 +46,6 @@ class RecordCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               image_url != null
-                  //TODO: SWAP OUT FOR IMAGE.NETWORK
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
