@@ -100,6 +100,7 @@ function filterRecords(query_records, query_params, user_uid) {
                             itemName: "$itemName",
                             date: "$date",
                             cost: "$cost",
+                            category: "$category",
                             isFavourited: "$isFavourited"
                         }
                     }
@@ -117,7 +118,8 @@ function filterRecords(query_records, query_params, user_uid) {
                     itemName: '$document.itemName',
                     date: '$document.date',
                     cost: '$document.cost',
-                    isFavourited: '$document.isFavourited'
+                    isFavourited: '$document.isFavourited',
+                    category: '$document.category'
                 }
             }
         ],
