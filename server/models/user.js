@@ -32,7 +32,7 @@ const userSchema = new Schema({
     },
 
     friends: {
-        type: String,
+        type: Array,
         required: false,
         default: []
     },
