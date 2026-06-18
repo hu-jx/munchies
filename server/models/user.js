@@ -29,7 +29,13 @@ const userSchema = new Schema({
         required: false,
         default: null,
         trim: true
-    }
+    },
+
+    friends: {
+        type: Array,
+        required: false,
+        default: []
+    },
 },
     {
         timestamps: true

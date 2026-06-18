@@ -25,7 +25,7 @@ export async function createProfile(req, res) {
             username,
             firstName,
             emailAddress,
-            lastName
+            lastName,
         })
         await new_profile.save()
         return res.status(201).json({ message: "Successfully created new profile" })

@@ -14,5 +14,6 @@ class Colours {
   static const pieYellow = Color(0xffFDFABB);
   static const pieBlue = Color(0xffC8F7FF);
   static const piePurple = Color(0xffEED7FF);
-
+  static const piePink = Color(0xffFECFED);
+  static const pieGreen = Color(0xffCDF7D9);
 }

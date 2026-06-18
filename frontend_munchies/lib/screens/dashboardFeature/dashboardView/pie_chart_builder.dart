@@ -30,17 +30,23 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
     Colours.pieRed,
     Colours.pieOrange,
     Colours.pieYellow,
+    Colours.pieGreen,
     Colours.pieBlue,
     Colours.piePurple,
+    Colours.piePink,
+    Colours.pieRed,
   ];
 
   Map<String, Color> colourMap = {"Beverages": Colours.pieRed};
 
   List<dynamic> prepPieData(List listCopy, String sortBy) {
+    
     listCopy = listCopy.map((entry) {
       return {
         "_id": {
-          "category": (entry["_id"]["category"] == "null")
+          "category":
+              (entry["_id"]["category"] == "null" ||
+                  entry["_id"]["category"] == null)
               ? "Uncategorised"
               : entry["_id"]["category"],
         },
@@ -48,31 +54,36 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
         "numPerCat": entry["numPerCat"],
       };
     }).toList();
-
-    listCopy.sort((a, b) => b[sortBy].compareTo(a[sortBy]));
-
+    
     /*
-    //final listCopy = List<dynamic>.from(widget.categoryData);
-    listCopy.sort((a, b) => b[sortBy].compareTo(a[sortBy]));
-    final top4cate = listCopy.take(4).toList();
-
-    double othersVal = 0;
-
-    for (final cate in widget.categoryData) {
-      if (!listCopy.contains(cate)) {
-        othersVal += cate[sortBy];
+    final Map<String, dynamic> organisedData = {};
+    
+    for (final entry in listCopy) {
+      final category =
+          (entry["_id"]["category"] == "null" ||
+              entry["_id"]["category"] == null)
+          ? "Uncategorised"
+          : entry["_id"]["category"].toString();
+      if (!organisedData.containsKey(category)) {
+        organisedData[category] = {
+          "_id": {"category": category},
+          "costPerCat": 0,
+          "numPerCat": 0,
+        };
+      } else {
+        organisedData[category]["costPerCat"] += listCopy[entry]["costPerCat"];
+        organisedData[category]["numPerCat"] += listCopy[entry]["numPerCat"];
       }
     }
 
-    if (othersVal > 0) {
-      top4cate.add({
-        "_id": {"category": "Others"},
-        sortBy: othersVal,
-      });
-    }
-    print("OUTPUT: ${top4cate}");
-    return top4cate;
+    final organisedDataList = organisedData.values.toList();
+
+    organisedDataList.sort((a, b) => b[sortBy].compareTo(a[sortBy]));
+
+    return organisedDataList;
     */
+
+    listCopy.sort((a, b) => b[sortBy].compareTo(a[sortBy]));
     return listCopy;
   }
 
@@ -87,7 +98,6 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
   @override
   Widget build(BuildContext context) {
     final listCopy = List<dynamic>.from(widget.categoryData);
-    
 
     Size size = MediaQuery.of(context).size;
     double height = size.height;
@@ -102,7 +112,9 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
       return PieChartSectionData(
         value: cate[widget.sortBy].toDouble(),
         //title: cate["_id"]["category"],
-        title: (cate[widget.sortBy].toDouble()/total * 100).round().toString() + "%",
+        title:
+            (cate[widget.sortBy].toDouble() / total * 100).round().toString() +
+            "%",
         color: colourList[preppedData.indexOf(cate)],
         radius: 100,
       );
@@ -127,9 +139,9 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
               ),
             ),
             Text(
-              (widget.sortBy == "costPerCat") ?
-              "\$" + (cate[widget.sortBy]/100).toString() : 
-              cate[widget.sortBy].toString(),
+              (widget.sortBy == "costPerCat")
+                  ? "\$" + (cate[widget.sortBy] / 100).toString()
+                  : cate[widget.sortBy].toString(),
               style: TextStyle(
                 fontFamily: "Poppins",
                 color: Colours.lightBrown,
@@ -141,7 +153,7 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
     }).toList();
 
     return Container(
-      height: height * 0.44,
+      height: height * (0.35 + sectionList.length * 0.02),
       color: Colours.darkerBeige,
       child: Column(
         children: [
