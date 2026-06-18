@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/friendsFeature/friends_view/friends_button.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/widgets/profile_widgets/logout_button.dart';
@@ -33,6 +34,8 @@ class _ProfileViewState extends State<ProfileView> {
           child: Column(
             children: [
               Text('Set goal here. Not yet implemented.'),
+              //Text("Search for friends here"),
+              FriendsButton(),
               LogoutButton(),
             ],
           ),

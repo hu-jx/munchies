@@ -12,6 +12,7 @@ dependencies:
   fl_chart: ^1.2.0
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_debouncer: ^2.1.1
   google_fonts: ^8.1.0
   http: ^1.6.0

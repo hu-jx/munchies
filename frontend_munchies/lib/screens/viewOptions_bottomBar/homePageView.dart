@@ -35,6 +35,7 @@ class _HomePageViewState extends State<HomePageView>
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double height = size.height;
+    print("HOMEPAGE BUILD → ${DateTime.now()}");
 
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +44,7 @@ class _HomePageViewState extends State<HomePageView>
         title: const Align(
           alignment: Alignment.topLeft,
           child: Padding(
-            padding: EdgeInsets.only(left:10.0, right: 10.0),
+            padding: EdgeInsets.only(left: 10.0, right: 10.0),
             child: Text(
               "HOME",
               style: TextStyle(
@@ -55,7 +56,10 @@ class _HomePageViewState extends State<HomePageView>
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: MediaQuery.of(context).orientation == Orientation.landscape ? Size.fromHeight(height * 0.22) : Size.fromHeight(95),
+          preferredSize:
+              MediaQuery.of(context).orientation == Orientation.landscape
+              ? Size.fromHeight(height * 0.22)
+              : Size.fromHeight(95),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.min,
@@ -96,14 +100,13 @@ class _HomePageViewState extends State<HomePageView>
                     color: Colours.greyPink,
                   ),
                   initialValue: _selectedFilter,
-                  //notify listener to call _fetch again when this change occurs 
+                  //notify listener to call _fetch again when this change occurs
                   onSelected: (ActivityFilter res) {
                     setState(() {
                       if (res != _selectedFilter) {
                         currView = ActivitiesView(filter: res);
                       }
                       _selectedFilter = res;
-
                     });
                   },
                   itemBuilder: (BuildContext context) =>
@@ -157,7 +160,7 @@ class _HomePageViewState extends State<HomePageView>
       body: TabBarView(
         key: ValueKey(currView),
         controller: _tabController,
-        //tabbarview does not update automatically 
+        //tabbarview does not update automatically
         children: [currView, CalendarView()],
       ),
     );

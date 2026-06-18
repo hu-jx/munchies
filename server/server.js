@@ -6,6 +6,7 @@ import {connectDB} from './config/db.js'
 import authRouter from './routes/auth_routes.js'
 import recordRouter from './routes/record_routes.js'
 import fs from 'fs';
+import userRouter from './routes/user_routes.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -18,7 +19,7 @@ app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use('/api', authRouter)
 app.use('/api', recordRouter)
-//api goes to recordRouter
+app.use('/api', userRouter)
 
 const startServer = async () => {
     await connectDB()

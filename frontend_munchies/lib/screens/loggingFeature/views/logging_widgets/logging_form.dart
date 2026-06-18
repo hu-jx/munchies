@@ -21,11 +21,13 @@ import 'package:provider/provider.dart';
 
 class LoggingForm extends StatelessWidget {
   final Record? record;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   LoggingForm({super.key, this.record});
+  
 
   @override
   Widget build(BuildContext context) {
+    print("BUILD TEST");
     final lvm = context.watch<LoggingViewModel>();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -111,7 +113,11 @@ class LoggingForm extends StatelessWidget {
     );
   }
 
-  Row _buildActionRow(double width, LoggingViewModel lvm, BuildContext context) {
+  Row _buildActionRow(
+    double width,
+    LoggingViewModel lvm,
+    BuildContext context,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -152,12 +158,16 @@ class LoggingForm extends StatelessWidget {
       builder: (context) => ChangeNotifierProvider.value(
         value: lvm,
         builder: (context, child) {
-          return (context.watch<LoggingViewModel>().isLoading) ? Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [CircularProgressIndicator(color: Colours.greyPink)],
-          ),
-        ) : Center();
+          return (context.watch<LoggingViewModel>().isLoading)
+              ? Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(color: Colours.greyPink),
+                    ],
+                  ),
+                )
+              : Center();
         },
       ),
       barrierDismissible: false,

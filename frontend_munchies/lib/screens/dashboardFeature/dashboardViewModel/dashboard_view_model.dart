@@ -27,7 +27,7 @@ class DashboardViewModel {
   }
 
   Future<void> getData() async {
-    final int currentRequest = ++ requestId;
+    final int currentRequest = ++ requestId ;
 
     User? usr = FirebaseAuth.instance.currentUser;
     if (usr == null) throw AuthException('No permission to access.');
@@ -36,7 +36,7 @@ class DashboardViewModel {
       throw AuthException('No permission to access. ');
     }
 
-    Map<String, dynamic> data = await RecordServices.getDashboardData(
+    Map<String, dynamic> dbData = await RecordServices.getDashboardData(
       idToken: idToken,
       user_uid: usr.uid,
       startDate: findStart(selectedView, chosenDate),
@@ -46,7 +46,7 @@ class DashboardViewModel {
 
     if (currentRequest != requestId) return;
 
-    summaryData = List.from(data['summary']);
-    categoryData = List.from(data['catData']);
+    summaryData = List.from(dbData['summary']);
+    categoryData = List.from(dbData['catData']);
   }
 }
