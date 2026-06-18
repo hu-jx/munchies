@@ -21,8 +21,8 @@ import 'package:provider/provider.dart';
 
 class LoggingForm extends StatelessWidget {
   final Record? record;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  LoggingForm({super.key, this.record});
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  const LoggingForm({super.key, this.record});
 
   @override
   Widget build(BuildContext context) {
