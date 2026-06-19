@@ -10,8 +10,8 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(ChangeNotifierProvider(
-    create: (context) => RecordChanger(),
+  runApp(Provider(
+    create: (context) => RecordRepoImpl(),
     child: const MainApp()));
 }
 

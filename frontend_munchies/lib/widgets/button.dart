@@ -23,7 +23,7 @@ class _AppButtonState extends State<AppButton> {
   @override
   Widget build(BuildContext context) {
     return TapDebouncer(
-      onTap: () async => await widget.onPressed(),
+      onTap: widget.onPressed,
       builder: (BuildContext context, TapDebouncerFunc? onTap) => OutlinedButton(
         onPressed: onTap,
         style: OutlinedButton.styleFrom(

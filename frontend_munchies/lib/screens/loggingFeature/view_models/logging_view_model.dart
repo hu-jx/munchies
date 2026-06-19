@@ -5,11 +5,11 @@ import 'package:frontend_munchies/models/category_item.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/services/records/record_changer.dart';
-import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/fields/date.dart';
+// import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/fields/date.dart';
 
 class LoggingViewModel extends ChangeNotifier {
   final Record? record;
-  final RecordChanger recordChanger;
+  final RecordRepoImpl recordChanger;
   LoggingViewModel({this.record, required this.recordChanger});
 
   String? _itemName;
@@ -129,14 +129,22 @@ class LoggingViewModel extends ChangeNotifier {
         }
       }
       await recordChanger.saveRecord(
-        _itemName!,
-        DateField.formatDate(_date!.toLocal())!,
-        _cost!,
-        _category ?? record?.category,
-        _existing_file,
-        _isFavourited ?? false,
-        details,
-        _isVisible ?? false,
+        Record(itemName: _itemName!, 
+        date: _date!.toLocal(), 
+        cost: (double.parse(_cost!) * 100).toInt(), 
+        isFavourited: _isFavourited ?? false, 
+        isVisible: _isVisible ?? false, 
+        photo_file: _existing_file,
+        category: _category ?? record?.category,
+        details: details)
+        // _itemName!,
+        // DateField.formatDate(_date!.toLocal())!,
+        // _cost!,
+        // _category ?? record?.category,
+        // _existing_file,
+        // _isFavourited ?? false,
+        // details,
+        // _isVisible ?? false,
       );
       _errorMessage = null;
       notifyListeners();
@@ -166,7 +174,8 @@ class LoggingViewModel extends ChangeNotifier {
         'details': _details,
         'isVisible': _isVisible,
       };
-      await recordChanger.patchRecord(record!, updates);
+      if (record?.record_id == null) throw Exception('No record id linked to edit.');
+      await recordChanger.patchRecord(record!.record_id!, updates);
 
       _errorMessage = null;
       offLoading();

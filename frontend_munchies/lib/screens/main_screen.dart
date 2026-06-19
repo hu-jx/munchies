@@ -41,7 +41,7 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<RecordChanger>(context, listen: false);
+    Provider.of<RecordRepoImpl>(context, listen: false);
 
   }
 
@@ -62,7 +62,7 @@ class _HomepageState extends State<Homepage> {
       Scaffold(
         backgroundColor: Colors.transparent,
     
-        body: _viewOptions[_selectedIndex],
+        body: IndexedStack(index: _selectedIndex,children: _viewOptions,),
     
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,

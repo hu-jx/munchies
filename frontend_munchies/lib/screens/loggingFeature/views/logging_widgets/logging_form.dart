@@ -16,7 +16,6 @@ import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/f
 import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/fields/others_row.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/fields/visibility_toggle.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
-import 'package:frontend_munchies/models/record.dart';
 import 'package:provider/provider.dart';
 
 class LoggingForm extends StatelessWidget {
@@ -60,6 +59,7 @@ class LoggingForm extends StatelessWidget {
                       ),
                       //DATE ROW
                       DateField(
+                        originalDate: lvm.record?.date,
                         dateController: TextEditingController(
                           text: DateField.formatDate(lvm.date),
                         ),
@@ -127,6 +127,8 @@ class LoggingForm extends StatelessWidget {
                 Navigator.popUntil(context, (route) {
                   return route.settings.name == '/home' || route.isFirst;
                 });
+              } else if (lvm.errorMessage != null && context.mounted) {
+                Navigator.of(context).pop();
               }
             }
           },

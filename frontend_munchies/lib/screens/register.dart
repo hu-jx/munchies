@@ -32,7 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   String? errorMessage;
 
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  static final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {

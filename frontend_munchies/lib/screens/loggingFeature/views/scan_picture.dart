@@ -13,14 +13,9 @@ import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_vie
 import 'package:frontend_munchies/models/record.dart';
 import 'package:provider/provider.dart';
 
-class ScanPicture extends StatefulWidget {
+class ScanPicture extends StatelessWidget {
   const ScanPicture({super.key});
 
-  @override
-  State<ScanPicture> createState() => _ScanPictureState();
-}
-
-class _ScanPictureState extends State<ScanPicture> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -124,7 +119,7 @@ class _ScanPictureState extends State<ScanPicture> {
                   SizedBox(height: 20),
                   AppButton(
                     text: 'Scan',
-                    onPressed: () => _onScanButtonPressed(svm),
+                    onPressed: () => _onScanButtonPressed(svm, context),
                     size: Size(width * 0.75, 53),
                   ),
                   svm.errorMessage != null
@@ -168,10 +163,14 @@ class _ScanPictureState extends State<ScanPicture> {
     );
   }
 
-  Future<void> _onScanButtonPressed(ScanViewModel svm) async {
+  Future<void> _onScanButtonPressed(ScanViewModel svm, BuildContext context) async {
     showLoading(svm, context);
     await svm.onScanPressed();
-    if (!mounted || svm.errorMessage != null) return;
+    if (!context.mounted) return;
+    if (context.mounted && svm.errorMessage != null) {
+      Navigator.of(context).pop();
+      return;
+    }
     if (!svm.isValidItemName) {
       {
         Navigator.of(context).pop();
@@ -200,7 +199,7 @@ class _ScanPictureState extends State<ScanPicture> {
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider(
           create: (_) => LoggingViewModel(
-            recordChanger: context.read<RecordChanger>(),
+            recordChanger: context.read<RecordRepoImpl>(),
             record: Record(
               itemName: svm.itemName ?? 'null',
               date: DateTime.now(),

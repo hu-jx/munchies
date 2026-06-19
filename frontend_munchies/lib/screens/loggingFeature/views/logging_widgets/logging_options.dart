@@ -30,7 +30,7 @@ class _LoggingOptionsState extends State<LoggingOptions> {
               context,
               MaterialPageRoute(
                 builder: (_) => ChangeNotifierProvider(
-                  create: (_) => LoggingViewModel(recordChanger: context.read<RecordChanger>()),
+                  create: (_) => LoggingViewModel(recordChanger: context.read<RecordRepoImpl>()),
                   child: TrackingPage(),
                 ),
               ),
@@ -59,7 +59,7 @@ class _LoggingOptionsState extends State<LoggingOptions> {
               context,
               MaterialPageRoute(
                 builder: (_) => ChangeNotifierProvider(
-                  create: (_) => FavouritesViewModel(recordChanger: context.read<RecordChanger>()),
+                  create: (_) => FavouritesViewModel(recordChanger: context.read<RecordRepoImpl>()),
                   child: FavouritesPage(),
                 ),
               ),

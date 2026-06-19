@@ -1,16 +1,20 @@
-import 'dart:io';
-
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/services/auth/auth_exception.dart';
 import 'package:frontend_munchies/services/records/record_services.dart';
 import 'package:frontend_munchies/models/record.dart';
 
-class RecordChanger extends ChangeNotifier {
+class RecordRepoImpl implements RecordRepository {
+  final _recordStream = StreamController<void>.broadcast();
+
+  Stream<void> get recordStream => _recordStream.stream;
+
+  void dispose() {
+    _recordStream.close();
+  }
+
   String? idToken;
-  List<Record> records = [];
-  bool isLoading = false;
-  String? errorMessage;
 
   Future<void> getUserToken() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -23,88 +27,47 @@ class RecordChanger extends ChangeNotifier {
     if (idToken!.isEmpty) throw AuthException('Access Denied');
   }
 
+  @override
   Future<void> deleteRec(String recordId) async {
     await getUserToken();
     await RecordServices.deleteRecord(idToken!, recordId);
-    notifyListeners();
+    _recordStream.add(null);
   }
 
-  //add save here
-  Future<void> saveRecord(
-    String itemName,
-    String date,
-    String cost,
-    String? selectedCategory,
-    File? imageField,
-    bool isFavourited,
-    String? details,
-    bool isVisible,
-  ) async {
+  @override
+  Future<void> saveRecord(Record record) async {
     await getUserToken();
     User? usr = FirebaseAuth.instance.currentUser;
     if (usr == null) throw AuthException('Access denied.');
-    Record rec = Record(
-      user_uid: usr.uid,
-      itemName: itemName,
-      date: DateTime.parse(date),
-      cost: (double.parse(cost) * 100).toInt(),
-      category: selectedCategory,
-      photo_file: imageField,
-      isFavourited: isFavourited,
-      details: details,
-      isVisible: isVisible,
-    );
-    await RecordServices.createRecord(idToken!, rec);
-    notifyListeners();
+    record.user_uid = usr.uid;
+    await RecordServices.createRecord(idToken!, record);
+    _recordStream.add(null);
   }
 
-  Future<void> patchRecord(Record record, Map<String, dynamic> updates) async {
+  @override
+  Future<void> patchRecord(
+    String recordId,
+    Map<String, dynamic> updates,
+  ) async {
     await getUserToken();
     if (updates['cost'] != null) {
       updates['cost'] = (double.parse(updates['cost']) * 100).toInt();
     }
-    await RecordServices.updateRecord(idToken!, record.record_id!, updates);
-    notifyListeners();
+    await RecordServices.updateRecord(idToken!, recordId, updates);
+    _recordStream.add(null);
   }
 
+  @override
   Future<Record> getRecord(String recordId) async {
-    // debugPrint("FUNCTIO CALLED");
     await getUserToken();
     if (idToken == null) throw AuthException('Access Denied');
     return RecordServices.getRecord(idToken!, recordId);
   }
 
-  Future<List<Record>> getFilteredRecord(Map<String, String> query) async {
+  @override
+  Future<List<Record>> fetchAllRecords(Map<String, String>? query) async {
     await getUserToken();
-    try {
-      Map<String, dynamic> validQueries = {
-        'today': 'today',
-        'weekly': 'weekly',
-        'favourites': 'favourites',
-        'monthly': 'month,year',
-      };
-      if (query.keys.length > 1) {
-        throw Exception('Access Denied in querying records.');
-      }
-      if (!validQueries.keys.contains(query.keys.toList()[0])) {
-        throw Exception('Not a valid query.');
-      }
-      return RecordServices.getAllRecords(idToken!, query);
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> fetchAllRecords(Map<String, String>? query) async {
-    try {
-      await getUserToken();
-      isLoading = true;
-      List<Record> data = await RecordServices.getAllRecords(idToken!, query);
-      isLoading = false;
-      records = data;
-    } on Exception catch (e) {
-      isLoading = false;
-      errorMessage = e.toString();
-    }
+    List<Record> data = await RecordServices.getAllRecords(idToken!, query);
+    return List.unmodifiable(data);
   }
 }
