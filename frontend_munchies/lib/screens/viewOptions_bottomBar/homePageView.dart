@@ -35,7 +35,6 @@ class _HomePageViewState extends State<HomePageView>
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double height = size.height;
-    print("HOMEPAGE BUILD → ${DateTime.now()}");
 
     return Scaffold(
       appBar: AppBar(

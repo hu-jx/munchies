@@ -7,6 +7,7 @@ import authRouter from './routes/auth_routes.js'
 import recordRouter from './routes/record_routes.js'
 import fs from 'fs';
 import userRouter from './routes/user_routes.js'
+import requestRouter from './routes/request_routes.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use('/api', authRouter)
 app.use('/api', recordRouter)
 app.use('/api', userRouter)
+app.use('/api', requestRouter)
 
 const startServer = async () => {
     await connectDB()

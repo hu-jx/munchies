@@ -10,10 +10,6 @@ requestRouter.use(verifyToken);
 
 requestRouter.post('/send_req', createRequest);
 requestRouter.patch('/update_req', updateRequest);
-/*
-requestRouter.patch('/accept_req', acceptRequest);
-requestRouter.patch('/decline_req', declineRequest);
-*/
 requestRouter.get('/get_pending_req', getPendingRequest);
 requestRouter.get('/check_status', checkStatus);
 

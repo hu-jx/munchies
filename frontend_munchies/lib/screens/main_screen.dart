@@ -28,7 +28,7 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
-  final List<Widget> _viewOptions = const [
+  final List<Widget> _viewOptions = [
     HomePageView(),
     //DashboardView(),
     Dashboard(),

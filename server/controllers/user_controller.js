@@ -1,6 +1,5 @@
 // search for other users using email
 
-import { isRegExp } from "util/types"
 import { User } from "../models/user.js"
 
 export async function searchUser(req, res) {

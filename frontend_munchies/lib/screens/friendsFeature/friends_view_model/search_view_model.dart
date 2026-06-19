@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/services/auth/auth_exception.dart';
@@ -16,14 +15,11 @@ class SearchViewModel {
       throw AuthException('No permission to access. ');
     }
 
-    print("SEARCH START");
-
     List<UserProfile> userList = await UserServices.searchUser(
       emailAddress,
       usr.uid,
       idToken
     );
-    print("SEARCH END");
 
     usersFound = userList;
   }

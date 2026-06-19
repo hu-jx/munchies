@@ -20,7 +20,9 @@ export async function createRequest(req, res) {
         })
         //else if it is already in the database
         if (in_database) {
+            //for accepted/pending statuses
             return res.status(400).json({ message: "Request already exists" })
+            //TO ADD, if the status is declined, revive it by updating its status to pending and senders and receivers
         }
 
         const new_req = new Request({
@@ -35,13 +37,6 @@ export async function createRequest(req, res) {
     }
 }
 
-/*
-// accept request
-export async function acceptRequest(req, res) { }
-
-// decline request 
-export async function declineRequest(req, res) { }
-*/
 
 //update request
 //change the status to accept/decline
@@ -57,18 +52,25 @@ export async function updateRequest(req, res) {
             ]
         });
 
+        if (existingReq.status === "accepted") {
+            return res.status(400).json({ message: "Already accepted request, cannot modify" });
+        }
+
+        const prevAccepted = (existingReq.status === "accepted")
+
         existingReq.status = response
         await existingReq.save()
 
         //if is accept, update the friends list of the user
-        if (response === "accepted") {
+        //addToSet and extra checks to ensure adding to list is only done once 
+        if ((response === "accepted") && !prevAccepted) {
             await User.findByIdAndUpdate(
-                existingReq.sender_id, 
-                { $push: {friends: existingReq.receiver_id}});
+                existingReq.sender_id,
+                { $addToSet: { friends: existingReq.receiver_id } });
             await User.findByIdAndUpdate(
-                existingReq.receiver_id, 
-                { $push: {friends: existingReq.sender_id}});
-            
+                existingReq.receiver_id,
+                { $addToSet: { friends: existingReq.sender_id } });
+
         }
 
         return res.status(201).json({ message: "Successfully change status" })
@@ -96,12 +98,6 @@ export async function getPendingRequest(req, res) {
         console.error("getPendingRequest error: ", error)
         return res.status(500).json({ message: "Server error" })
     }
-    var { user_uid } = req.query
-
-    var pendingRequests = await Request.find({
-        receiver_id: user_uid,
-        status: "pending"
-    });
 }
 
 
@@ -121,16 +117,16 @@ export async function checkStatus(req, res) {
         } else if (existingReq.status === "pending"
             && sender_id.toString() === existingReq.sender_id.toString()) {
             //pending and sent by the user themselves
-            return res.status(200).json({ message: "Requested by user" })
+            return res.status(200).json({ message: "From user" })
         } else if (existingReq.status === "pending"
             && sender_id.toString() === existingReq.receiver_id.toString()) {
             //pending and sent by the sender 
-            return res.status(200).json({ message: "Requested by other user" })
+            return res.status(200).json({ message: "To user" })
         } else {
             return res.status(200).json({ message: "Declined" })
         }
 
     }
-    return "Does not exist"
+    return res.status(200).json({ message: "Does not exist" })
 
 }

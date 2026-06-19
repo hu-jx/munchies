@@ -245,9 +245,6 @@ class RecordServices {
         'Connection': 'keep-alive',
       },
     );
-    print("RAW RESPONSE: $res");
-    print("FULL RESPONSE: ${res.toString()}");
-print("DATA FIELD: ${res.body}");
     return jsonDecode(res.body);
   }
 }
