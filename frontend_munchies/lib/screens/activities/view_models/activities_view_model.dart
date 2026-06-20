@@ -74,9 +74,4 @@ class ActivitiesViewModel extends ChangeNotifier implements RecordHandler {
     _isDisposed = true;
     super.dispose();
   }
-  
-  @override
-  RecordRepoImpl getRecordRepo() {
-    return recordRepo;
-  }
 }

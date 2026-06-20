@@ -12,7 +12,6 @@ class CalendarViewModel extends ChangeNotifier implements RecordHandler {
   late StreamSubscription _subscription;
 
   CalendarViewModel({required this.recordRepo}) {
-    debugPrint("VM UPDATING - Hash: ${hashCode}");
 
     _subscription = recordRepo.recordStream.listen((rec) {
       getMonthlyRecords(DateTime.now());
@@ -120,50 +119,5 @@ class CalendarViewModel extends ChangeNotifier implements RecordHandler {
     getMonthlyRecords(_focusedDay);
     offLoading();
   }
-
-  @override
-  RecordRepoImpl getRecordRepo() {
-    return recordRepo;
-  }
 }
-
- //  if (selectedDay == null) {
-    //   debugPrint("ENTERED HERE");
-    //   getMonthlyRecords(_focusedDay);
-    //   notifyListeners();
-    //   return;
-    // }
-    // onLoading();
-    // String month = selectedDay.month.toString();
-    // String year = selectedDay.year.toString();
-    // String query = '$month,$year';
-    // debugPrint(_selectedDay.toString());
-    // List<Record> data  = await recordRepo.fetchAllRecords({'monthly': query});
-    // _records = data.where((rec) => isSameDay(rec.date, selectedDay.toLocal())).toList();
-    // debugPrint(_records.length.toString());
-    // debugPrint("NUMBER OF RECORDS AT SETTING IN VIEW MODEL: ${recordDetails.length}");
-    // notifyListeners();
-    // offLoading();
-  // }
-
-  // Future<void> setSelectedDay(DateTime? selectedDay) async {
-  //   _selectedDay = selectedDay;
-  //    if (selectedDay == null) {
-  //     debugPrint("ENTERED HERE");
-  //     getMonthlyRecords(_focusedDay);
-  //     notifyListeners();
-  //     return;
-  //   }
-  //   onLoading();
-  //   String month = selectedDay.month.toString();
-  //   String year = selectedDay.year.toString();
-  //   String query = '$month,$year';
-  //   debugPrint(_selectedDay.toString());
-  //   List<Record> data  = await recordRepo.fetchAllRecords({'monthly': query});
-  //   _records = data.where((rec) => isSameDay(rec.date, selectedDay.toLocal())).toList();
-  //   debugPrint(_records.length.toString());
-  //   debugPrint("NUMBER OF RECORDS AT SETTING: ${recordDetails.length}");
-  //   notifyListeners();
-  //   offLoading();
-  // }
 
