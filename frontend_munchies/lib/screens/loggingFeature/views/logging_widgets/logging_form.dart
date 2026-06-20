@@ -111,7 +111,11 @@ class LoggingForm extends StatelessWidget {
     );
   }
 
-  Row _buildActionRow(double width, LoggingViewModel lvm, BuildContext context) {
+  Row _buildActionRow(
+    double width,
+    LoggingViewModel lvm,
+    BuildContext context,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -154,12 +158,19 @@ class LoggingForm extends StatelessWidget {
       builder: (context) => ChangeNotifierProvider.value(
         value: lvm,
         builder: (context, child) {
-          return (context.watch<LoggingViewModel>().isLoading) ? Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [CircularProgressIndicator(color: Colours.greyPink)],
-          ),
-        ) : Center();
+          if ((context.watch<LoggingViewModel>().isLoading)) {
+            return PopScope(
+              canPop: false,
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [CircularProgressIndicator(color: Colours.greyPink)],
+                ),
+              ),
+            );
+          } else {
+            return Center();
+          }
         },
       ),
       barrierDismissible: false,

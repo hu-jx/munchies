@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/scan_view_model.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/scan_picture_widgets/banner.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
-import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/widgets/button.dart';
@@ -147,16 +147,21 @@ class ScanPicture extends StatelessWidget {
       builder: (context) => ChangeNotifierProvider.value(
         value: svm,
         builder: (context, child) {
-          return (context.watch<ScanViewModel>().isLoading)
-              ? Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(color: Colours.greyPink),
-                    ],
+          if ((context.watch<ScanViewModel>().isLoading)) {
+            return PopScope(
+              canPop: false,
+              child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(color: Colours.greyPink),
+                      ],
+                    ),
                   ),
-                )
-              : Center();
+            );
+          } else {
+            return Center();
+          }
         },
       ),
       barrierDismissible: false,
@@ -191,15 +196,15 @@ class ScanPicture extends StatelessWidget {
         return;
       }
     }
-    Navigator.of(context)
-      ..pop()
-      ..pop();
+     Navigator.popUntil(context, (route) {
+          return route.settings.name == '/home' || route.isFirst;
+        });
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider(
           create: (_) => LoggingViewModel(
-            recordChanger: context.read<RecordRepoImpl>(),
+            recordChanger: context.read<RecordRepository>(),
             record: Record(
               itemName: svm.itemName ?? 'null',
               date: DateTime.now(),

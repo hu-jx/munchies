@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/activities/domain/view_models/record_handler.dart';
 import 'package:frontend_munchies/screens/activities/view_models/calendar_view_model.dart';
-import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/screens/activities/views/activities_widgets/record_card.dart';
@@ -16,7 +16,7 @@ class Calendar extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) =>
-          CalendarViewModel(recordRepo: context.read<RecordRepoImpl>()),
+          CalendarViewModel(recordRepo: context.read<RecordRepository>()),
       child: CalendarView(),
     );
   }

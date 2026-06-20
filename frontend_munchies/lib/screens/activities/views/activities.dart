@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/filters.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/activities/domain/view_models/record_handler.dart';
 import 'package:frontend_munchies/screens/activities/view_models/activities_view_model.dart';
-import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/screens/activities/views/activities_widgets/record_card.dart';
@@ -16,7 +16,7 @@ class ActivitiesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ActivitiesViewModel>(
       create: (context) => ActivitiesViewModel(
-        recordRepo: context.read<RecordRepoImpl>(),
+        recordRepo: context.read<RecordRepository>(),
         filter: filter,
       ),
       child: const ActivitiesView(),

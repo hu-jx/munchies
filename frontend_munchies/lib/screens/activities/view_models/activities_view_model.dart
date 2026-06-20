@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:frontend_munchies/models/filters.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/activities/domain/view_models/record_handler.dart';
-import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/models/record.dart';
 
 class ActivitiesViewModel extends ChangeNotifier implements RecordHandler {
-  final RecordRepoImpl recordRepo;
+  final RecordRepository recordRepo;
   final ActivityFilter filter;
   late StreamSubscription _subscription;
 

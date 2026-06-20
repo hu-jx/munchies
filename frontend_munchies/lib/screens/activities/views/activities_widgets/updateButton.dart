@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
-import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
@@ -17,7 +17,7 @@ class UpdateButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TapDebouncer(
       onTap: () async {
-        Record rec = await Provider.of<RecordRepoImpl>(
+        Record rec = await Provider.of<RecordRepository>(
           context,
           listen: false,
         ).getRecord(recordId);
@@ -29,7 +29,7 @@ class UpdateButton extends StatelessWidget {
           MaterialPageRoute(
             builder: (_) => ChangeNotifierProvider(
               create: (_) => LoggingViewModel(
-                recordChanger: context.read<RecordRepoImpl>(),
+                recordChanger: context.read<RecordRepository>(),
                 record: rec,
               ),
               child: TrackingPage(),

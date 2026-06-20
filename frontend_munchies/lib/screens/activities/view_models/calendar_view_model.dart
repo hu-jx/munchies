@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_debouncer/flutter_debouncer.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/activities/domain/view_models/record_handler.dart';
-import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarViewModel extends ChangeNotifier implements RecordHandler {
-  final RecordRepoImpl recordRepo;
+  final RecordRepository recordRepo;
   late StreamSubscription _subscription;
 
   CalendarViewModel({required this.recordRepo}) {

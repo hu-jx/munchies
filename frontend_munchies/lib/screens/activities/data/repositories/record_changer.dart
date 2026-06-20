@@ -8,6 +8,7 @@ import 'package:frontend_munchies/models/record.dart';
 class RecordRepoImpl implements RecordRepository {
   final _recordStream = StreamController<void>.broadcast();
 
+  @override
   Stream<void> get recordStream => _recordStream.stream;
 
   void dispose() {

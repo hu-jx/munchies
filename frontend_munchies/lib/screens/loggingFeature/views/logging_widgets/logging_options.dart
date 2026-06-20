@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/favourites_view_model.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/scan_view_model.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/scan_picture.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/favourites.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
-import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +30,7 @@ class _LoggingOptionsState extends State<LoggingOptions> {
               context,
               MaterialPageRoute(
                 builder: (_) => ChangeNotifierProvider(
-                  create: (_) => LoggingViewModel(recordChanger: context.read<RecordRepoImpl>()),
+                  create: (_) => LoggingViewModel(recordChanger: context.read<RecordRepository>()),
                   child: TrackingPage(),
                 ),
               ),
@@ -59,7 +59,7 @@ class _LoggingOptionsState extends State<LoggingOptions> {
               context,
               MaterialPageRoute(
                 builder: (_) => ChangeNotifierProvider(
-                  create: (_) => FavouritesViewModel(recordChanger: context.read<RecordRepoImpl>()),
+                  create: (_) => FavouritesViewModel(recordChanger: context.read<RecordRepository>()),
                   child: FavouritesPage(),
                 ),
               ),

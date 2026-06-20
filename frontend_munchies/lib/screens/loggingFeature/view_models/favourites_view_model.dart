@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/filters.dart';
-import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/models/record.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 
 class FavouritesViewModel extends ChangeNotifier {
-  final RecordRepoImpl recordChanger;
+  final RecordRepository recordChanger;
 
   List<Record> _recordDetails = [];
   String? _errorMessage;
