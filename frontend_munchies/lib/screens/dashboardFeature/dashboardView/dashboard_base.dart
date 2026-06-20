@@ -11,7 +11,7 @@ class DashboardView extends StatelessWidget {
   final Function(DateTime) onBackButton;
   final Function(DateTime) onForwardButton;
 
-  DashboardView({
+  const DashboardView({
     super.key,
     required this.model,
     required this.onChangeView,

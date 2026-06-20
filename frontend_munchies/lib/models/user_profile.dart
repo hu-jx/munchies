@@ -2,6 +2,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 class UserProfile {
+  final String? mongo_id;
   final String firebase_uid;
   final String emailAddress;
   final String password;
@@ -9,6 +10,7 @@ class UserProfile {
   final String? lastName;
 
   const UserProfile({
+    this.mongo_id,
     required this.firebase_uid,
     required this.emailAddress,
     required this.password,
@@ -18,6 +20,7 @@ class UserProfile {
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
+      mongo_id: json['_id']?.toString() ?? '',
       firebase_uid: json['firebase_uid']?.toString() ?? '',
       emailAddress: json['emailAddress']?.toString() ?? '',
       firstName: json['firstName']?.toString() ?? '',
