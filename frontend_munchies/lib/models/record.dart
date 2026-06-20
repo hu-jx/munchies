@@ -5,7 +5,7 @@ import 'dart:io';
 
 class Record {
   final String? record_id;
-  final String? user_uid;
+  String? user_uid;
   String itemName;
   DateTime date;
   int cost;

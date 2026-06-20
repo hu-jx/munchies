@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend_munchies/models/record.dart';
 
 class FavCard extends StatelessWidget {
-  const FavCard({required this.textStyle, required this.record});
+  const FavCard({super.key, required this.textStyle, required this.record});
 
   final TextStyle textStyle;
   final Record record;
@@ -23,7 +23,7 @@ class FavCard extends StatelessWidget {
             MaterialPageRoute(
               builder: (_) => ChangeNotifierProvider(
                 create: (_) => LoggingViewModel(
-                  recordChanger: context.read<RecordChanger>(),
+                  recordChanger: context.read<RecordRepository>(),
                   record: Record(
                     itemName: record.itemName,
                     date: DateTime.now(),

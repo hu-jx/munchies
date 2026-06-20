@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/scan_view_model.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/scan_picture_widgets/banner.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/widgets/button.dart';
@@ -13,14 +13,9 @@ import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_vie
 import 'package:frontend_munchies/models/record.dart';
 import 'package:provider/provider.dart';
 
-class ScanPicture extends StatefulWidget {
+class ScanPicture extends StatelessWidget {
   const ScanPicture({super.key});
 
-  @override
-  State<ScanPicture> createState() => _ScanPictureState();
-}
-
-class _ScanPictureState extends State<ScanPicture> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -124,7 +119,7 @@ class _ScanPictureState extends State<ScanPicture> {
                   SizedBox(height: 20),
                   AppButton(
                     text: 'Scan',
-                    onPressed: () => _onScanButtonPressed(svm),
+                    onPressed: () => _onScanButtonPressed(svm, context),
                     size: Size(width * 0.75, 53),
                   ),
                   svm.errorMessage != null
@@ -152,26 +147,35 @@ class _ScanPictureState extends State<ScanPicture> {
       builder: (context) => ChangeNotifierProvider.value(
         value: svm,
         builder: (context, child) {
-          return (context.watch<ScanViewModel>().isLoading)
-              ? Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(color: Colours.greyPink),
-                    ],
+          if ((context.watch<ScanViewModel>().isLoading)) {
+            return PopScope(
+              canPop: false,
+              child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(color: Colours.greyPink),
+                      ],
+                    ),
                   ),
-                )
-              : Center();
+            );
+          } else {
+            return Center();
+          }
         },
       ),
       barrierDismissible: false,
     );
   }
 
-  Future<void> _onScanButtonPressed(ScanViewModel svm) async {
+  Future<void> _onScanButtonPressed(ScanViewModel svm, BuildContext context) async {
     showLoading(svm, context);
     await svm.onScanPressed();
-    if (!mounted || svm.errorMessage != null) return;
+    if (!context.mounted) return;
+    if (context.mounted && svm.errorMessage != null) {
+      Navigator.of(context).pop();
+      return;
+    }
     if (!svm.isValidItemName) {
       {
         Navigator.of(context).pop();
@@ -192,15 +196,15 @@ class _ScanPictureState extends State<ScanPicture> {
         return;
       }
     }
-    Navigator.of(context)
-      ..pop()
-      ..pop();
+     Navigator.popUntil(context, (route) {
+          return route.settings.name == '/home' || route.isFirst;
+        });
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider(
           create: (_) => LoggingViewModel(
-            recordChanger: context.read<RecordChanger>(),
+            recordChanger: context.read<RecordRepository>(),
             record: Record(
               itemName: svm.itemName ?? 'null',
               date: DateTime.now(),

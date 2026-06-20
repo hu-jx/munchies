@@ -1,38 +1,33 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_debouncer/flutter_debouncer.dart';
-import 'package:frontend_munchies/models/record.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
+import 'package:frontend_munchies/screens/activities/domain/view_models/record_handler.dart';
+import 'package:frontend_munchies/screens/activities/view_models/calendar_view_model.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
-import 'package:frontend_munchies/widgets/activitiesView_widget/record_card.dart';
+import 'package:frontend_munchies/screens/activities/views/activities_widgets/record_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class CalendarView extends StatefulWidget {
-  const CalendarView({super.key});
-
-  @override
-  State<CalendarView> createState() => _CalendarViewState();
-}
-
-class _CalendarViewState extends State<CalendarView> {
-  DateTime _focusedDay = DateTime.now();
-  List<Record> _recordDetails = [];
-  bool _isLoading = false;
-  List<DateTime>? _dates;
-  final Debouncer _debouncer = Debouncer();
-
-  @override
-  void initState() {
-    super.initState();
-    getMonthlyRecords(DateTime.now());
-  }
+class Calendar extends StatelessWidget {
+  const Calendar({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) =>
+          CalendarViewModel(recordRepo: context.read<RecordRepository>()),
+      child: CalendarView(),
+    );
+  }
+}
+
+class CalendarView extends StatelessWidget {
+  const CalendarView({super.key});
+  // @override
+  @override
+  Widget build(BuildContext context) {
+    final CalendarViewModel vm = context.watch<CalendarViewModel>();
     Size size = MediaQuery.of(context).size;
     double height = size.height;
     double width = size.width;
@@ -64,15 +59,23 @@ class _CalendarViewState extends State<CalendarView> {
                   child: TableCalendar(
                     calendarBuilders: CalendarBuilders(
                       defaultBuilder: (context, day, focusedDay) {
-                        if (_dates != null) {
-                          if (_dates!.any((date) => sameDate(date, day))) {
-                            return Center(child: Icon(Icons.cookie_rounded, size: 30, color: Colours.greyPink,));
+                        if (vm.datesWithRecord.isNotEmpty) {
+                          if (vm.datesWithRecord.any(
+                            (date) => isSameDay(date, day),
+                          )) {
+                            return Center(
+                              child: Icon(
+                                Icons.cookie_rounded,
+                                size: 30,
+                                color: Colours.greyPink,
+                              ),
+                            );
                           }
                         }
                         return null;
                       },
                     ),
-                    focusedDay: _focusedDay,
+                    focusedDay: vm.focusedDay,
                     firstDay: DateTime(2000),
                     lastDay: DateTime(2100),
                     calendarFormat: CalendarFormat.month,
@@ -97,19 +100,20 @@ class _CalendarViewState extends State<CalendarView> {
                         color: Colours.lightBrown.withValues(alpha: 0.8),
                         shape: BoxShape.circle,
                       ),
+                      selectedDecoration: BoxDecoration(
+                        color: Colours.darkBrown.withValues(alpha: 0.8),
+                        shape: BoxShape.circle,
+                      ),
                     ),
                     availableGestures: AvailableGestures.horizontalSwipe,
-                    onPageChanged: (focusedDay) {
-                      _debouncer.debounce(duration: Duration(milliseconds: 800), 
-                      onDebounce: () {
-                        setState(() {
-                        _focusedDay = focusedDay;
-                        getMonthlyRecords(_focusedDay);
-                      });
-                      });
-              
+                    onPageChanged: (focusedDay) => vm.onPageChanged(focusedDay),
+                    selectedDayPredicate: (day) {
+                      return isSameDay(vm.selectedDay, day);
                     },
-                    startingDayOfWeek: StartingDayOfWeek.sunday,
+                    onDaySelected: (selectedDay, focusedDay) =>
+                        vm.onDaySelected(focusedDay, selectedDay),
+
+                    startingDayOfWeek: StartingDayOfWeek.monday,
                     daysOfWeekStyle: DaysOfWeekStyle(
                       weekdayStyle: inputTextStyle,
                       weekendStyle: inputTextStyle,
@@ -118,18 +122,27 @@ class _CalendarViewState extends State<CalendarView> {
                 ),
               ),
               SizedBox(height: 10.0),
-
               Padding(
                 padding: const EdgeInsets.only(left: 12.0, right: 12.0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Logs',
+                      'Monthly Logs',
                       style: TextStyle(
                         color: Colours.darkBrown,
                         fontFamily: 'Poppins',
                         fontSize: 24,
                       ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        vm.setSelectedDay(null);
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colours.lightBrown,
+                      ),
+                      child: Text('All', style: importantTextStyle),
                     ),
                   ],
                 ),
@@ -146,21 +159,19 @@ class _CalendarViewState extends State<CalendarView> {
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: _isLoading
+                  children: vm.isLoading
                       ? [Text('Loading....', style: backgroundTextStyle)]
-                      : _recordDetails.isEmpty
-                      ? [
-                          Text(
-                            'No records found this month!',
-                            style: backgroundTextStyle,
-                          ),
-                        ]
-                      : _recordDetails.map((record) {
-                          return RecordCard(
-                            date: record.date,
-                            cost: record.cost,
-                            itemName: record.itemName,
-                            recordId: record.record_id!,
+                      : vm.recordDetails.isEmpty
+                      ? [Text('No records found!', style: backgroundTextStyle)]
+                      : vm.recordDetails.map((rec) {
+                          return ChangeNotifierProvider<RecordHandler>.value(
+                            value: vm,
+                            child: RecordCard(
+                              date: rec.date,
+                              cost: rec.cost,
+                              itemName: rec.itemName,
+                              recordId: rec.record_id!,
+                            ),
                           );
                         }).toList(),
                 ),
@@ -170,33 +181,5 @@ class _CalendarViewState extends State<CalendarView> {
         ),
       ),
     );
-  }
-
-  //get records monthly. if more than one that day -> use generic emoji
-  Future<void> getMonthlyRecords(DateTime date) async {
-    String month = date.month.toString();
-    String year = date.year.toString();
-    String query = '$month,$year';
-    if (!mounted) return;
-    setState(() {
-      _isLoading = true;
-    });
-    List<Record> data = await Provider.of<RecordChanger>(
-      context,
-      listen: false,
-    ).getFilteredRecord({'monthly': query});
-    List<DateTime> dates = data.map((rec) {
-      return rec.date;
-    }).toSet().toList() ;
-    if (!mounted) return;
-    setState(() {
-      _isLoading = false;
-      _recordDetails = data;
-      _dates = dates;
-    });
-  }
-
-  bool sameDate(DateTime date1, DateTime date2) {
-    return date1.day == date2.day && date1.month == date2.month && date1.year == date2.year;
   }
 }

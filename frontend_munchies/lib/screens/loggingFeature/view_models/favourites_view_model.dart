@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/models/filters.dart';
 import 'package:frontend_munchies/models/record.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 
 class FavouritesViewModel extends ChangeNotifier {
-  final RecordChanger recordChanger;
+  final RecordRepository recordChanger;
 
   List<Record> _recordDetails = [];
   String? _errorMessage;
@@ -12,7 +13,7 @@ class FavouritesViewModel extends ChangeNotifier {
   List<Record> get recordDetails => _recordDetails;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-  
+
   FavouritesViewModel({required this.recordChanger}) {
     _fetchFavRecords();
   }
@@ -30,9 +31,9 @@ class FavouritesViewModel extends ChangeNotifier {
   Future<void> _fetchFavRecords() async {
     try {
       onLoading();
-      _recordDetails = await recordChanger.getFilteredRecord({
-        'favourites': 'favourites',
-      });
+      _recordDetails = await recordChanger.fetchAllRecords(
+        ActivityFilter.favouritedActivities.query,
+      );
       notifyListeners();
       offLoading();
     } on Exception catch (e) {

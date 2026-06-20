@@ -108,7 +108,8 @@ function filterRecords(query_records, query_params, user_uid) {
             },
             {
                 $match: {
-                    "document.isFavourited": true
+                    "document.isFavourited": true,
+                    "document.user_uid": user_uid
                 }
             },
             {

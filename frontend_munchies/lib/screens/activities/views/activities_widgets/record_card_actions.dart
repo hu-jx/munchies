@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/view_models/record_handler.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/widgets/activitiesView_widget/delete_button.dart';
-import 'package:frontend_munchies/widgets/activitiesView_widget/updateButton.dart';
+import 'package:frontend_munchies/screens/activities/views/activities_widgets/delete_button.dart';
+import 'package:frontend_munchies/screens/activities/views/activities_widgets/updateButton.dart';
+import 'package:provider/provider.dart';
 class ShowRecordActions extends StatelessWidget {
   const ShowRecordActions({
     super.key,
@@ -12,6 +14,7 @@ class ShowRecordActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final RecordHandler avm = context.watch<RecordHandler>();
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: Padding(
@@ -25,7 +28,7 @@ class ShowRecordActions extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
             ),
             UpdateButton(recordId: recordId,),
-            DeleteButton(recordId: recordId,),
+            DeleteButton(recordId: recordId, recordHandler: avm,),
           ],
         ),
       ),

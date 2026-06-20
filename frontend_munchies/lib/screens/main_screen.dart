@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 //import 'package:frontend_munchies/screens/viewOptions_bottomBar/dashboard_view.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboard.dart';
 import 'package:frontend_munchies/screens/viewOptions_bottomBar/homePageView.dart';
 import 'package:frontend_munchies/screens/viewOptions_bottomBar/profile_view.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/logging_options.dart';
 import 'package:popover/popover.dart';
@@ -41,7 +41,7 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<RecordChanger>(context, listen: false);
+    Provider.of<RecordRepository>(context, listen: false);
 
   }
 
@@ -62,7 +62,7 @@ class _HomepageState extends State<Homepage> {
       Scaffold(
         backgroundColor: Colors.transparent,
     
-        body: _viewOptions[_selectedIndex],
+        body: IndexedStack(index: _selectedIndex,children: _viewOptions,),
     
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,

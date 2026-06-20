@@ -1,11 +1,12 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:tap_debouncer/tap_debouncer.dart';
 
 class UpdateButton extends StatelessWidget {
   final String recordId;
@@ -14,9 +15,9 @@ class UpdateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () async {
-        Record rec = await Provider.of<RecordChanger>(
+    return TapDebouncer(
+      onTap: () async {
+        Record rec = await Provider.of<RecordRepository>(
           context,
           listen: false,
         ).getRecord(recordId);
@@ -28,28 +29,33 @@ class UpdateButton extends StatelessWidget {
           MaterialPageRoute(
             builder: (_) => ChangeNotifierProvider(
               create: (_) => LoggingViewModel(
-                recordChanger: context.read<RecordChanger>(),
-                record: rec
+                recordChanger: context.read<RecordRepository>(),
+                record: rec,
               ),
               child: TrackingPage(),
             ),
           ),
         );
       },
-      child: Row(
-        mainAxisAlignment: .spaceBetween,
-        children: [
-          Icon(Icons.edit, size: 32, color: Colours.greyPink),
-          Text(
-            'Edit',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              color: Colours.darkBrown,
-              fontSize: 22,
-            ),
+      builder: (context, onTap) {
+        return TextButton(
+          onPressed: onTap,
+          child: Row(
+            mainAxisAlignment: .spaceBetween,
+            children: [
+              Icon(Icons.edit, size: 32, color: Colours.greyPink),
+              Text(
+                'Edit',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: Colours.darkBrown,
+                  fontSize: 22,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -16,13 +16,12 @@ import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/f
 import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/fields/others_row.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/fields/visibility_toggle.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
-import 'package:frontend_munchies/models/record.dart';
 import 'package:provider/provider.dart';
 
 class LoggingForm extends StatelessWidget {
   final Record? record;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  LoggingForm({super.key, this.record});
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  const LoggingForm({super.key, this.record});
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +59,7 @@ class LoggingForm extends StatelessWidget {
                       ),
                       //DATE ROW
                       DateField(
+                        originalDate: lvm.record?.date,
                         dateController: TextEditingController(
                           text: DateField.formatDate(lvm.date),
                         ),
@@ -111,7 +111,11 @@ class LoggingForm extends StatelessWidget {
     );
   }
 
-  Row _buildActionRow(double width, LoggingViewModel lvm, BuildContext context) {
+  Row _buildActionRow(
+    double width,
+    LoggingViewModel lvm,
+    BuildContext context,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -127,6 +131,8 @@ class LoggingForm extends StatelessWidget {
                 Navigator.popUntil(context, (route) {
                   return route.settings.name == '/home' || route.isFirst;
                 });
+              } else if (lvm.errorMessage != null && context.mounted) {
+                Navigator.of(context).pop();
               }
             }
           },
@@ -152,12 +158,19 @@ class LoggingForm extends StatelessWidget {
       builder: (context) => ChangeNotifierProvider.value(
         value: lvm,
         builder: (context, child) {
-          return (context.watch<LoggingViewModel>().isLoading) ? Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [CircularProgressIndicator(color: Colours.greyPink)],
-          ),
-        ) : Center();
+          if ((context.watch<LoggingViewModel>().isLoading)) {
+            return PopScope(
+              canPop: false,
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [CircularProgressIndicator(color: Colours.greyPink)],
+                ),
+              ),
+            );
+          } else {
+            return Center();
+          }
         },
       ),
       barrierDismissible: false,
