@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:frontend_munchies/models/category_item.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 // import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/fields/date.dart';
 
 class LoggingViewModel extends ChangeNotifier {

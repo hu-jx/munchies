@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/filters.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/models/record.dart';
 
 class FavouritesViewModel extends ChangeNotifier {

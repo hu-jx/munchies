@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/filters.dart';
 import 'package:frontend_munchies/screens/activities/domain/view_models/record_handler.dart';
 import 'package:frontend_munchies/screens/activities/view_models/activities_view_model.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/screens/activities/views/activities_widgets/record_card.dart';

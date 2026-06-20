@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/scan_view_model.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/scan_picture_widgets/banner.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/widgets/button.dart';

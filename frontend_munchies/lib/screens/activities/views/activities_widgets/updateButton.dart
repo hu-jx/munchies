@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';

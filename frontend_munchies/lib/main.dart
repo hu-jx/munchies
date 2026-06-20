@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/main_screen.dart';
 import 'package:frontend_munchies/screens/login.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 

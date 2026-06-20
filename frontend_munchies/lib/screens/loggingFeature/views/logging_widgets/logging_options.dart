@@ -4,7 +4,7 @@ import 'package:frontend_munchies/screens/loggingFeature/view_models/scan_view_m
 import 'package:frontend_munchies/screens/loggingFeature/views/scan_picture.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/favourites.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
-import 'package:frontend_munchies/services/records/record_changer.dart';
+import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
 import 'package:provider/provider.dart';
