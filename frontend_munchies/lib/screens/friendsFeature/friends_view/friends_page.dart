@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/models/friend_request.dart';
+import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/friendsFeature/friends_view/search_page.dart';
+import 'package:frontend_munchies/screens/friendsFeature/friends_view_model/friends_page_vm.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 
@@ -11,10 +14,41 @@ class FriendsPage extends StatefulWidget {
 }
 
 class _FriendsPageState extends State<FriendsPage> {
+  List<UserProfile> friendsList = [];
+  bool friendsListLoading = true;
+  List<FriendRequest> requestList = [];
+  bool reqListLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadFriends();
+    loadRequests();
+  }
+
+  Future<void> loadFriends() async {
+    final result = await getFriendsList();
+    if (!mounted) return;
+    setState(() {
+      friendsList = result;
+      friendsListLoading = false;
+    });
+  }
+
+  Future<void> loadRequests() async {
+    final requests = await getPendingRequest();
+
+    if (!mounted) return;
+    setState(() {
+      requestList = requests;
+      reqListLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      initialIndex: 1,
+      initialIndex: 0,
       length: 2,
       child: Scaffold(
         backgroundColor: Colours.lightBeige,
@@ -25,12 +59,10 @@ class _FriendsPageState extends State<FriendsPage> {
           actions: [
             IconButton(
               onPressed: () {
-                
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SearchPage()),
                 );
-                
               },
               icon: const Icon(Icons.search),
             ),
@@ -38,7 +70,9 @@ class _FriendsPageState extends State<FriendsPage> {
           backgroundColor: Colours.greyPink.withValues(alpha: 0.35),
           bottom: TabBar(
             indicator: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colours.darkBrown, width: 3)),
+              border: Border(
+                bottom: BorderSide(color: Colours.darkBrown, width: 3),
+              ),
             ),
             labelStyle: TextStyle(
               fontFamily: "Poppins",
@@ -51,12 +85,7 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ),
         //body, navigate between current friends and friend requests
-        body: TabBarView(
-          children: <Widget>[
-            Center(child: Text("Friends displayed here. WIP")),
-            Center(child: Text("Friend requests displayed here. WIP")),
-          ],
-        ),
+        body: TabBarView(children: [friendsDisplay(), requestsDisplay()]),
       ),
     );
   }
@@ -75,5 +104,148 @@ class _FriendsPageState extends State<FriendsPage> {
       icon: const Icon(Icons.arrow_back),
     );
   }
-}
 
+  Widget friendsDisplay() {
+    if (friendsListLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colours.greyPink),
+      );
+    } else if (friendsList.isEmpty) {
+      return Center(child: Text("No friends yet", style: normalTextStyle));
+    }
+    return ListView.separated(
+      physics: const ClampingScrollPhysics(),
+      padding: const EdgeInsets.all(8),
+      itemCount: friendsList.length,
+      itemBuilder: (BuildContext context, int index) {
+        final user = friendsList[index];
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colours.darkerBeige,
+              borderRadius: BorderRadius.circular(25),
+            ),
+            height: 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Name: ${user.firstName}',
+                  style: TextStyle(fontFamily: "Poppins", fontSize: 18),
+                ),
+                Text(
+                  'Email: ${user.emailAddress}',
+                  style: TextStyle(fontFamily: "Poppins", fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+    );
+  }
+
+  Widget requestsDisplay() {
+    if (reqListLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colours.greyPink),
+      );
+    } else if (requestList.isEmpty) {
+      return Center(child: Text("No friend requests currently", style: normalTextStyle));
+    }
+    return ListView.separated(
+      physics: const ClampingScrollPhysics(),
+      padding: const EdgeInsets.all(8),
+      itemCount: requestList.length,
+      itemBuilder: (BuildContext context, int index) {
+        final req = requestList[index];
+        final senderProfile = req.senderId;
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            height: 150,
+            decoration: BoxDecoration(
+              color: Colours.darkerBeige,
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: RequestFormat(req, senderProfile),
+          ),
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+    );
+  }
+
+  Widget RequestFormat(FriendRequest req, UserProfile senderProfile) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Name: ${senderProfile.firstName}',
+          style: TextStyle(fontFamily: "Poppins", fontSize: 18),
+        ),
+        Text(
+          'Email: ${senderProfile.emailAddress}',
+          style: TextStyle(fontFamily: "Poppins", fontSize: 16),
+        ),
+        SizedBox(height: 15),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+              onPressed: () {
+                sendResponse(req, "accepted");
+              },
+              label: Text("Accept", style: normalTextStyle),
+              icon: Icon(Icons.check),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colours.pieGreen,
+                elevation: 0,
+              ),
+            ),
+            SizedBox(width: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                sendResponse(req, "declined");
+              },
+              label: Text("Decline", style: normalTextStyle),
+              icon: Icon(Icons.close),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colours.pieRed,
+                elevation: 0,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Future<void> sendResponse(FriendRequest request, String response) async {
+    //to update the backend
+    //Response should only be accepted or declined
+    try {
+      final senderMongoId = request.senderId.mongo_id;
+      if (senderMongoId == null) {
+        throw Exception("Sender ID is null");
+      }
+      await updateRequest(senderMongoId, request.receiverId, response);
+      if (!mounted) return;
+
+      //after responding, remove from pending list
+      setState(() {
+        requestList.removeWhere((item) => item.mongo_id == request.mongo_id);
+      });
+      if (response == "accepted") {
+        await loadFriends();
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to update request, try again")),
+      );
+    }
+  }
+}

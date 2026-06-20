@@ -86,12 +86,19 @@ export async function updateRequest(req, res) {
 // get_pending_req?user_uid=....
 export async function getPendingRequest(req, res) {
     try {
-        var { user_uid } = req.query
+        //var { user_uid } = req.query
+        const user_json = await User.findOne(
+            {
+                firebase_uid: req.uid,
+            }).populate('friends')
+        if (!user_json) {
+            return res.status(404).json({ message: "No user found" })
+        }
 
         var pendingRequests = await Request.find({
-            receiver_id: user_uid,
+            receiver_id: user_json._id,
             status: "pending"
-        });
+        }).populate('sender_id');
 
         return res.status(200).json(pendingRequests)
     } catch (error) {
@@ -101,7 +108,7 @@ export async function getPendingRequest(req, res) {
 }
 
 
-// check status, 4 outcomes: does not exist, accepted, sent BY user, sent TO user
+// check status, 5 outcomes: does not exist, accepted, sent BY user, sent TO user, ownself
 export async function checkStatus(req, res) {
     var { sender_id, receiver_id } = req.query;
     const existingReq = await Request.findOne({
@@ -126,7 +133,8 @@ export async function checkStatus(req, res) {
             return res.status(200).json({ message: "Declined" })
         }
 
+    } else {
+        return res.status(200).json({ message: "Request does not exist" })
     }
-    return res.status(200).json({ message: "Does not exist" })
 
 }

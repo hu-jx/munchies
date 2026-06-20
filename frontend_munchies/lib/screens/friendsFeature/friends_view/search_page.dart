@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
+import 'package:frontend_munchies/screens/friendsFeature/friends_view/searched_profile.dart';
 import 'package:frontend_munchies/screens/friendsFeature/friends_view_model/search_view_model.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
@@ -16,14 +17,14 @@ class _SearchPageState extends State<SearchPage> {
   bool isSearching = false;
 
   final vm = SearchViewModel();
-  List<UserProfile> foundUsers = [];
+  UserProfile? foundUser;
 
   void onSearch() async {
     final query = searchController.text;
     await vm.findUsers(query);
 
     setState(() {
-      foundUsers = vm.usersFound;
+      foundUser = vm.foundUser;
       if (searchController.text != "") {
         isSearching = true;
       } else {
@@ -66,6 +67,7 @@ class _SearchPageState extends State<SearchPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
             child: TextField(
               controller: searchController,
+              style: normalTextStyle,
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colours.grey),
@@ -75,9 +77,6 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
           ),
-          //search results below
-          //for testing api results
-          //Text(foundUsers.map((u) => u.emailAddress).join(", ")),
           searchResults(),
         ],
       ),
@@ -87,24 +86,14 @@ class _SearchPageState extends State<SearchPage> {
   Widget searchResults() {
     if (isSearching == false) {
       return Center(child: Text(""));
-    } else if (foundUsers.isEmpty) {
+    } 
+    final user = foundUser; 
+    if (user == null) {
       return Center(child: Text("No user found", style: TextStyle(fontFamily: "Poppins", fontSize: 20, color: Colours.greyPink),));
     }
-    return Expanded(
-      child: ListView.separated(
-        physics: const ClampingScrollPhysics(),
-        padding: const EdgeInsets.all(8),
-        itemCount: foundUsers.length,
-        itemBuilder: (BuildContext context, int index) {
-          final user = foundUsers[index];
-          final userEmail = user.emailAddress;
-          return Container(
-            height: 50,
-            child: Center(child: Text('User: $userEmail', style: TextStyle(fontFamily: "Poppins", fontSize: 16),)),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
-      ),
-    );
+    return 
+    SearchedProfile(key: ValueKey(user.mongo_id), userProfile: user);
+      
+      //Text(foundUser!.firstName + ": " + foundUser!.emailAddress);
   }
 }

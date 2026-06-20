@@ -5,7 +5,8 @@ import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:http/http.dart' as http;
 
 class AuthServices {
-  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  static const String _baseUrl = "http://10.0.2.2:3000/api";
+  //static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   //GET http request
   Future<UserProfile> fetchProfileData(String idToken) async {

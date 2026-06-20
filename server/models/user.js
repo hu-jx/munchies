@@ -1,5 +1,5 @@
 //modules
-import { Schema, model } from 'mongoose'
+import { Schema, model, mongoose } from 'mongoose'
 
 //schema 
 const userSchema = new Schema({
@@ -32,7 +32,7 @@ const userSchema = new Schema({
     },
 
     friends: {
-        type: Array,
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
         required: false,
         default: []
     },

@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -11,7 +13,7 @@ class PieChartBuilder extends StatefulWidget {
   final String sortBy;
   final DateTime chosenDate;
 
-  PieChartBuilder({
+  const PieChartBuilder({
     super.key,
     required this.summaryData,
     required this.categoryData,

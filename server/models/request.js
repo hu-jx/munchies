@@ -4,11 +4,13 @@ const requestSchema = new Schema({
 
     sender_id: {
         type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
     },
 
     receiver_id: {
         type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
     },
 
