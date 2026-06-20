@@ -1,8 +1,10 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/activities/domain/view_models/record_handler.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-import 'package:frontend_munchies/widgets/activitiesView_widget/record_card_actions.dart';
+import 'package:frontend_munchies/screens/activities/views/activities_widgets/record_card_actions.dart';
+import 'package:provider/provider.dart';
 
 class RecordCard extends StatelessWidget {
   final DateTime date;
@@ -22,6 +24,7 @@ class RecordCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final RecordHandler recordHandler = context.watch<RecordHandler>();
     return Padding(
       padding: const EdgeInsets.only(
         left: 15.0,
@@ -30,8 +33,7 @@ class RecordCard extends StatelessWidget {
         bottom: 8.0,
       ),
       child: ElevatedButton(
-        onPressed: () {},
-        onLongPress: () => _onRecordPressed(context),
+        onPressed: () => _onRecordPressed(context, recordHandler),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colours.darkerBeige,
           shape: RoundedRectangleBorder(
@@ -113,11 +115,14 @@ class RecordCard extends StatelessWidget {
     );
   }
 
-  Future<void> _onRecordPressed(BuildContext context) async {
+  Future<void> _onRecordPressed(BuildContext context, RecordHandler recordHandler) async {
     await showModalBottomSheet<void>(
       context: context,
-      builder: (BuildContext context) {
-        return ShowRecordActions(recordId: recordId);
+      builder: (context) {
+        return ChangeNotifierProvider<RecordHandler>.value(value: recordHandler, 
+        builder: (context, child) => 
+        ShowRecordActions(recordId: recordId)
+        );
       },
       backgroundColor: Colours.darkerBeige,
     );

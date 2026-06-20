@@ -1,11 +1,10 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/screens/viewOptions_tabBar/activities.dart';
-import 'package:frontend_munchies/screens/viewOptions_tabBar/calendar.dart';
+import 'package:frontend_munchies/models/filters.dart';
+import 'package:frontend_munchies/screens/activities/views/activities.dart';
+import 'package:frontend_munchies/screens/activities/views/calendar.dart';
 import 'package:frontend_munchies/styles/colours.dart';
-
-enum ActivityFilter { all, daily, weekly }
 
 class HomePageView extends StatefulWidget {
   const HomePageView({super.key});
@@ -15,12 +14,10 @@ class HomePageView extends StatefulWidget {
 }
 
 class _HomePageViewState extends State<HomePageView>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   ActivityFilter _selectedFilter = ActivityFilter.all;
-
   late TabController _tabController;
-  // bool _isExpanded = false;
-  ActivitiesView currView = ActivitiesView(filter: ActivityFilter.all);
+  ActivitiesPage currView = ActivitiesPage(filter: ActivityFilter.all);
 
   @override
   void initState() {
@@ -29,6 +26,12 @@ class _HomePageViewState extends State<HomePageView>
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) setState(() {});
     });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -99,11 +102,10 @@ class _HomePageViewState extends State<HomePageView>
                     color: Colours.greyPink,
                   ),
                   initialValue: _selectedFilter,
-                  //notify listener to call _fetch again when this change occurs
                   onSelected: (ActivityFilter res) {
                     setState(() {
                       if (res != _selectedFilter) {
-                        currView = ActivitiesView(filter: res);
+                        currView = ActivitiesPage(filter: res);
                       }
                       _selectedFilter = res;
                     });
@@ -130,7 +132,7 @@ class _HomePageViewState extends State<HomePageView>
                             ),
                           ),
                         ),
-                        PopupMenuItem(
+                        PopupMenuItem<ActivityFilter>(
                           value: ActivityFilter.all,
                           child: Text(
                             'All',
@@ -159,8 +161,7 @@ class _HomePageViewState extends State<HomePageView>
       body: TabBarView(
         key: ValueKey(currView),
         controller: _tabController,
-        //tabbarview does not update automatically
-        children: [currView, CalendarView()],
+        children: [currView, Calendar()],
       ),
     );
   }
