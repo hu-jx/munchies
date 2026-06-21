@@ -94,16 +94,16 @@ class _SearchedProfileState extends State<SearchedProfile> {
   Widget friendStatus(String status, UserProfile sender, UserProfile receiver) {
     //based on the returned status, determine which buttons to show
     if (status == "Accepted") {
-      return reuseContainer(120, "Friends");
+      return reuseContainer(400, "Friends");
     } else if (status == "From user") {
-      return reuseContainer(200, "Requested");
+      return reuseContainer(400, "Requested");
     } else if (status == "To user") {
-      return reuseContainer(250, "Requested by friend");
+      return reuseContainer(400, "Requested by friend");
     } else if (status == "Declined") {
       //change to RequestButton, when allowing for resending is added into the app
-      return reuseContainer(400, "Declined, resending not available yet");
+      return reuseContainer(400, "Declined, resending not available ");
     } else if (status == "Own user") {
-      return Text("Your own user!");
+      return reuseContainer(400, "Your own user!");
     } else if (status == "Request does not exist") {
       //Request Button
       return requestButton(sender, receiver);

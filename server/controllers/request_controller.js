@@ -1,9 +1,7 @@
 import { Request } from "../models/request.js";
 import { User } from "../models/user.js";
 
-//http://localhost:3000/api/send_req?sender_id=&receiver_id=
-//..?sender_id= & receiver_id=
-// send/create a new request
+//create a new request
 export async function createRequest(req, res) {
     try {
         var { sender_id, receiver_id } = req.body
@@ -73,7 +71,7 @@ export async function updateRequest(req, res) {
 
         }
 
-        return res.status(201).json({ message: "Successfully change status" })
+        return res.status(201).json({ message: "Successfully changed status" })
     } catch (error) {
         console.error("updateRequest error: ", error)
         return res.status(500).json({ message: "Server error" })
@@ -108,7 +106,7 @@ export async function getPendingRequest(req, res) {
 }
 
 
-// check status, 5 outcomes: does not exist, accepted, sent BY user, sent TO user, ownself
+// check status, 5 outcomes: does not exist, accepted, sent BY user, sent TO user
 export async function checkStatus(req, res) {
     var { sender_id, receiver_id } = req.query;
     const existingReq = await Request.findOne({

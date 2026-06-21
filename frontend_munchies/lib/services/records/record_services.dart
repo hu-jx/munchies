@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 class RecordServices {
   static const String _baseUrl = "http://10.0.2.2:3000/api";
   //static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
-  
+
   //POST http request (createRec)
   static Future<void> createRecord(String idToken, Record record) async {
     var request = http.MultipartRequest('POST', Uri.parse('$_baseUrl/records'));
@@ -245,6 +245,9 @@ class RecordServices {
         'Connection': 'keep-alive',
       },
     );
+    // print("STATUS: ${res.statusCode}");
+    // print("BODY: ${res.body}");
+    //error here
     return jsonDecode(res.body);
   }
 }
