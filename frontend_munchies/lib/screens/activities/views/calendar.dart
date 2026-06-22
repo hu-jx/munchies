@@ -5,6 +5,7 @@ import 'package:frontend_munchies/screens/activities/view_models/calendar_view_m
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/screens/activities/views/activities_widgets/record_card.dart';
+import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -111,7 +112,7 @@ class CalendarView extends StatelessWidget {
                       return isSameDay(vm.selectedDay, day);
                     },
                     onDaySelected: (selectedDay, focusedDay) =>
-                        vm.onDaySelected(focusedDay, selectedDay),
+                        vm.setSelectedDay(selectedDay),
 
                     startingDayOfWeek: StartingDayOfWeek.monday,
                     daysOfWeekStyle: DaysOfWeekStyle(
@@ -142,7 +143,7 @@ class CalendarView extends StatelessWidget {
                       style: TextButton.styleFrom(
                         foregroundColor: Colours.lightBrown,
                       ),
-                      child: Text('All', style: importantTextStyle),
+                      child: Icon(Icons.refresh_rounded, size: 30, color: Colours.darkBrown,),
                     ),
                   ],
                 ),
@@ -154,7 +155,9 @@ class CalendarView extends StatelessWidget {
                 endIndent: 18,
                 color: Colours.darkBrown,
               ),
-
+              if (vm.errorMessage != null) 
+                ShowErrorMessage(errorMessage: vm.errorMessage ?? 'Data failed to fetch')
+              else
               Padding(
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Column(
