@@ -15,6 +15,9 @@ class Record {
   String? details;
   bool isVisible;
   File? photo_file;
+  String? mongo_user_id;
+  List? likes;
+
 
   Record({
     this.record_id,
@@ -27,7 +30,9 @@ class Record {
     required this.isFavourited,
     this.details,
     required this.isVisible,
-    this.photo_file
+    this.photo_file,
+    this.mongo_user_id,
+    this.likes,
   });
 
   factory Record.fromJson(Map<String, dynamic> json) {
@@ -37,11 +42,13 @@ class Record {
       itemName: json['itemName']?.toString() ?? '',
       date: DateTime.parse(json['date']?.toString() ?? DateTime.now().toIso8601String()).toLocal(),
       cost: int.parse(json['cost']?.toString() ?? "0"),
-      isFavourited: bool.parse(json['isFavourited']?.toString() ?? 'false'),
+      isFavourited: bool.parse(json['lisFavourited']?.toString() ?? 'false'),
       category: json['category'] ?? 'Other',
       photo_URL: json['photo']?.toString(),
       details: json['details']?.toString(),
-      isVisible: bool.parse(json['isVisible']?.toString() ?? 'false')
+      isVisible: bool.parse(json['isVisible']?.toString() ?? 'false'),
+      mongo_user_id: json['user_mongo_id']?.toString() ?? '',
+      likes: json['likes'] ?? [],
     );
   }
 }

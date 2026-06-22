@@ -51,7 +51,8 @@ class DashboardView extends StatelessWidget {
       ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Color(0xff696969).withValues(alpha: 0.1),
+        backgroundColor: Colors.transparent,
+        //backgroundColor: Color(0xff696969).withValues(alpha: 0.0),
         title: const Align(
           alignment: Alignment.topLeft,
           child: Padding(

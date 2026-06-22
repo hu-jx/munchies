@@ -410,7 +410,7 @@ export async function getFriendsPost(req, res) {
             })
         const friendsList = currentUser['friends']
         var friendsPosts = await Record.find({ user_mongo_id: { $in: friendsList }, isVisible: true })
-            .populate('user_uid')
+            //.populate('user_mongo_id')
             .sort({ date: -1 })
         return res.status(200).json(friendsPosts)
     } catch (e) {
@@ -455,8 +455,6 @@ export async function removeLike(req, res) {
             {
                 firebase_uid: req.uid,
             })
-        console.log("trying to pull:", currentUser._id.toString());
-        console.log("from record:", id);
 
         await Record.findByIdAndUpdate(new ObjectId(id), {
             $pull: { likes: currentUser._id }

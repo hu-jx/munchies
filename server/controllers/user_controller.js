@@ -2,6 +2,23 @@
 
 import { User } from "../models/user.js"
 
+//this finds user info using their mongo unique id in the database
+export async function findUserInfo(req, res) {
+    try {
+        var { mongo_id } = req.query
+        const user_profile = await User.findOne({
+            _id: mongo_id
+        })
+        if (!user_profile) {
+            return res.status(204).json({ message: "No user found" })
+        }
+        return res.status(200).json(user_profile)
+    } catch (error) {
+        console.error("findUserInfo error: ", error)
+        return res.status(500).json({ message: "Server error" })
+    }
+}    
+
 export async function searchUser(req, res) {
     try {
         var { search_email, user_uid } = req.query

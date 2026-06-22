@@ -82,4 +82,28 @@ class UserServices {
       throw Exception('Failed to get friends list');
     }
   }
+
+  static Future<UserProfile> findUserInfo(
+    String idToken,
+    String mongo_user_id,
+  ) async {
+    String url = '$_baseUrl/find_user_info?mongo_id=$mongo_user_id';
+
+    final res = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Accept': '*/*',
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': '	application/json',
+        'Connection': 'keep-alive',
+      },
+    );
+    if (res.statusCode == 200) {
+      final decoded = jsonDecode(res.body);
+      return UserProfile.fromJson(decoded);
+    } else {
+      debugPrint(res.reasonPhrase);
+      throw Exception('Failed to fetch records data');
+    }
+  }
 }

@@ -136,7 +136,8 @@ class LoggingViewModel extends ChangeNotifier {
         isVisible: _isVisible ?? false, 
         photo_file: _existing_file,
         category: _category ?? record?.category,
-        details: details)
+        details: details
+        )
         // _itemName!,
         // DateField.formatDate(_date!.toLocal())!,
         // _cost!,
