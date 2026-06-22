@@ -65,6 +65,7 @@ class CalendarViewModel extends ChangeNotifier implements RecordHandler {
     if (!_isDisposed) {
       super.notifyListeners();
     }
+    return;
   }
 
   Future<void> setSelectedDay(DateTime? selectedDay) async {
@@ -97,10 +98,10 @@ class CalendarViewModel extends ChangeNotifier implements RecordHandler {
         _records = data;
         _datesWithRecord = dates;
         notifyListeners();
+        offLoading();
       }
     } catch (e) {
       _errorMessage = e.toString();
-    } finally {
       offLoading();
     }
   }
