@@ -153,6 +153,7 @@ class LoggingForm extends StatelessWidget {
   }
 
   void showLoading(LoggingViewModel lvm, BuildContext context) {
+    if (!context.mounted) return;
     showDialog(
       context: context,
       builder: (context) => ChangeNotifierProvider.value(

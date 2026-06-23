@@ -30,9 +30,7 @@ class ItemName extends StatelessWidget {
             controller: itemNameController,
             style: inputTextStyle,
             decoration: basicBoxDeco('What did you have?'),
-            validator: (value) => ((value == null || value.isEmpty)
-                ? "Field cannot be empty"
-                : null),
+            validator: (value) => LoggingViewModel.requiredValidator(value),
           ),
         ),
       ],

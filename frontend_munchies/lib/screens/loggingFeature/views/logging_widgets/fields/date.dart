@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
 import 'package:frontend_munchies/styles/logging_form_styles.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -43,9 +44,7 @@ class DateField extends StatelessWidget {
             readOnly: true,
             onTap: () => _selectDate(context),
             decoration: basicBoxDeco('Click to enter date!'),
-            validator: (value) => ((value == null || value.isEmpty)
-                ? "Field cannot be empty"
-                : null),
+            validator: (value) => LoggingViewModel.requiredValidator(value),
           ),
         ),
       ],
@@ -53,7 +52,7 @@ class DateField extends StatelessWidget {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final date = await showDatePicker(
+    final DateTime? date = await showDatePicker(
       context: context,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),

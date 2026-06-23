@@ -31,9 +31,7 @@ class CostField extends StatelessWidget {
             controller: costController,
             style: inputTextStyle,
             decoration: basicBoxDeco('How much did you spend?').copyWith(prefixText: '\$', prefixStyle: inputTextStyle),
-            validator: (value) => ((value == null || value.isEmpty)
-                ? "Field cannot be empty"
-                : null),
+            validator: (value) => LoggingViewModel.costValidator(value),
           ),
         ),
       ],
