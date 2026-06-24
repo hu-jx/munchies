@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
+import 'package:frontend_munchies/screens/loggingFeature/repository/scan_repository.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/favourites_view_model.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/scan_view_model.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/scan_picture.dart';
@@ -88,7 +89,7 @@ class _LoggingOptionsState extends State<LoggingOptions> {
               context,
               MaterialPageRoute(
                 builder: (_) => ChangeNotifierProvider(
-                  create: (_) => ScanViewModel(),
+                  create: (_) => ScanViewModel(scanRepo: ScanRepoImpl()),
                   child: ScanPicture(),
                 ),
               ),
