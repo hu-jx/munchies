@@ -106,7 +106,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
           color: Colours.darkerBeige,
-          border: BoxBorder.all(color: Colours.darkBrown),
+          //border: BoxBorder.all(color: Colours.darkBrown),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
