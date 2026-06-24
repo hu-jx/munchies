@@ -47,8 +47,13 @@ class DashboardMain extends StatelessWidget {
               behavior: ScrollBehavior().copyWith(overscroll: false),
               child: SingleChildScrollView(
                 child: (model.categoryData.isEmpty)
-                    ? Text("No data. Please log your consumption first", 
-                    style: TextStyle(fontFamily: "Poppins", color: Colours.lightBrown),)
+                    ? Text(
+                        "No data. Please log your consumption first",
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          color: Colours.lightBrown,
+                        ),
+                      )
                     : Column(
                         children: [
                           Padding(
@@ -98,30 +103,37 @@ class DashboardMain extends StatelessWidget {
   }
 
   Widget dateNavigator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          onPressed: () {
-            onBackButton(goBack(model.selectedView, model.chosenDate));
-          },
-          icon: const Icon(Icons.arrow_left),
-          iconSize: 30,
-          color: Colours.greyPink,
-        ),
-        Text(
-          displayRange(model.selectedView, model.chosenDate),
-          style: TextStyle(color: Colours.greyPink, fontFamily: 'Poppins'),
-        ),
-        IconButton(
-          onPressed: () {
-            onForwardButton(goForward(model.selectedView, model.chosenDate));
-          },
-          icon: const Icon(Icons.arrow_right),
-          iconSize: 30,
-          color: Colours.greyPink,
-        ),
-      ],
-    );
+    if (model.selectedView.name == "futureView") {
+      return Text(
+        "Future 6 Months",
+        style: TextStyle(color: Colours.greyPink, fontFamily: 'Poppins'),
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: () {
+              onBackButton(goBack(model.selectedView, model.chosenDate));
+            },
+            icon: const Icon(Icons.arrow_left),
+            iconSize: 30,
+            color: Colours.greyPink,
+          ),
+          Text(
+            displayRange(model.selectedView, model.chosenDate),
+            style: TextStyle(color: Colours.greyPink, fontFamily: 'Poppins'),
+          ),
+          IconButton(
+            onPressed: () {
+              onForwardButton(goForward(model.selectedView, model.chosenDate));
+            },
+            icon: const Icon(Icons.arrow_right),
+            iconSize: 30,
+            color: Colours.greyPink,
+          ),
+        ],
+      );
+    }
   }
 }
