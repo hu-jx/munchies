@@ -10,6 +10,7 @@ config({ quiet: true })
 import fs from 'fs'
 import { User } from '../models/user.js';
 const ObjectId = mongoose.Types.ObjectId
+import { predictData } from '../controllers/prediction_service.js'
 
 
 dayjs.locale('en-sg')
@@ -346,6 +347,18 @@ export async function getDashboardData(req, res) {
         console.log("Date objects:", new Date(startDate), new Date(endDate))
         console.log("view:", view, "dateFormat:", dateFormat)
 
+        if (view === "futureView") {
+            //call the prediction model, which should return data in this format
+            //predict timeData, predict catData
+            const predictions = await predictData(user_uid);
+
+            if (predictions.summary === null && Object.keys(predictions.catData).length === 0) {
+                return res.status(200).json({ message: "Not enough data to generate predictions yet" });
+            }
+
+            return res.status(200).json(predictions);
+        }
+
 
         const timeData = await Record.aggregate([
             {
@@ -391,7 +404,7 @@ export async function getDashboardData(req, res) {
             }
         ])
 
-        res.json({
+        return res.status(200).json({
             summary: timeData,
             catData: catData
         })
@@ -410,7 +423,7 @@ export async function getFriendsPost(req, res) {
             })
         const friendsList = currentUser['friends']
         var friendsPosts = await Record.find({ user_mongo_id: { $in: friendsList }, isVisible: true })
-            .populate('user_uid')
+            //.populate('user_mongo_id')
             .sort({ date: -1 })
         return res.status(200).json(friendsPosts)
     } catch (e) {
@@ -455,8 +468,6 @@ export async function removeLike(req, res) {
             {
                 firebase_uid: req.uid,
             })
-        console.log("trying to pull:", currentUser._id.toString());
-        console.log("from record:", id);
 
         await Record.findByIdAndUpdate(new ObjectId(id), {
             $pull: { likes: currentUser._id }

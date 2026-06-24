@@ -241,7 +241,7 @@ class RecordServices {
       headers: {
         'Accept': '*/*',
         'Authorization': 'Bearer $idToken',
-        'Content-Type': '	application/json',
+        'Content-Type': 'application/json',
         'Connection': 'keep-alive',
       },
     );
@@ -249,5 +249,63 @@ class RecordServices {
     // print("BODY: ${res.body}");
     //error here
     return jsonDecode(res.body);
+  }
+
+  static Future<List<Record>> getFriendsPosts({required String idToken}) async {
+    String url = '$_baseUrl/friends_post';
+    final res = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Accept': '*/*',
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': 'application/json',
+        'Connection': 'keep-alive',
+      },
+    );
+
+    if (res.statusCode == 200) {
+      final decoded = jsonDecode(res.body);
+      List<Record> recordsList = [];
+      for (final rec in decoded) {
+        recordsList.add(Record.fromJson(rec as Map<String, dynamic>));
+      }
+      return recordsList;
+    } else {
+      debugPrint(res.reasonPhrase);
+      throw Exception('Failed to fetch the list of friends posts');
+    }
+  }
+
+  static Future<void> addLike(String idToken, String recordId) async {
+    String url = '$_baseUrl/records/like/$recordId';
+    final res = await http.patch(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (res.statusCode != 201) {
+      debugPrint(res.reasonPhrase);
+      throw Exception('Failed to update profile');
+    }
+  }
+
+  static Future<void> removeLike(String idToken, String recordId) async {
+    String url = '$_baseUrl/records/unlike/$recordId';
+    final res = await http.patch(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (res.statusCode != 201) {
+      debugPrint("STATUS: ${res.statusCode}");
+      debugPrint("BODY: ${res.body}");
+      throw Exception('Failed to update profile');
+    }
   }
 }

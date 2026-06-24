@@ -7,7 +7,8 @@ const recordSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: true,
         trim: true,
-        immutable: true
+        immutable: true,
+        ref: 'User',
     },
 
     user_uid: {

@@ -42,7 +42,6 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
   Map<String, Color> colourMap = {"Beverages": Colours.pieRed};
 
   List<dynamic> prepPieData(List listCopy, String sortBy) {
-    
     listCopy = listCopy.map((entry) {
       return {
         "_id": {
@@ -56,34 +55,6 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
         "numPerCat": entry["numPerCat"],
       };
     }).toList();
-    
-    /*
-    final Map<String, dynamic> organisedData = {};
-    
-    for (final entry in listCopy) {
-      final category =
-          (entry["_id"]["category"] == "null" ||
-              entry["_id"]["category"] == null)
-          ? "Uncategorised"
-          : entry["_id"]["category"].toString();
-      if (!organisedData.containsKey(category)) {
-        organisedData[category] = {
-          "_id": {"category": category},
-          "costPerCat": 0,
-          "numPerCat": 0,
-        };
-      } else {
-        organisedData[category]["costPerCat"] += listCopy[entry]["costPerCat"];
-        organisedData[category]["numPerCat"] += listCopy[entry]["numPerCat"];
-      }
-    }
-
-    final organisedDataList = organisedData.values.toList();
-
-    organisedDataList.sort((a, b) => b[sortBy].compareTo(a[sortBy]));
-
-    return organisedDataList;
-    */
 
     listCopy.sort((a, b) => b[sortBy].compareTo(a[sortBy]));
     return listCopy;
@@ -95,6 +66,30 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
       total += item[widget.sortBy];
     }
     return total;
+  }
+
+  String freqDesc(ViewOpt viewOpt) {
+    if (viewOpt.name == "weekly") {
+      return "Number purchased per week";
+    } else if (viewOpt.name == "monthly") {
+      return "Number purchased per month";
+    } else if (viewOpt.name == "annually") {
+      return "Number purchased per year";
+    } else {
+      return "Projected number of sweet treats";
+    }
+  }
+
+  String expensesDesc(ViewOpt viewOpt) {
+    if (viewOpt.name == "weekly") {
+      return "Amount spent per week";
+    } else if (viewOpt.name == "monthly") {
+      return "Amount spent per month";
+    } else if (viewOpt.name == "annually") {
+      return "Amount spent per year";
+    } else {
+      return "Projected amount spent on sweet treats";
+    }
   }
 
   @override
@@ -142,8 +137,8 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
             ),
             Text(
               (widget.sortBy == "costPerCat")
-                  ? "\$" + (cate[widget.sortBy] / 100).toString()
-                  : cate[widget.sortBy].toString(),
+                  ? "\$" + (cate[widget.sortBy] / 100).toStringAsFixed(2)
+                  : cate[widget.sortBy].round().toString(),
               style: TextStyle(
                 fontFamily: "Poppins",
                 color: Colours.lightBrown,
@@ -171,8 +166,8 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
           ),
           Text(
             (widget.sortBy == "costPerCat")
-                ? "Amount spent on each category per week"
-                : "Number purchased per week",
+                ? expensesDesc(widget.selectedView)
+                : freqDesc(widget.selectedView),
             style: TextStyle(fontFamily: "Poppins", color: Colours.lightBrown),
           ),
           SizedBox(height: 15),

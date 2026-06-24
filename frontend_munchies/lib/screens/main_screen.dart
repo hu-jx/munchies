@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 //import 'package:frontend_munchies/screens/viewOptions_bottomBar/dashboard_view.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboard.dart';
+import 'package:frontend_munchies/screens/feedFeature/feed_view/feed_view.dart';
 import 'package:frontend_munchies/screens/viewOptions_bottomBar/homePageView.dart';
 import 'package:frontend_munchies/screens/viewOptions_bottomBar/profile_view.dart';
 import 'package:frontend_munchies/styles/colours.dart';
@@ -34,7 +35,8 @@ class _HomepageState extends State<Homepage> {
     Dashboard(),
     //const Center(child: Text('Dashboard. Not yet implemented.')),
     const Center(child: Text('Track. Not yet implemented.')),
-    const Center(child: Text('Feed. Not yet implemented.')),
+    //const Center(child: Text('Feed. Not yet implemented.')),
+    FeedView(),
     ProfileView(),
   ];
 
