@@ -274,8 +274,9 @@ export async function deleteRecord(req, res) {
 }
 
 export async function getItemName(req, res) {
+    
     var delay = 2000;
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 3; i++) {
         try {
             if (i > 1) {
                 delay = delay * 2

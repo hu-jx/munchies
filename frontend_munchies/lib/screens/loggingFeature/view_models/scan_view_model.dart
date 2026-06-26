@@ -58,6 +58,7 @@ class ScanViewModel extends ChangeNotifier {
       return;
     }
 
+
     try {
       onLoading();
       //check that the photo file bytes are non-empty 

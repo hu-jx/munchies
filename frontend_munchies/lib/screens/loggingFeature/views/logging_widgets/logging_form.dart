@@ -30,85 +30,85 @@ class LoggingForm extends StatelessWidget {
     double height = MediaQuery.of(context).size.height;
 
     return LayoutBuilder(
-      builder: (context, constraints) {
-        return Form(
-          key: _formKey,
-          autovalidateMode: AutovalidateMode.onUnfocus,
-          child: ScrollConfiguration(
-            behavior: ScrollBehavior().copyWith(overscroll: false),
-            child: SingleChildScrollView(
-              physics: ClampingScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 25.0,
-                    bottom: 35.0,
-                    right: 14.0,
-                    left: 14.0,
-                  ),
-                  child: Column(
-                    spacing: 12.0,
-                    children: [
-                      //ITEMNAME FIELD
-                      ItemName(
-                        itemNameController: TextEditingController(
-                          text: lvm.itemName,
+        builder: (context, constraints) {
+          return Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUnfocus,
+            child: ScrollConfiguration(
+              behavior: ScrollBehavior().copyWith(overscroll: false),
+              child: SingleChildScrollView(
+                physics: ClampingScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 25.0,
+                      bottom: 35.0,
+                      right: 14.0,
+                      left: 14.0,
+                    ),
+                    child: Column(
+                      spacing: 12.0,
+                      children: [
+                        //ITEMNAME FIELD
+                        ItemName(
+                          itemNameController: TextEditingController(
+                            text: lvm.itemName,
+                          ),
+                          lvm: lvm,
                         ),
-                        lvm: lvm,
-                      ),
-                      //DATE ROW
-                      DateField(
-                        originalDate: lvm.record?.date,
-                        dateController: TextEditingController(
-                          text: DateField.formatDate(lvm.date),
+                        //DATE ROW
+                        DateField(
+                          originalDate: lvm.record?.date,
+                          dateController: TextEditingController(
+                            text: DateField.formatDate(lvm.date),
+                          ),
+                          sendBackDate: (date) => lvm.setDate(date),
                         ),
-                        sendBackDate: (date) => lvm.setDate(date),
-                      ),
-                      //COST ROW
-                      CostField(
-                        costController: TextEditingController(text: lvm.cost),
-                        lvm: lvm,
-                      ),
-                      //OTHER DETAILS BEGIN
-                      OthersRow(),
-                      //DETAILS
-                      DetailsField(
-                        detailsController: TextEditingController(
-                          text: lvm.details,
+                        //COST ROW
+                        CostField(
+                          costController: TextEditingController(text: lvm.cost),
+                          lvm: lvm,
                         ),
-                        lvm: lvm,
-                      ),
-                      //CATEGORY
-                      CategoryMenu(
-                        categoryController: TextEditingController(
-                          text: lvm.category,
+                        //OTHER DETAILS BEGIN
+                        OthersRow(),
+                        //DETAILS
+                        DetailsField(
+                          detailsController: TextEditingController(
+                            text: lvm.details,
+                          ),
+                          lvm: lvm,
                         ),
-                        sendBackCat: (cat) => lvm.setCat(cat),
-                        maxWidth: constraints.maxWidth,
-                      ),
-                      ImageSelectionButton(
-                        boxSize: Size(width * 0.95, height * 0.3),
-                        existing_url: lvm.existing_url,
-                        existing_photo_file: lvm.existing_file,
-                        sendBackPhotoFile: (file) => lvm.setPhotoFile(file),
-                      ),
-                      VisibilityToggle(
-                        original: lvm.isVisible,
-                        formKey: _formKey,
-                        sendVisibility: (boolean) => lvm.setVisibility(boolean),
-                      ),
-                      _buildActionRow(width, lvm, context),
-                      ShowErrorMessage(errorMessage: lvm.errorMessage),
-                    ],
+                        //CATEGORY
+                        CategoryMenu(
+                          categoryController: TextEditingController(
+                            text: lvm.category,
+                          ),
+                          sendBackCat: (cat) => lvm.setCat(cat),
+                          maxWidth: constraints.maxWidth,
+                        ),
+                        ImageSelectionButton(
+                          boxSize: Size(width * 0.95, height * 0.3),
+                          existing_url: lvm.existing_url,
+                          existing_photo_file: lvm.existing_file,
+                          sendBackPhotoFile: (file) => lvm.setPhotoFile(file),
+                        ),
+                        VisibilityToggle(
+                          original: lvm.isVisible,
+                          formKey: _formKey,
+                          sendVisibility: (boolean) => lvm.setVisibility(boolean),
+                        ),
+                        _buildActionRow(width, lvm, context),
+                        ShowErrorMessage(errorMessage: lvm.errorMessage),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
   }
 
   Row _buildActionRow(
@@ -123,7 +123,9 @@ class LoggingForm extends StatelessWidget {
           text: 'Save',
           onPressed: () async {
             bool success = _formKey.currentState?.validate() ?? false;
+            // debugPrint('reached $success');
             if (success) {
+              // debugPrint('success');
               showLoading(lvm, context);
               await lvm.onSavePressed();
               if (lvm.errorMessage == null && !lvm.isLoading) {
@@ -153,13 +155,17 @@ class LoggingForm extends StatelessWidget {
   }
 
   void showLoading(LoggingViewModel lvm, BuildContext context) {
+                  
+
     if (!context.mounted) return;
+
     showDialog(
       context: context,
       builder: (context) => ChangeNotifierProvider.value(
         value: lvm,
         builder: (context, child) {
           if ((context.watch<LoggingViewModel>().isLoading)) {
+            
             return PopScope(
               canPop: false,
               child: Center(

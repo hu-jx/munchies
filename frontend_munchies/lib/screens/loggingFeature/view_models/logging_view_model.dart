@@ -67,13 +67,13 @@ class LoggingViewModel extends ChangeNotifier {
   }
 
   static String? costValidator(String? value) {
-    if (requiredValidator(value) == null) {
+    if (LoggingViewModel.requiredValidator(value) == null) {
       if (double.tryParse(value!) == null) {
         return 'Invalid value for cost.';
       }
       return null;
     }
-    return null;
+    return LoggingViewModel.requiredValidator(value);
   }
 
   //check state of values in record
@@ -143,9 +143,6 @@ class LoggingViewModel extends ChangeNotifier {
   Future<void> onSavePressed() async {
     if (_isLoading || _isDisposed) return;
     onLoading();
-    _errorMessage = null;
-    notifyListeners();
-
     //check using values if its an update or a new record
     if (record != null && record?.record_id != null) {
       await patchRecord();
@@ -153,12 +150,14 @@ class LoggingViewModel extends ChangeNotifier {
       await saveRecord();
     }
     if (_isDisposed) return;
+
     offLoading();
   }
 
   Future<void> saveRecord() async {
     try {
       if (_isDisposed) return;
+
       if (record?.record_id == null && record != null) {
         //saving from AI Scan OR Fill with Fav
         if (_itemName == null) setItemName(record!.itemName);
@@ -174,7 +173,9 @@ class LoggingViewModel extends ChangeNotifier {
             setNotFav();
           }
         }
-      } else if (_itemName == null || _date == null || _cost == null) {
+      }
+      
+      if (_itemName == null || _date == null || _cost == null) {
         throw FormatException('One or more required fields have a null value');
       }
 
@@ -218,7 +219,6 @@ class LoggingViewModel extends ChangeNotifier {
         'isVisible': _isVisible,
       };
       if (updates.entries.every((val) => val.value == null)) {
-        offLoading();
         debugPrint('Nothing to update');
         return;
       }

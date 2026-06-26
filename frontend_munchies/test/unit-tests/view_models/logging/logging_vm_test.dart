@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_munchies/models/category_item.dart';
+import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/logging_view_model.dart';
-import 'package:frontend_munchies/widgets/ignore_widgets/record_changer.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockRecordRepo extends Mock implements RecordRepoImpl {}
+class MockRecordRepo extends Mock implements RecordRepository {}
 
 class MockFile extends Mock implements File {}
 
@@ -46,10 +46,6 @@ void main() {
       isFavourited: false,
       isVisible: false,
     );
-  });
-
-  tearDown(() {
-    mockRepo.dispose();
   });
 
   group('State setter checks', () {
@@ -220,7 +216,7 @@ void main() {
       () async {
         //constructed dynamically in updateRecord()
         Map<String, dynamic> updates = {
-          'itemName': null,
+          'itemName': 'new',
           'date': null,
           'cost': null,
           'photo_file': null,
@@ -233,6 +229,7 @@ void main() {
           recordChanger: mockRepo,
           record: toUpdate,
         );
+        updateViewModel.setItemName('new');
         when(
           () => mockRepo.saveRecord(any()),
         ).thenAnswer((_) async => debugPrint('save record'));
@@ -444,19 +441,20 @@ void main() {
 
       await updateViewModel.patchRecord();
 
-      //expected num notif: 2 - one when onLoading, 1 offLoading (since no data update required and itemName states no notif
-      expect(counter, 2);
+      //no loading involved at patching. only notify if there is error message
+      expect(counter, 0);
       expect(paramUpdates, modifiedUpdates);
       verify(() => mockRepo.patchRecord(any<String>(), any<Map<String, dynamic>>())).called(1);
     });
 
-    test('If there is nothing to update, operation ceases immediately and notifies listeners', () {
+    test('If there is nothing to update, operation ceases immediately and notifies listeners', () async {
       int counter = 0;
       when(() => mockRepo.patchRecord('id', any())).thenAnswer((_) async {});
       updateViewModel.addListener(() => counter++,);
-      updateViewModel.patchRecord();
+      updateViewModel.onSavePressed();
+      await pumpEventQueue();
 
-      expect(counter, 3);
+      expect(counter, 2);
       //stop loading once this happens 
       expect(updateViewModel.isLoading, false);
       //expect that the pipeline never gets to actual RecordRepoImpl (to prevent unnecessary rebuilds due to stream)
@@ -474,10 +472,10 @@ void main() {
         int numNotif = 0;
         when(() => mockRepo.patchRecord(any(), any()),).thenThrow(Exception('Test Exception'));
         //add listener to check for final notified status
-        updateViewModel.addListener(() => numNotif++);
 
         //make an update so that recordrepo's methods are triggered
         updateViewModel.setAsFav();
+        updateViewModel.addListener(() => numNotif++);
         updateViewModel.patchRecord();
 
         //assert
@@ -485,7 +483,7 @@ void main() {
         expect(updateViewModel.isLoading, false);
 
         //3 notif from update solely (onLoad, update error, offLoad), 1 from setting state
-        expect(numNotif, 3 + 1);
+        expect(numNotif, 1);
       });
     });
   });
