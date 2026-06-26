@@ -19,6 +19,8 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend_munchies/models/record.dart';
 
+import '../../mocks/mock_navi_observer.dart';
+
 class MockRecordRepo extends Mock implements RecordRepository {}
 
 class MockRoute extends Mock implements Route {}
@@ -37,11 +39,13 @@ void main() {
   late MockImagePicker mockPicker;
   late MockRecordRepo mockRepo;
   late LoggingViewModel vm;
+  late MockNaviObserver mno;
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   setUp(() {
     mockRepo = MockRecordRepo();
     mockPicker = setUpMockPicker();
+    mno = MockNaviObserver();
     ImagePickerPlatform.instance = mockPicker;
     vm = LoggingViewModel(recordChanger: mockRepo);
   });
@@ -67,9 +71,9 @@ void main() {
       create: (_) => vm,
       child: MaterialApp(
         navigatorKey: navigatorKey,
-        initialRoute: '/',
+        initialRoute: '/home',
         routes: {
-          '/': (_) => const Placeholder(),
+          '/home': (_) => const Placeholder(),
           '/track': (_) => const TrackingPage(),
         },
         navigatorObservers: navigatorObservers,
@@ -78,7 +82,7 @@ void main() {
   }
 
   Future<void> setUpLogging(WidgetTester tester) async {
-    await tester.pumpWidget(createTestWidget());
+    await tester.pumpWidget(createTestWidget(navigatorObservers: [mno]));
     navigatorKey.currentState!.pushNamed('/track');
     await tester.pumpAndSettle();
   }
@@ -332,6 +336,9 @@ void main() {
 
         await tester.pumpAndSettle();
         expect(find.byType(CircularProgressIndicator), findsNothing);
+
+        //expect that the home is the last popped route
+        expect(mno.popped[mno.popped.length - 1].settings.name, '/home');
       },
     );
     testWidgets(

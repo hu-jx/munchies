@@ -84,7 +84,6 @@ void main() {
       ).thenAnswer((_) async => mockRecords);
       avm = ActivitiesViewModel(recordRepo: mockRepo, filter: filter);
         await avm.loadAllRecords();
-
         //check that loading status is turned off
         expect(avm.loadingStatus, false);
         expect(avm.recordDetails, mockRecords);
