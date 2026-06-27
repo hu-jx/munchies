@@ -21,18 +21,35 @@ class DashboardViewModel {
 
   void changeView(ViewOpt newView) {
     selectedView = newView;
-    getData();
+    //getData();
   }
 
   void backButton(DateTime newDate) {
     chosenDate = newDate;
-    getData();
+    // getData();
   }
 
   void forwardButton(DateTime newDate) {
     chosenDate = newDate;
+    // getData();
+  }
+
+  /*
+  Future<void> changeView(ViewOpt newView) async {
+    selectedView = newView;
     getData();
   }
+
+  Future<void> backButton(DateTime newDate) async {
+    chosenDate = newDate;
+    await getData();
+  }
+
+  Future<void> forwardButton(DateTime newDate) async {
+    chosenDate = newDate;
+    await getData();
+  }
+  */
 
   Future<void> getData() async {
     final int currentRequest = ++requestId;
