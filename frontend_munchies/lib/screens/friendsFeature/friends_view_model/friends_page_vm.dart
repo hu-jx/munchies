@@ -3,40 +3,65 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend_munchies/models/friend_request.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
-import 'package:frontend_munchies/services/auth/auth_exception.dart';
 import 'package:frontend_munchies/services/request_services.dart';
 import 'package:frontend_munchies/services/user_services.dart';
+import 'package:frontend_munchies/utils/auth_helper.dart';
 
-
-Future<List<UserProfile>> getFriendsList() async {
+Future<List<UserProfile>> getFriendsList({FirebaseAuth? auth}) async {
+  /*
   User? usr = FirebaseAuth.instance.currentUser;
   if (usr == null) throw AuthException('No permission to access.');
   String? idToken = await usr.getIdToken();
   if (idToken == null || idToken.isEmpty) {
     throw AuthException('No permission to access. ');
   }
+  */
+
+  final authInstance = auth ?? FirebaseAuth.instance;
+  final firebaseInfo = await userIdToken(authInstance);
+  final idToken = firebaseInfo.idToken;
 
   return UserServices.getFriendsList(idToken);
 }
 
-Future<List<FriendRequest>> getPendingRequest() async {
+Future<List<FriendRequest>> getPendingRequest({FirebaseAuth? auth}) async {
+  /*
   User? usr = FirebaseAuth.instance.currentUser;
   if (usr == null) throw AuthException('No permission to access.');
   String? idToken = await usr.getIdToken();
   if (idToken == null || idToken.isEmpty) {
     throw AuthException('No permission to access. ');
   }
+  */
+  final authInstance = auth ?? FirebaseAuth.instance;
+  final firebaseInfo = await userIdToken(authInstance);
+  final idToken = firebaseInfo.idToken;
 
   return RequestServices.getPendingRequests(idToken);
 }
 
-Future<void> updateRequest(String sender_id, String receiver_id, String response) async {
+Future<void> updateRequest(
+  String sender_id,
+  String receiver_id,
+  String response, {
+  FirebaseAuth? auth,
+}) async {
+  /*
   User? usr = FirebaseAuth.instance.currentUser;
   if (usr == null) throw AuthException('No permission to access.');
   String? idToken = await usr.getIdToken();
   if (idToken == null || idToken.isEmpty) {
     throw AuthException('No permission to access. ');
   }
+  */
+  final authInstance = auth ?? FirebaseAuth.instance;
+  final firebaseInfo = await userIdToken(authInstance);
+  final idToken = firebaseInfo.idToken;
 
-  await RequestServices.updateRequest(sender_id, receiver_id, response, idToken);
+  await RequestServices.updateRequest(
+    sender_id,
+    receiver_id,
+    response,
+    idToken,
+  );
 }

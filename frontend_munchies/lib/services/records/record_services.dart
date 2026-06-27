@@ -7,8 +7,8 @@ import 'package:frontend_munchies/models/record.dart';
 import 'package:http/http.dart' as http;
 
 class RecordServices {
-  static const String _baseUrl = "http://10.0.2.2:3000/api";
-  //static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  //static const String _baseUrl = "http://10.0.2.2:3000/api";
+  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   //POST http request (createRec)
   static Future<void> createRecord(String idToken, Record record) async {
@@ -226,17 +226,22 @@ class RecordServices {
     }
   }
 
+  //functions used for dashboard and feed feature which require record data
   static Future<Map<String, dynamic>> getDashboardData({
     required String idToken,
     required String user_uid,
     required String startDate,
     required String endDate,
     required String view,
+    http.Client? client,
   }) async {
-    //make API call here
+
+    //added for mocking, if test client is provided, use that, if not default to current one
+    final httpClient = client ?? http.Client();
+
     String url =
         '$_baseUrl/dashboard?startDate=$startDate&endDate=$endDate&view=$view&user_uid=$user_uid';
-    final res = await http.get(
+    final res = await httpClient.get(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',
@@ -272,6 +277,7 @@ class RecordServices {
       return recordsList;
     } else {
       debugPrint(res.reasonPhrase);
+      //Exception: Failed to fetch the list of friends posts
       throw Exception('Failed to fetch the list of friends posts');
     }
   }

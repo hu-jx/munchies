@@ -123,10 +123,10 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(
+            Container(
               height: 10,
               width: 10,
-              //color: colourList[preppedData.indexOf(cate)],
+              //color: colourList[preppedData.indexOf(cate) + 1],
             ),
             Text(
               cate["_id"]["category"].toString(),

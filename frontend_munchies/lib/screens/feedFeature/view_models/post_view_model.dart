@@ -1,8 +1,8 @@
 import 'package:frontend_munchies/services/user_services.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:frontend_munchies/services/auth/auth_exception.dart';
 import 'package:frontend_munchies/services/records/record_services.dart';
+import 'package:frontend_munchies/utils/auth_helper.dart';
 
 
 Future<bool> userLiked(Record record) async {
@@ -12,45 +12,18 @@ Future<bool> userLiked(Record record) async {
   return record.likes?.contains(retrievedProfile.mongo_id) ?? false;
 }
 
-/*
-Future<void> addLike(Record record) async {
+Future<void> vmToggleLikes(Record record, bool isLiked, {FirebaseAuth? auth}) async {
+  /*
   User? usr = FirebaseAuth.instance.currentUser;
   if (usr == null) throw AuthException('No permission to access.');
   String? idToken = await usr.getIdToken();
   if (idToken == null || idToken.isEmpty) {
     throw AuthException('No permission to access. ');
   }
-
-  final recordId = record.record_id ;
-  if (recordId == null) {
-    throw Exception("Record does not have an id");
-  }
-  RecordServices.addLike(idToken, recordId);
-}
-
-Future<void> removeLike(Record record) async {
-  User? usr = FirebaseAuth.instance.currentUser;
-  if (usr == null) throw AuthException('No permission to access.');
-  String? idToken = await usr.getIdToken();
-  if (idToken == null || idToken.isEmpty) {
-    throw AuthException('No permission to access. ');
-  }
-
-  final recordId = record.record_id ;
-  if (recordId == null) {
-    throw Exception("Record does not have an id");
-  }
-  RecordServices.removeLike(idToken, recordId);
-}
-*/
-
-Future<void> vmToggleLikes(Record record, bool isLiked) async {
-  User? usr = FirebaseAuth.instance.currentUser;
-  if (usr == null) throw AuthException('No permission to access.');
-  String? idToken = await usr.getIdToken();
-  if (idToken == null || idToken.isEmpty) {
-    throw AuthException('No permission to access. ');
-  }
+  */
+  final authInstance = auth ?? FirebaseAuth.instance;
+  final firebaseInfo = await userIdToken(authInstance);
+  final idToken = firebaseInfo.idToken;
 
   final recordId = record.record_id ;
   if (recordId == null) {
