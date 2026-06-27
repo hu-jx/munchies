@@ -49,7 +49,6 @@ class ActivitiesViewModel extends ChangeNotifier implements RecordHandler {
   Future<void> loadAllRecords() async {
     try {
       onLoading();
-      debugPrint('ON VIEWMODEL' + _isLoading.toString());
       debugPrint('reached loading with $_isLoading');
       List<Record> data = await recordRepo.fetchAllRecords(filter.query);
       debugPrint('after fetch');

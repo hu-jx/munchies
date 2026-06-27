@@ -12,6 +12,7 @@ class MockNaviObserver extends NavigatorObserver {
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    debugPrint(route.toString());
     pushed.add(route);
     super.didPush(route, previousRoute);
   }
