@@ -35,11 +35,11 @@ class RecordServices {
 
     http.StreamedResponse response = await request.send();
 
-    if (response.statusCode == 201) {
-      debugPrint(await response.stream.bytesToString());
-    } else {
-      debugPrint(response.reasonPhrase);
-    }
+    // if (response.statusCode == 201) {
+    //   debugPrint(await response.stream.bytesToString());
+    // } else {
+    //   debugPrint(response.reasonPhrase);
+    // }
 
     //   headers: {
     //     'Authorization': 'Bearer $idToken',
@@ -154,7 +154,7 @@ class RecordServices {
     String id,
     Map<String, dynamic> updates,
   ) async {
-    debugPrint("AT RECORD SERVICES ${updates.toString()}");
+    // debugPrint("AT RECORD SERVICES ${updates.toString()}");
     var headers = {
       'Authorization': 'Bearer $idToken',
       'Content-Type': 'application/json',
@@ -320,8 +320,8 @@ class RecordServices {
     );
 
     if (res.statusCode != 201) {
-      debugPrint("STATUS: ${res.statusCode}");
-      debugPrint("BODY: ${res.body}");
+      // debugPrint("STATUS: ${res.statusCode}");
+      // debugPrint("BODY: ${res.body}");
       throw Exception('Failed to update profile');
     }
   }

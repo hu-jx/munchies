@@ -5,6 +5,7 @@ import 'package:frontend_munchies/services/auth/auth_exception.dart';
 import 'package:frontend_munchies/services/records/record_services.dart';
 import 'package:frontend_munchies/models/record.dart';
 
+//Repository - handles business logic of whether or not something new has arrived and logic of what to pass to API Services
 class RecordRepoImpl implements RecordRepository {
   final _recordStream = StreamController<void>.broadcast();
 
