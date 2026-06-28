@@ -5,6 +5,7 @@ import 'package:frontend_munchies/screens/feedFeature/feed_view/like_button.dart
 import 'package:frontend_munchies/screens/feedFeature/view_models/feed_view_model.dart';
 import 'package:frontend_munchies/screens/feedFeature/view_models/post_view_model.dart';
 import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/styles/textStyles.dart';
 
 class RecordDisplay extends StatefulWidget {
   final Record record;
@@ -34,6 +35,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
   late var mongo_user_id = widget.record.mongo_user_id;
   late var likes = widget.record.likes;
   late var likesCount = likes?.length ?? 0;
+  late var caption = widget.record.details;
 
   @override
   void initState() {
@@ -61,6 +63,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
 
   void checkIfLiked() async {
     final result = await userLiked(widget.record);
+    if (!mounted) return;
     setState(() {
       isLiked = result;
     });
@@ -118,14 +121,18 @@ class _RecordDisplayState extends State<RecordDisplay> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    LikeButton(isLiked: isLiked, onPressed: (() => toggleLikes())),
-                    Text(likesCount.toString()) 
+                    LikeButton(
+                      isLiked: isLiked,
+                      onPressed: (() => toggleLikes()),
+                    ),
+                    Text(likesCount.toString()),
                   ],
                 ),
               ),
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -172,6 +179,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 10,),
                     //IMAGE HERE
                     imgUrl != null
                         ? Row(
@@ -182,7 +190,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
                                 width: 278,
                                 child: Image.network(
                                   imgUrl,
-                                  fit: BoxFit.contain,
+                                  fit: BoxFit.cover,
                                   alignment: Alignment.centerLeft,
                                 ),
                               ),
@@ -190,6 +198,31 @@ class _RecordDisplayState extends State<RecordDisplay> {
                           )
                         : Row(),
                     imgUrl != null ? SizedBox(height: 10) : Row(),
+                    //CAPTION HERE
+                    (caption == null)
+                        ? SizedBox(height: 0)
+                        : Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                posterProfile!.firstName.toString(),
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: Colours.darkBrown,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight(600),
+                                ),
+                              ),
+                              SizedBox(width: 10,),
+                              Expanded(
+                                child: Text(
+                                  caption!,
+                                  style: normalTextStyle,
+                                  maxLines: null,
+                                ),
+                              ),
+                            ],
+                          ),
                   ],
                 ),
               ),

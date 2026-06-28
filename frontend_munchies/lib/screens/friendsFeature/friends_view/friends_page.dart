@@ -170,7 +170,7 @@ class _FriendsPageState extends State<FriendsPage> {
               color: Colours.darkerBeige,
               borderRadius: BorderRadius.circular(25),
             ),
-            child: RequestFormat(req, senderProfile),
+            child: requestFormat(req, senderProfile),
           ),
         );
       },
@@ -178,7 +178,7 @@ class _FriendsPageState extends State<FriendsPage> {
     );
   }
 
-  Widget RequestFormat(FriendRequest req, UserProfile senderProfile) {
+  Widget requestFormat(FriendRequest req, UserProfile senderProfile) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

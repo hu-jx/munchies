@@ -7,7 +7,7 @@ import 'package:frontend_munchies/models/record.dart';
 import 'package:http/http.dart' as http;
 
 class RecordServices {
-  // static const String _baseUrl = "http://10.0.2.2:3000/api";
+  //static const String _baseUrl = "http://10.0.2.2:3000/api";
   static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   //POST http request (createRec)
@@ -226,17 +226,21 @@ class RecordServices {
     }
   }
 
+  //functions used for dashboard and feed feature which require record data
   static Future<Map<String, dynamic>> getDashboardData({
     required String idToken,
     required String user_uid,
     required String startDate,
     required String endDate,
     required String view,
+    http.Client? client,
   }) async {
-    //make API call here
+    //added for mocking, if test client is provided, use that, if not default to current one
+    final httpClient = client ?? http.Client();
+
     String url =
         '$_baseUrl/dashboard?startDate=$startDate&endDate=$endDate&view=$view&user_uid=$user_uid';
-    final res = await http.get(
+    final res = await httpClient.get(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',
@@ -271,14 +275,21 @@ class RecordServices {
       }
       return recordsList;
     } else {
-      debugPrint(res.reasonPhrase);
+      debugPrint('Status: ${res.statusCode}, Body: ${res.body}, Reason: ${res.reasonPhrase}');
+      //Exception: Failed to fetch the list of friends posts
       throw Exception('Failed to fetch the list of friends posts');
     }
   }
 
-  static Future<void> addLike(String idToken, String recordId) async {
+  static Future<void> addLike(
+    String idToken,
+    String recordId,
+    {http.Client? client}
+  ) async {
+    final httpClient = client ?? http.Client();
+
     String url = '$_baseUrl/records/like/$recordId';
-    final res = await http.patch(
+    final res = await httpClient.patch(
       Uri.parse(url),
       headers: {
         'Authorization': 'Bearer $idToken',
@@ -292,9 +303,15 @@ class RecordServices {
     }
   }
 
-  static Future<void> removeLike(String idToken, String recordId) async {
+  static Future<void> removeLike(
+    String idToken,
+    String recordId,
+    {http.Client? client}
+  ) async {
+    final httpClient = client ?? http.Client();
+
     String url = '$_baseUrl/records/unlike/$recordId';
-    final res = await http.patch(
+    final res = await httpClient.patch(
       Uri.parse(url),
       headers: {
         'Authorization': 'Bearer $idToken',

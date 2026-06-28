@@ -6,19 +6,22 @@ import 'package:frontend_munchies/models/friend_request.dart';
 import 'package:http/http.dart' as http;
 
 class RequestServices {
-  // static const String _baseUrl = "http://10.0.2.2:3000/api";
+  //static const String _baseUrl = "http://10.0.2.2:3000/api";
   static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   //RETURNED null in this function
-  static Future<String> checkStatus(
-    String sender_id,
-    String receiver_id,
-    String idToken,
-  ) async {
+  static Future<String> checkStatus({
+    required String sender_id,
+    required String receiver_id,
+    required String idToken,
+    http.Client? client,
+  }) async {
     String url =
         '$_baseUrl/check_status?sender_id=$sender_id&receiver_id=$receiver_id';
 
-    final res = await http.get(
+    final httpClient = client ?? http.Client();
+
+    final res = await httpClient.get(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',
@@ -40,14 +43,17 @@ class RequestServices {
   }
 
   //calls sendRequest API
-  static Future<void> sendRequest(
-    String sender_id,
-    String receiver_id,
-    String idToken,
-  ) async {
+  static Future<void> sendRequest({
+    required String sender_id,
+    required String receiver_id,
+    required String idToken,
+    http.Client? client,
+  }) async {
     String url = '$_baseUrl/send_req';
 
-    final res = await http.post(
+    final httpClient = client ?? http.Client();
+
+    final res = await httpClient.post(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',
@@ -63,10 +69,15 @@ class RequestServices {
   }
 
   //calls getPendingRequests API
-  static Future<List<FriendRequest>> getPendingRequests(String idToken) async {
+  static Future<List<FriendRequest>> getPendingRequests(
+    String idToken, {
+    http.Client? client,
+  }) async {
     String url = '$_baseUrl/get_pending_req';
 
-    final res = await http.get(
+    final httpClient = client ?? http.Client();
+
+    final res = await httpClient.get(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',
@@ -93,11 +104,15 @@ class RequestServices {
     String sender_id,
     String receiver_id,
     String response,
-    String idToken,
-  ) async {
-    String url = '$_baseUrl/update_req?sender_id=$sender_id&receiver_id=$receiver_id&response=$response';
+    String idToken, {
+    http.Client? client,
+  }) async {
+    String url =
+        '$_baseUrl/update_req?sender_id=$sender_id&receiver_id=$receiver_id&response=$response';
 
-    final res = await http.patch(
+    final httpClient = client ?? http.Client();
+
+    final res = await httpClient.patch(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/screens/activities/views/activities_widgets/record_card.dart';
 import 'package:frontend_munchies/screens/feedFeature/view_models/feed_view_model.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/models/record.dart';
@@ -24,7 +23,6 @@ class _FeedViewState extends State<FeedView> {
   }
 
   Future<void> loadFriendsPosts() async {
-
     final result = await getFriendsPosts();
 
     if (!mounted) return;
@@ -34,6 +32,20 @@ class _FeedViewState extends State<FeedView> {
     });
   }
 
+  double getHeight(Record record) {
+    if ((record.photo_URL == null) && (record.details != null)) {
+      return 170;
+    } else if ((record.photo_URL != null) && (record.details == null)) {
+      return 350;
+    } else if ((record.photo_URL != null) && (record.details != null)) {
+      return 400;
+    } else {
+      return 120;
+    }
+  }
+
+  //ScrollConfiguration(
+  //behavior: ScrollBehavior().copyWith(overscroll: false),
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -46,26 +58,30 @@ class _FeedViewState extends State<FeedView> {
         children: [
           Container(color: Colours.lightBeige, height: height * 0.9),
           //LISTVIEW BUILT HERE
-          (friendsPosts == [])
-              ? Text("No posts from friends")
-              : ListView.builder(
-                  physics: ClampingScrollPhysics(),
-                  padding: const EdgeInsets.all(8),
-                  itemCount: friendsPosts.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      height: (friendsPosts[index].photo_URL == null) ? 120 : 350,
-                      child: Center(
-                        child: RecordDisplay(
-                          record: friendsPosts[index],
-                          height: height,
-                          width: width,
+          ScrollConfiguration(
+            behavior: ScrollBehavior().copyWith(overscroll: false),
+            child: (friendsPosts == [])
+                ? Text("No posts from friends")
+                : ListView.builder(
+                    physics: ClampingScrollPhysics(),
+                    padding: const EdgeInsets.all(8),
+                    itemCount: friendsPosts.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Container(
+                        //height: (friendsPosts[index].photo_URL == null) ? 120 : 350,
+                        height: getHeight(friendsPosts[index]),
+                        child: Center(
+                          child: RecordDisplay(
+                            record: friendsPosts[index],
+                            height: height,
+                            width: width,
+                          ),
+                          //child: Text('Entry ${friendsPosts[index]}'),
                         ),
-                        //child: Text('Entry ${friendsPosts[index]}'),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
+          ),
         ],
       ),
       appBar: AppBar(

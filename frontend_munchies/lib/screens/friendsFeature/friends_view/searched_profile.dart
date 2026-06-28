@@ -1,5 +1,7 @@
 // for profile display after searching
 
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/friendsFeature/friends_view_model/search_view_model.dart';
