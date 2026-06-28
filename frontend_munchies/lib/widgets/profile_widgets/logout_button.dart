@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/screens/login.dart';
+import 'package:frontend_munchies/screens/authentication/login.dart';
 import 'package:frontend_munchies/services/auth/authentication.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
@@ -33,7 +33,7 @@ class _LogoutButtonState extends State<LogoutButton> {
     if (!mounted) return;
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => LoginPage(authentication: Authentication.real(),)),
     );
   }
 

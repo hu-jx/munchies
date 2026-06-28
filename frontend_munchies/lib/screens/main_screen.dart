@@ -3,7 +3,7 @@ import 'package:frontend_munchies/screens/activities/domain/repositories/record_
 //import 'package:frontend_munchies/screens/viewOptions_bottomBar/dashboard_view.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboard.dart';
 import 'package:frontend_munchies/screens/feedFeature/feed_view/feed_view.dart';
-import 'package:frontend_munchies/screens/viewOptions_bottomBar/homePageView.dart';
+import 'package:frontend_munchies/screens/activities/views/homePageView.dart';
 import 'package:frontend_munchies/screens/viewOptions_bottomBar/profile_view.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/logging_options.dart';
@@ -11,7 +11,17 @@ import 'package:popover/popover.dart';
 import 'package:provider/provider.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+  final List<Widget> viewOptions;
+  const Homepage({super.key, this.viewOptions = const [
+    HomePageView(),
+    //DashboardView(),
+    Dashboard(),
+    //const Center(child: Text('Dashboard. Not yet implemented.')),
+    Center(child: Text('Track. Not yet implemented.')),
+    //const Center(child: Text('Feed. Not yet implemented.')),
+    FeedView(),
+    ProfileView(),
+  ]});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -28,17 +38,6 @@ class _HomepageState extends State<Homepage> {
       }
     });
   }
-
-  final List<Widget> _viewOptions = [
-    HomePageView(),
-    //DashboardView(),
-    Dashboard(),
-    //const Center(child: Text('Dashboard. Not yet implemented.')),
-    const Center(child: Text('Track. Not yet implemented.')),
-    //const Center(child: Text('Feed. Not yet implemented.')),
-    FeedView(),
-    ProfileView(),
-  ];
 
   @override
   void initState() {
@@ -64,7 +63,7 @@ class _HomepageState extends State<Homepage> {
       Scaffold(
         backgroundColor: Colors.transparent,
     
-        body: IndexedStack(index: _selectedIndex,children: _viewOptions,),
+        body: IndexedStack(index: _selectedIndex,children: widget.viewOptions,),
     
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
