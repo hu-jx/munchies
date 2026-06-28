@@ -54,15 +54,6 @@ class DashboardViewModel {
   Future<void> getData() async {
     final int currentRequest = ++requestId;
 
-    /*
-    User? usr = FirebaseAuth.instance.currentUser;
-    if (usr == null) throw AuthException('No permission to access.');
-    String? idToken = await usr.getIdToken();
-    if (idToken == null || idToken.isEmpty) {
-      throw AuthException('No permission to access. ');
-    }
-    */
-
     final firebaseInfo = await userIdToken(_auth);
     final idToken = firebaseInfo.idToken;
     final usr = firebaseInfo.usr;

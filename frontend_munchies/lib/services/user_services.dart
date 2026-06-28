@@ -12,15 +12,18 @@ class UserServices {
   //static const String _baseUrl = "http://10.0.2.2:3000/api";
   static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
-  static Future<UserProfile?> searchUser(
-    String emailAddress,
-    String user_uid,
-    String idToken,
-  ) async {
+  static Future<UserProfile?> searchUser({
+    required String emailAddress,
+    required String user_uid,
+    required String idToken,
+    http.Client? client,
+  }) async {
     String url =
         '$_baseUrl/search?search_email=$emailAddress&user_uid=$user_uid';
 
-    final res = await http.get(
+    final httpClient = client ?? http.Client();
+
+    final res = await httpClient.get(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',

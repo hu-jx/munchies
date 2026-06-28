@@ -34,7 +34,7 @@ class _FeedViewState extends State<FeedView> {
 
   double getHeight(Record record) {
     if ((record.photo_URL == null) && (record.details != null)) {
-      return 160;
+      return 170;
     } else if ((record.photo_URL != null) && (record.details == null)) {
       return 350;
     } else if ((record.photo_URL != null) && (record.details != null)) {

@@ -421,6 +421,10 @@ export async function getFriendsPost(req, res) {
             {
                 firebase_uid: req.uid,
             })
+        //temp fix, edge case when a user creates a new acc but doesnt hv the id registered i think
+        if (!currentUser) {
+            return res.status(200).json([]);
+        }
         const friendsList = currentUser['friends']
         var friendsPosts = await Record.find({ user_mongo_id: { $in: friendsList }, isVisible: true })
             //.populate('user_mongo_id')

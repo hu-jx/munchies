@@ -235,7 +235,6 @@ class RecordServices {
     required String view,
     http.Client? client,
   }) async {
-
     //added for mocking, if test client is provided, use that, if not default to current one
     final httpClient = client ?? http.Client();
 
@@ -276,15 +275,21 @@ class RecordServices {
       }
       return recordsList;
     } else {
-      debugPrint(res.reasonPhrase);
+      debugPrint('Status: ${res.statusCode}, Body: ${res.body}, Reason: ${res.reasonPhrase}');
       //Exception: Failed to fetch the list of friends posts
       throw Exception('Failed to fetch the list of friends posts');
     }
   }
 
-  static Future<void> addLike(String idToken, String recordId) async {
+  static Future<void> addLike(
+    String idToken,
+    String recordId,
+    {http.Client? client}
+  ) async {
+    final httpClient = client ?? http.Client();
+
     String url = '$_baseUrl/records/like/$recordId';
-    final res = await http.patch(
+    final res = await httpClient.patch(
       Uri.parse(url),
       headers: {
         'Authorization': 'Bearer $idToken',
@@ -298,9 +303,15 @@ class RecordServices {
     }
   }
 
-  static Future<void> removeLike(String idToken, String recordId) async {
+  static Future<void> removeLike(
+    String idToken,
+    String recordId,
+    {http.Client? client}
+  ) async {
+    final httpClient = client ?? http.Client();
+
     String url = '$_baseUrl/records/unlike/$recordId';
-    final res = await http.patch(
+    final res = await httpClient.patch(
       Uri.parse(url),
       headers: {
         'Authorization': 'Bearer $idToken',

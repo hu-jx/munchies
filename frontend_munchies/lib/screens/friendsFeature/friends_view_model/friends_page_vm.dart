@@ -8,14 +8,6 @@ import 'package:frontend_munchies/services/user_services.dart';
 import 'package:frontend_munchies/utils/auth_helper.dart';
 
 Future<List<UserProfile>> getFriendsList({FirebaseAuth? auth}) async {
-  /*
-  User? usr = FirebaseAuth.instance.currentUser;
-  if (usr == null) throw AuthException('No permission to access.');
-  String? idToken = await usr.getIdToken();
-  if (idToken == null || idToken.isEmpty) {
-    throw AuthException('No permission to access. ');
-  }
-  */
 
   final authInstance = auth ?? FirebaseAuth.instance;
   final firebaseInfo = await userIdToken(authInstance);
@@ -25,14 +17,7 @@ Future<List<UserProfile>> getFriendsList({FirebaseAuth? auth}) async {
 }
 
 Future<List<FriendRequest>> getPendingRequest({FirebaseAuth? auth}) async {
-  /*
-  User? usr = FirebaseAuth.instance.currentUser;
-  if (usr == null) throw AuthException('No permission to access.');
-  String? idToken = await usr.getIdToken();
-  if (idToken == null || idToken.isEmpty) {
-    throw AuthException('No permission to access. ');
-  }
-  */
+  
   final authInstance = auth ?? FirebaseAuth.instance;
   final firebaseInfo = await userIdToken(authInstance);
   final idToken = firebaseInfo.idToken;
@@ -46,14 +31,7 @@ Future<void> updateRequest(
   String response, {
   FirebaseAuth? auth,
 }) async {
-  /*
-  User? usr = FirebaseAuth.instance.currentUser;
-  if (usr == null) throw AuthException('No permission to access.');
-  String? idToken = await usr.getIdToken();
-  if (idToken == null || idToken.isEmpty) {
-    throw AuthException('No permission to access. ');
-  }
-  */
+  
   final authInstance = auth ?? FirebaseAuth.instance;
   final firebaseInfo = await userIdToken(authInstance);
   final idToken = firebaseInfo.idToken;

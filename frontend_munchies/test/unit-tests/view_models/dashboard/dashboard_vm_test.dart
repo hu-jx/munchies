@@ -71,11 +71,7 @@ void main() {
     final mockAuth = MockFirebaseAuth(mockUser: mockUser, signedIn: true);
     final mockClient = MockClient();
 
-    //fake http response with some data
-    when(
-      () => mockClient.get(any(), headers: any(named: 'headers')),
-    ).thenAnswer(
-      (_) async => http.Response('''{
+    final mockResponse = '''{
   "summary": [
     {
       "_id": "2026-06-21T00:00:00.000Z",
@@ -111,7 +107,13 @@ void main() {
       "numPerCat": 3
     }
   ]
-}''', 200),
+}''';
+
+    //fake http response with some data
+    when(
+      () => mockClient.get(any(), headers: any(named: 'headers')),
+    ).thenAnswer(
+      (_) async => http.Response(mockResponse, 200),
     );
 
     final vm = DashboardViewModel(auth: mockAuth, client: mockClient);

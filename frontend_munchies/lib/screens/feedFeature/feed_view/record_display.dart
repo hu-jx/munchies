@@ -63,6 +63,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
 
   void checkIfLiked() async {
     final result = await userLiked(widget.record);
+    if (!mounted) return;
     setState(() {
       isLiked = result;
     });
