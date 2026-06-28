@@ -82,7 +82,7 @@ void main() {
     );
 
     test(
-      'goBack function correctly returns updated date(May) for monthly view',
+      'goBack function correctly returns updated date(May) for yearly view',
       () async {
         final newDate = goBack(ViewOpt.annually, DateTime(2026, 6, 21));
         expect(newDate, DateTime(2025, 1, 1));

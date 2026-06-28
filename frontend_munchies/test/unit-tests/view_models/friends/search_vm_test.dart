@@ -32,7 +32,7 @@ void main() {
 ''';
 
   when(
-      () => mockClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')),
+      () => mockClient.get(any(), headers: any(named: 'headers')),
     ).thenAnswer(
       (_) async => http.Response(mockResponse, 200),
     );
@@ -65,7 +65,7 @@ void main() {
 
   });
 
-  test('sendRequest works', () async {
+  test('sendRequest works properly', () async {
     final mockUser = MockUser(uid: "test-uid");
     final mockAuth = MockFirebaseAuth(mockUser: mockUser, signedIn: true);
     final mockClient = MockClient();

@@ -6,23 +6,24 @@ import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/services/request_services.dart';
 import 'package:frontend_munchies/services/user_services.dart';
 import 'package:frontend_munchies/utils/auth_helper.dart';
+import 'package:http/http.dart' as http;
 
-Future<List<UserProfile>> getFriendsList({FirebaseAuth? auth}) async {
+Future<List<UserProfile>> getFriendsList({FirebaseAuth? auth, http.Client? client}) async {
 
   final authInstance = auth ?? FirebaseAuth.instance;
   final firebaseInfo = await userIdToken(authInstance);
   final idToken = firebaseInfo.idToken;
 
-  return UserServices.getFriendsList(idToken);
+  return UserServices.getFriendsList(idToken, client: client);
 }
 
-Future<List<FriendRequest>> getPendingRequest({FirebaseAuth? auth}) async {
+Future<List<FriendRequest>> getPendingRequest({FirebaseAuth? auth, http.Client? client}) async {
   
   final authInstance = auth ?? FirebaseAuth.instance;
   final firebaseInfo = await userIdToken(authInstance);
   final idToken = firebaseInfo.idToken;
 
-  return RequestServices.getPendingRequests(idToken);
+  return RequestServices.getPendingRequests(idToken, client: client);
 }
 
 Future<void> updateRequest(
@@ -30,6 +31,7 @@ Future<void> updateRequest(
   String receiver_id,
   String response, {
   FirebaseAuth? auth,
+  http.Client? client
 }) async {
   
   final authInstance = auth ?? FirebaseAuth.instance;
@@ -41,5 +43,6 @@ Future<void> updateRequest(
     receiver_id,
     response,
     idToken,
+    client: client
   );
 }

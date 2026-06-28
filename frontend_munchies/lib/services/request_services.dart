@@ -69,10 +69,15 @@ class RequestServices {
   }
 
   //calls getPendingRequests API
-  static Future<List<FriendRequest>> getPendingRequests(String idToken) async {
+  static Future<List<FriendRequest>> getPendingRequests(
+    String idToken, {
+    http.Client? client,
+  }) async {
     String url = '$_baseUrl/get_pending_req';
 
-    final res = await http.get(
+    final httpClient = client ?? http.Client();
+
+    final res = await httpClient.get(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',
@@ -99,12 +104,15 @@ class RequestServices {
     String sender_id,
     String receiver_id,
     String response,
-    String idToken,
-  ) async {
+    String idToken, {
+    http.Client? client,
+  }) async {
     String url =
         '$_baseUrl/update_req?sender_id=$sender_id&receiver_id=$receiver_id&response=$response';
 
-    final res = await http.patch(
+    final httpClient = client ?? http.Client();
+
+    final res = await httpClient.patch(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',

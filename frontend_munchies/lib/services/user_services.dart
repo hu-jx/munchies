@@ -56,10 +56,12 @@ class UserServices {
     return await authService.fetchProfileData(idToken);
   }
 
-  static Future<List<UserProfile>> getFriendsList(String idToken) async {
+  static Future<List<UserProfile>> getFriendsList(String idToken, {http.Client? client}) async {
     String url = '$_baseUrl/find_friends';
 
-    final res = await http.get(
+    final httpClient = client ?? http.Client();
+
+    final res = await httpClient.get(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',
