@@ -52,15 +52,12 @@ class Authentication {
     String lastName,
   ) async {
     try {
-      print('start');
       final cred = await firebaseAuth.createUserWithEmailAndPassword(
         email: emailAddress,
         password: password,
       );
-      print('after create');
       final user = cred.user!;
       final String? idToken = await user.getIdToken();
-      print('before api call');
       return apiServices.createProfile(
         idToken!,
         UserProfile(
@@ -72,7 +69,6 @@ class Authentication {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      print(e.toString());
       switch (e.code) {
         case 'email-already-in-use':
           throw AuthException('Email address already in use.');

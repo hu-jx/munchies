@@ -148,7 +148,7 @@ void main() {
         await tester.pump();
 
         //FIXME: if wrong value, it should not be saved to the VM
-        debugPrint(vm.cost);
+        // debugPrint(vm.cost);
 
         FocusManager.instance.primaryFocus?.unfocus();
         await tester.pumpAndSettle();
@@ -317,7 +317,6 @@ void main() {
         //stub successful save repo method
         when(() => mockRepo.saveRecord(any())).thenAnswer((_) async {
           await Future.delayed(Duration(seconds: 1));
-          debugPrint('saved Record');
         });
         //a valid form is created when all required fields are filled.
         await createValidForm(tester);
@@ -373,7 +372,6 @@ void main() {
       (tester) async {
         when(() => mockRepo.saveRecord(any())).thenAnswer((_) async {
           await Future.delayed(Duration(seconds: 1));
-          debugPrint('saved Record');
         });
         await tester.pumpWidget(createTestWidget(navigatorObservers: []));
         navigatorKey.currentState!.pushNamed('/track');
@@ -400,7 +398,6 @@ void main() {
         WidgetController.hitTestWarningShouldBeFatal = true;
         when(() => mockRepo.saveRecord(any())).thenAnswer((_) async {
           await Future.delayed(Duration(seconds: 1));
-          debugPrint('saved Record');
         });
         await createValidForm(tester);
         await pressSubmit(tester);

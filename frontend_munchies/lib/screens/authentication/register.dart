@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/services/auth/authentication.dart';
 import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/general_textfield.dart';
 import 'package:frontend_munchies/widgets/pw_textfield.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   String? errorMessage;
 
-  static final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +66,7 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Center(
             child: Container(
               width: 342.0,
-              height: 775.0,
+              height: 710.0,
               decoration: BoxDecoration(
                 color: Colours.darkerBeige,
                 borderRadius: BorderRadius.circular(25),
@@ -89,7 +90,7 @@ class _RegisterPageState extends State<RegisterPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10.0),
+              // SizedBox(height: 5.0),
               Center(
                 child: Text(
                   'MUNCHIES',
@@ -193,12 +194,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ],
               ),
-              Center(
-                child: Text(
-                  errorMessage ?? "",
-                  style: GoogleFonts.poppins(color: Colors.red, fontSize: 14.0),
-                ),
-              ),
+              ShowErrorMessage(errorMessage: errorMessage)
+              // Center(
+              //   child: Text(
+              //     errorMessage ?? "",
+              //     style: GoogleFonts.poppins(color: Colors.red, fontSize: 14.0),
+              //   ),
+              // ),
             ],
           ),
         ),

@@ -59,7 +59,6 @@ void main() {
     //stub signInWith.... method
     when(() => mockFirebaseAuth.createUserWithEmailAndPassword(email: any<String>(named: 'email'), password: any<String>(named: 'password')))
     .thenAnswer((inv) async {
-      debugPrint('called createUser');
       return userCredential;
     }
     );
@@ -98,18 +97,12 @@ void main() {
   });
   testWidgets('Key in the correct login values and user is navigated to their activities homepage', (tester) async {
     await loadRegisterPage(tester);
-    debugPrint('here');
     //stub the signIn method
     await keyInValue(find.widgetWithText(TextFormField, 'Email Address'), 'new@gmail.com', tester);
-    debugPrint('here1');
     await keyInValue(find.widgetWithText(TextFormField, 'Confirm Email Address'), 'new@gmail.com', tester);
-    debugPrint('here2');
     await keyInValue(find.widgetWithText(TextFormField, 'First Name'), 'mock', tester);
-    debugPrint('here3');
     await keyInValue(find.widgetWithText(TextFormField, 'Password'), 'password', tester);
-    debugPrint('her');
     await keyInValue(find.widgetWithText(TextFormField, 'Confirm Password'), 'password', tester);
-    debugPrint('here5');
 
     //scroll until visible 
     await tester.scrollUntilVisible(find.byType(AppButton), 200.0, scrollable: find.byType(Scrollable).last);

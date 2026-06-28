@@ -109,7 +109,7 @@ void main() {
     expect(find.byType(RecordCard), findsOne);
   });
 
-  testWidgets('click on icon to show only records of that date', (tester) async {
+  testWidgets('click on refresh icon to show all records again', (tester) async {
     await loadCalendar(tester);
     await tester.tap(find.byIcon(Icons.cookie_rounded).first);
     await tester.pumpAndSettle();

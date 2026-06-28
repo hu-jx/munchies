@@ -219,7 +219,6 @@ class LoggingViewModel extends ChangeNotifier {
         'isVisible': _isVisible,
       };
       if (updates.entries.every((val) => val.value == null)) {
-        debugPrint('Nothing to update');
         return;
       }
       await recordChanger.patchRecord(record!.record_id!, updates);

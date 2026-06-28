@@ -49,17 +49,13 @@ class ActivitiesViewModel extends ChangeNotifier implements RecordHandler {
   Future<void> loadAllRecords() async {
     try {
       onLoading();
-      debugPrint('reached loading with $_isLoading');
       List<Record> data = await recordRepo.fetchAllRecords(filter.query);
-      debugPrint('after fetch');
       _records = data;
       notifyListeners();
     } catch (e) {
-      debugPrint(e.toString());
       _errorMessage = e.toString();
       notifyListeners();
     } finally {
-      debugPrint('does not reach offLoading');
       offLoading();
     }
   }
@@ -67,10 +63,8 @@ class ActivitiesViewModel extends ChangeNotifier implements RecordHandler {
   @override
   Future<void> onDeletePressed(String recordId) async {
     try {
-      debugPrint('delete in action');
       onLoading();
       await recordRepo.deleteRec(recordId);
-      debugPrint('complete delete in action');
     } on Exception catch (e) {
       _errorMessage = e.toString();
     } finally {

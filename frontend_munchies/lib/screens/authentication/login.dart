@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/main_screen.dart';
 import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/pw_textfield.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_munchies/widgets/general_textfield.dart';
@@ -20,6 +21,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final pwController = TextEditingController();
   String? errorMessage;
@@ -99,11 +101,15 @@ class _LoginPageState extends State<LoginPage> {
               ),
               //disable button while trying to log in to prevent multiple navigation.
               //enable button once logged in
-              AppButton(text: 'Login', onPressed: tryLogin, size: Size(298, 48)),
+              AppButton(text: 'Login', onPressed: () async {
+                    if (formKey.currentState?.validate() == true) {
+                      await tryLogin();
+                    }}, size: Size(298, 48)),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Flexible(
+                    fit: FlexFit.loose,
                     child: Text(
                       'New to Munchies?',
                       style: GoogleFonts.poppins(color: Colours.grey),
@@ -132,10 +138,11 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
               //Text("test"),
-              Text(
-                errorMessage ?? "",
-                style: GoogleFonts.poppins(color: Colors.red, fontSize: 14.0),
-              ),
+              ShowErrorMessage(errorMessage: errorMessage)
+              // Text(
+              //   errorMessage ?? "",
+              //   style: GoogleFonts.poppins(color: Colors.red, fontSize: 14.0),
+              // ),
             ],
           ),
         ),
@@ -144,33 +151,33 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget buildTextfields() {
-    return Column(
-      children: [
-        GeneralTextfield(
-          controller: emailController,
-          labelText: 'Email Address',
-        ),
-        SizedBox(height: 10.0),
-        PasswordTextfield(pwController: pwController, labelText: 'Password'),
-      ],
+    return Form(
+      key: formKey,
+      child: Column(
+        children: [
+          GeneralTextfield(
+            controller: emailController,
+            labelText: 'Email Address',
+          ),
+          SizedBox(height: 10.0),
+          PasswordTextfield(pwController: pwController, labelText: 'Password'),
+        ],
+      ),
     );
   }
 
   Future<void> tryLogin() async {
     try {
-      debugPrint("CALLED");
       //if successful, route to homepage
       await widget.authentication.login(
         emailController.text,
         pwController.text,
       );
-      debugPrint('complete login');
       // if (!mounted) return;
       // setState(() {
       //   errorMessage = null;
       // });
       if (!mounted) return;
-      debugPrint('navigating');
       Navigator.push(
         context,
         MaterialPageRoute(
