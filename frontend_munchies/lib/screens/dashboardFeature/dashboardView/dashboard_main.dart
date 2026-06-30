@@ -47,20 +47,18 @@ class DashboardMain extends StatelessWidget {
               behavior: ScrollBehavior().copyWith(overscroll: false),
               child: SingleChildScrollView(
                 child: (model.categoryData.isEmpty)
-                    ? Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                        child: Text(
-                            (model.selectedView.name == "futureView")
-                                ? "Not enough data for a prediction. A minimum of 3 months worth of data entered is required to make a prediction"
-                                : "No data. Please log your consumption first",
-                            maxLines: null,
-                            style: TextStyle(
-                              fontFamily: "Poppins",
-                              color: Colours.lightBrown,
-                            ),
+                    ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Text(
+                          (model.selectedView.name == "futureView")
+                              ? "Not enough data for a prediction. A minimum of 3 months worth of data entered is required to make a prediction"
+                              : "No data. Please log your consumption first",
+                          maxLines: null,
+                          style: TextStyle(
+                            fontFamily: "Poppins",
+                            color: Colours.lightBrown,
                           ),
-                      ),
+                        ),
                     )
                     : Column(
                         children: [

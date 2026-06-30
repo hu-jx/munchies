@@ -14,6 +14,9 @@ import { predictData } from '../controllers/prediction_service.js'
 
 
 dayjs.locale('en-sg')
+
+var sow = dayjs().startOf('week').toDate()
+var eow = dayjs().endOf('week').toDate()
 //Create following CRUD 
 export async function createRecord(req, res) {
     try {
@@ -156,8 +159,7 @@ function filterRecords(query_records, query_params, user_uid) {
                 ]
             )
         } else if (query_params.freq == 'weekly') {
-            var sow = dayjs().startOf('week').toDate()
-            var eow = dayjs().endOf('week').toDate()
+            
             return Record.aggregate(
                 [
                     {
@@ -481,6 +483,30 @@ export async function removeLike(req, res) {
         return res.status(201).json({ message: "Successfully removed like" })
     } catch (e) {
         console.error("addLike error: ", e)
+        return res.status(500).json({ message: "Server error" })
+    }
+}
+
+export async function getThisWeekRecordCount(req, res) {
+    try {
+        //shape: {"count": value}
+        console.log(sow, eow)
+        var count_data = await Record.aggregate(
+                [
+                    {
+                        $match: {
+                            'user_uid': req.uid,
+                            'date': { $gte: sow, $lte: eow }
+                        }
+                    }, 
+                    {
+                        $count: "count"
+                    }
+                ]
+            )
+        return res.status(200).json(count_data)
+    } catch (error) {
+        console.error("getThisWeekRecordCount error: ", e)
         return res.status(500).json({ message: "Server error" })
     }
 }
