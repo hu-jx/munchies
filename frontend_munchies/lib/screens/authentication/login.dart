@@ -178,12 +178,13 @@ class _LoginPageState extends State<LoginPage> {
       //   errorMessage = null;
       // });
       if (!mounted) return;
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
           builder: (context) => widget.homepage ?? Homepage(),
           settings: RouteSettings(name: '/home'),
         ),
+        (Route<dynamic> route) => false
       );
     } catch (e) {
       if (!mounted) return;

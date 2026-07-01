@@ -27,6 +27,7 @@ class MainApp extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Homepage();
+          // return Homepage();
         }
         return LoginPage(authentication: Authentication.real(),);
       }),

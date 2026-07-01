@@ -7,12 +7,16 @@ class AppButton extends StatefulWidget {
   final String text;
   final Future<void> Function() onPressed;
   final Size size;
+  final Color? color;
+  final TextStyle? textStyle;
 
   const AppButton({
     super.key,
     required this.text,
     required this.onPressed,
     required this.size,
+    this.color,
+    this.textStyle,
   });
 
   @override
@@ -27,14 +31,14 @@ class _AppButtonState extends State<AppButton> {
       builder: (BuildContext context, TapDebouncerFunc? onTap) => OutlinedButton(
         onPressed: onTap,
         style: OutlinedButton.styleFrom(
-          backgroundColor: Colours.greyPink,
+          backgroundColor: widget.color ?? Colours.greyPink,
           fixedSize: widget.size,
-          side: BorderSide(color: Colours.greyPink),
+          side: BorderSide(color: widget.color != null ? Colors.transparent : Colours.greyPink),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
         child: Text(
           widget.text,
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16.0),
+          style: widget.textStyle ?? GoogleFonts.poppins(color: Colors.white, fontSize: 16.0),
         ),
       ),
     );
