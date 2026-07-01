@@ -1,4 +1,4 @@
-import { createNewGoal, deleteGoalById, getLatestGoal, updateCurrentGoalsToInactive, updateGoalById } from '../controllers/goal_controller.js';
+import { createNewGoal, deleteGoalById, deleteGoalHistory, getLatestGoal, updateCurrentGoalsToInactive, updateGoalById } from '../controllers/goal_controller.js';
 import { verifyToken } from '../middleware/auth_middleware.js'
 import express from 'express'
 
@@ -11,5 +11,6 @@ goalRouter.get('/goal', getLatestGoal)
 goalRouter.patch('/goal/:id', updateGoalById)
 goalRouter.delete('/goal/:id', deleteGoalById)
 goalRouter.patch('/goal', updateCurrentGoalsToInactive)
+goalRouter.delete('/goal', deleteGoalHistory);
 
 export default goalRouter

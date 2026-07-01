@@ -11,8 +11,7 @@ const absoluteWeek = (date) => dayjs(date).diff(EPOCH, 'week')
 //GET goal 
 export async function getLatestGoal(req, res) {
     try {
-        const goals_data = await Goal.find({ user_uid: req.uid, isActive: true }).sort('-start_week')
-        // .limit(1)
+        const goals_data = await Goal.find({ user_uid: req.uid, isActive: true }).sort('-start_week').limit(1)
         if (!goals_data || goals_data.length == 0) {
             return res.status(204).json({ message: "No data found" })
         }
@@ -27,6 +26,9 @@ export async function getLatestGoal(req, res) {
 export async function createNewGoal(req, res) {
     try {
         const { quantity, start_date } = req.body;
+        if (parseInt(quantity) < 0) {
+            throw Error('Invalid goal quantity value')
+        }
         var newGoal = Goal({
             user_uid: req.uid,
             quantity: quantity,
@@ -45,6 +47,7 @@ export async function createNewGoal(req, res) {
 //PATCH goal - update existing list of goals
 export async function updateGoalById(req, res) {
     try {
+        console.log("REACHED GOAL CONTROLLER")
         const { id } = req.params;
         const { quantity, isActive, start_date } = req.body;
         var current = await Goal.findOne({ _id: new ObjectId(id) })
@@ -86,11 +89,25 @@ export async function deleteGoalById(req, res) {
     }
 }
 
+export async function deleteGoalHistory(req, res) {
+    //clear inactive goals
+    try {
+        await Goal.deleteMany(
+            { user_uid: req.uid, isActive: false }
+        )
+        return res.status(201).json({ message: "Successfully deleted goal" })
+    } catch (error) {
+        console.log("deleteGoal error: ", error)
+        return res.status(500).json({ message: "Server error" })
+    }
+}
+
 //upload all current goals to be inactive when starting a new, higher goal 
 export async function updateCurrentGoalsToInactive(req, res) {
     try {
+        var { activeStatus } = req.query
         const filter = { user_uid: req.uid }
-        const update = { isActive: false }
+        const update = { isActive: activeStatus }
         await Goal.updateMany(filter, update)
         return res.status(201).json({ message: "Successfully updated all goals status" })
     } catch (error) {

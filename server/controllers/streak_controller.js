@@ -11,7 +11,7 @@ export async function getCurrentStreak(req, res) {
         if (active_goals == null || active_goals.length == 0) {
             return res.status(204).json({ "message": "No active goals found" })
         }
-        const oldest_goal_date = dayjs(active_goals[0].start_date).toDate()
+        const oldest_goal_date = dayjs(active_goals[0].start_date).startOf('week').toDate()
         console.log(oldest_goal_date)
         const record_count_by_week = await Record.aggregate(
             [
@@ -43,7 +43,7 @@ export async function getCurrentStreak(req, res) {
                 }
             ]
         )
-
+        console.log(record_count_by_week)
         var streak = computeStreak(active_goals, record_count_by_week, oldest_goal_date)
         return res.status(200).json({ "streak": streak })
     } catch (error) {

@@ -3,6 +3,7 @@ import 'dayjs/locale/en-sg.js'
 dayjs.locale('en-sg')
 
 export function computeStreak(active_goals, record_count_by_week) {
+    console.log('BEFORE MANIPULATION ', record_count_by_week)
     //date of comparison has to be a Monday
     const EPOCH = dayjs('2020-01-06')
     const absoluteWeek = (date) => dayjs(date).diff(EPOCH, 'week')
@@ -26,6 +27,7 @@ export function computeStreak(active_goals, record_count_by_week) {
             return [absoluteWeek(dayjs(entry._id)), parseInt(entry.count)]
         })
     )
+    console.log('AFTER MANIPULATION ', record_count)
 
     // console.log(record_count)
 
