@@ -2,6 +2,9 @@ import mongoose from "mongoose"
 import { Goal } from "../models/goal.js"
 import dayjs from 'dayjs'
 import 'dayjs/locale/en-sg.js'
+import { calculateGoal } from "../utils/adaptive_goal_calc.js"
+import DataError from "../utils/errors/insufficient_data_error.js"
+import { Record } from "../models/record.js"
 dayjs.locale('en-sg')
 
 const ObjectId = mongoose.Types.ObjectId
@@ -113,5 +116,59 @@ export async function updateCurrentGoalsToInactive(req, res) {
     } catch (error) {
         console.error("updateGoalStatus error: ", error)
         return res.status(500).json({ message: "Server error" })
+    }
+}
+
+export async function getPureAdaptiveGoal(req, res) {
+    try {
+        var four_week_ago = dayjs().subtract(4, 'week').startOf('week').toDate()
+        var start_of_week = dayjs().startOf('week').toDate()
+        console.log(four_week_ago, start_of_week)
+        var four_week_record_count = await Record.aggregate(
+                    [
+                        {
+                            $match: {
+                                user_uid: req.uid,
+                                date: {
+                                    $gte: four_week_ago, 
+                                    $lte: start_of_week
+                                }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: {
+                                    $dateTrunc: {
+                                        date: "$date",
+                                        unit: "week",
+                                        startOfWeek: "monday"
+                                    }
+                                }
+                                ,
+                                count: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $sort: { _id: 1 }
+                        }
+                    ]
+                )
+        if (four_week_record_count == undefined || four_week_record_count == null || four_week_record_count.length == 0 ) {
+            throw new DataError('Not enough data')
+        }
+        var recc_goal = calculateGoal(four_week_record_count)
+        if (recc_goal == undefined || recc_goal == null ) {
+            console.log('no goal found, hence return the default goal')
+            recc_goal = 2
+        }
+        return res.status(200).json({'goal': recc_goal})
+    } catch (error) {
+        if (error instanceof DataError) {
+            return res.status(422).json({message: "Not enough data to create an adaptive goal"})
+        }
+        console.error("getAdaptiveGoal error in controller", error);
+        return res.status(500).json({message: "server error"})
     }
 }
