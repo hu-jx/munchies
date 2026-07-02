@@ -7,8 +7,8 @@ import 'package:frontend_munchies/models/record.dart';
 import 'package:http/http.dart' as http;
 
 class RecordServices {
-  // static const String _baseUrl = "http://10.0.2.2:3000/api";
-  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  static const String _baseUrl = "http://10.0.2.2:3000/api";
+  // static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   //POST http request (createRec)
   static Future<void> createRecord(String idToken, Record record) async {
@@ -334,6 +334,7 @@ class RecordServices {
       'Authorization': 'Bearer $idToken',
       'Content-Type': 'application/json',
     });
+    debugPrint(res.reasonPhrase);
     if (res.statusCode == 200) {
       var consumption = jsonDecode(res.body);
       if (consumption is! List) {
@@ -342,10 +343,12 @@ class RecordServices {
         throw Exception('No records found');
       } else {
         if (consumption[0] is! Map<String, dynamic>) {
+          debugPrint('reached here');
           throw Exception('Unexpected data format');
         }
       }
-      return consumption[0]['count'];
+      debugPrint("${consumption[0]} is before count then ${consumption[0]['count']} is after");
+      return consumption[0]['count'] ?? 0;
     } else {
       debugPrint(res.reasonPhrase);
       throw Exception('Failed to retrieve current consumption');

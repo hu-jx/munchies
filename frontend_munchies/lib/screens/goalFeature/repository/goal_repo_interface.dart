@@ -8,4 +8,5 @@ abstract class GoalRepoInterface {
   Future<void> createHigherGoal(Goal goal);
   Future<int> getCurrentStreak();
   Future<int> getCurrentConsumption();
+  Future<int> getAdaptiveGoal();
 }

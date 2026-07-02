@@ -79,4 +79,10 @@ class GoalRepoImpl implements GoalRepoInterface {
     await getUserToken();
     return RecordServices.getCurrentConsumption(idToken!);
   }
+
+  @override
+  Future<int> getAdaptiveGoal() async {
+    await getUserToken();
+    return service.getAdaptiveGoal(null, idToken!);
+  }
 }

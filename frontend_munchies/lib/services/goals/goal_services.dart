@@ -5,8 +5,8 @@ import 'package:frontend_munchies/services/goals/goal_services_repo.dart';
 import 'package:http/http.dart' as http;
 
 class GoalServices implements GoalServicesRepo {
-  // static const String _baseUrl = "http://10.0.2.2:3000/api";
-  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  static const String _baseUrl = "http://10.0.2.2:3000/api";
+  // static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   @override
   Future<Goal?> getLatestGoal(http.Client? client, String idToken) async {
@@ -57,8 +57,6 @@ class GoalServices implements GoalServicesRepo {
       debugPrint(response.reasonPhrase);
       throw Exception('Failed to get current streak');
     }
-
-
   }
 
   //POST 
@@ -108,4 +106,27 @@ class GoalServices implements GoalServicesRepo {
     }
   }
   //no HTTP call created for deleteGoalById -> unsure if necessary 
+
+  @override
+  Future<int> getAdaptiveGoal(http.Client? client, String idToken) async {
+    final httpClient = client ?? http.Client();
+    final response = await httpClient.get(
+      Uri.parse('$_baseUrl/adaptive-goal'),
+      headers: {'Authorization': 'Bearer $idToken'},
+    );
+
+    if (response.statusCode == 204) {
+      return 2;
+    } else if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      if (data is! Map<String, dynamic>) {
+        throw Exception('Unexpected data format');
+      }
+      int goal = data['goal'] ?? 2;
+      return goal;
+    } else {
+      debugPrint(response.reasonPhrase);
+      throw Exception('Failed to get current streak');
+    }
+  }
 }
