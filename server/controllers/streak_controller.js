@@ -3,6 +3,7 @@ import { Goal } from "../models/goal.js"
 import { Record } from "../models/record.js"
 import { computeStreak } from "../utils/streak_calculator.js"
 import 'dayjs/locale/en-sg.js'
+import DataError from "../utils/errors/insufficient_data_error.js"
 dayjs.locale('en-sg')
 
 export async function getCurrentStreak(req, res) {
@@ -44,8 +45,8 @@ export async function getCurrentStreak(req, res) {
             ]
         )
         console.log(record_count_by_week)
-        if (record_count_by_week == undefined || record_count_by_week == null || record_count_by_week.length == 0 ) {
-            throw new DataError('Not enough data')
+        if (record_count_by_week == undefined || record_count_by_week == null) {
+            record_count_by_week = []
         }
         var streak = computeStreak(active_goals, record_count_by_week, oldest_goal_date)
         return res.status(200).json({ "streak": streak })

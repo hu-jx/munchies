@@ -166,7 +166,7 @@ export async function getPureAdaptiveGoal(req, res) {
         return res.status(200).json({'goal': recc_goal})
     } catch (error) {
         if (error instanceof DataError) {
-            return res.status(422).json({message: "Not enough data to create an adaptive goal"})
+            return res.status(204).json({message: "Not enough data to create an adaptive goal"})
         }
         console.error("getAdaptiveGoal error in controller", error);
         return res.status(500).json({message: "server error"})

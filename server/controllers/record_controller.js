@@ -504,6 +504,14 @@ export async function getThisWeekRecordCount(req, res) {
                     }
                 ]
             )
+        console.log(count_data)
+        if (count_data.length == 0) {
+            count_data = [
+                {
+                    "count": 0
+                }
+            ]
+        }
         return res.status(200).json(count_data)
     } catch (error) {
         console.error("getThisWeekRecordCount error: ", e)
