@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:io';
+import 'package:async/async.dart';
 import 'package:frontend_munchies/models/category_item.dart';
 import 'package:frontend_munchies/models/record.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class LoggingViewModel extends ChangeNotifier {
   static String invalidFormatErrorMessage = "One or more fields have an invalid value.\n"
           "Remember: use date picker for Date and key in a valid value for cost.\n"
           "Example of valid values: 4.80, 4. Do not include special characters like -, \$";
+  CancelableOperation<void>? recordOperation;
 
   //RECORD DETAILS
   String? get itemName => checkIfUpdate(record?.itemName, _itemName);
@@ -145,8 +147,10 @@ class LoggingViewModel extends ChangeNotifier {
     onLoading();
     //check using values if its an update or a new record
     if (record != null && record?.record_id != null) {
+      // recordOperation = CancelableOperation.fromFuture(patchRecord(), onCancel: () => debugPrint("Operation cancelled"));
       await patchRecord();
     } else {
+      // recordOperation = CancelableOperation.fromFuture(saveRecord(), onCancel: () => debugPrint("Operation cancelled"));
       await saveRecord();
     }
     if (_isDisposed) return;
@@ -157,7 +161,7 @@ class LoggingViewModel extends ChangeNotifier {
   Future<void> saveRecord() async {
     try {
       if (_isDisposed) return;
-
+      await recordOperation?.cancel();
       if (record?.record_id == null && record != null) {
         //saving from AI Scan OR Fill with Fav
         if (_itemName == null) setItemName(record!.itemName);
@@ -178,9 +182,10 @@ class LoggingViewModel extends ChangeNotifier {
       if (_itemName == null || _date == null || _cost == null) {
         throw FormatException('One or more required fields have a null value');
       }
-
+      
       if (_isDisposed) return;
-      await recordChanger.saveRecord(
+      
+      recordOperation = CancelableOperation.fromFuture( recordChanger.saveRecord(
         Record(
           itemName: _itemName!.trim(),
           date: _date!.toLocal(),
@@ -191,7 +196,8 @@ class LoggingViewModel extends ChangeNotifier {
           category: _category ?? record?.category,
           details: details,
         ),
-      );
+      ), onCancel: () => debugPrint("save operation cancelled"));
+      await recordOperation?.valueOrCancellation(null);
       _errorMessage = null;
       notifyListeners();
     } on FormatException {
@@ -205,6 +211,8 @@ class LoggingViewModel extends ChangeNotifier {
 
   Future<void> patchRecord() async {
     try {
+      if (_isDisposed) return;
+      await recordOperation?.cancel();
       if (record?.record_id == null) {
         throw Exception('No record id linked to edit.');
       }
@@ -221,8 +229,9 @@ class LoggingViewModel extends ChangeNotifier {
       if (updates.entries.every((val) => val.value == null)) {
         return;
       }
-      await recordChanger.patchRecord(record!.record_id!, updates);
-
+      if (_isDisposed) return;
+      recordOperation = CancelableOperation.fromFuture(recordChanger.patchRecord(record!.record_id!, updates), onCancel: () => debugPrint("Update Operation Cancelled"));
+      await recordOperation?.valueOrCancellation(null);
       _errorMessage = null;
       // notifyListeners();
     } on FormatException {

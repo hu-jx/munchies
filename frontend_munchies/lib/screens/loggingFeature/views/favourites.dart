@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/loggingFeature/view_models/favourites_view_model.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/favourites_page_widgets/favourite_card.dart';
 import 'package:frontend_munchies/styles/colours.dart';
+import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:provider/provider.dart';
 
@@ -52,7 +53,9 @@ class FavouritesPage extends StatelessWidget {
         ),
         body: Container(
           color: Colours.lightBeige,
-          alignment: fvm.isLoading ? Alignment.center : Alignment.topCenter,
+          alignment: fvm.isLoading || fvm.recordDetails.isEmpty
+              ? Alignment.center
+              : Alignment.topCenter,
           width: width,
           height: height * 0.90,
           child: ScrollConfiguration(
@@ -63,14 +66,19 @@ class FavouritesPage extends StatelessWidget {
                   ? CircularProgressIndicator(color: Colours.greyPink)
                   : fvm.errorMessage != null
                   ? ShowErrorMessage(errorMessage: fvm.errorMessage)
+                  : fvm.recordDetails.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No favourites found',
+                        style: backgroundTextStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                    )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: fvm.recordDetails.map((singleRec) {
-                        return FavCard(
-                          textStyle: textStyle,
-                          record: singleRec,
-                        );
+                        return FavCard(textStyle: textStyle, record: singleRec);
                       }).toList(),
                     ),
             ),

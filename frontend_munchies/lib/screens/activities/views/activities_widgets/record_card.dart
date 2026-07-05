@@ -52,11 +52,11 @@ class RecordCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         SizedBox(
-                          height: 200,
-                          width: 278,
+                          height: MediaQuery.of(context).size.height * 0.3,
+                          width: MediaQuery.of(context).size.width * 0.6,
                           child: Image.network(
                             image_url!,
-                            fit: BoxFit.contain,
+                            fit: BoxFit.cover,
                             alignment: Alignment.centerLeft,
                           ),
                         ),

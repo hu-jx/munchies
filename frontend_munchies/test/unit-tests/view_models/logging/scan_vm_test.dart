@@ -62,11 +62,11 @@ void main() {
     );
     test(
       'Handles errors when an empty file is handed BEFORE hitting server instead of having indefinite loading ',
-      () {
+      () async {
         final corruptedFile = MockFile();
         when(() => corruptedFile.readAsBytesSync()).thenReturn(Uint8List(0));
         scanViewModel.setPhotoFile(corruptedFile);
-        scanViewModel.onScanPressed();
+        await scanViewModel.onScanPressed();
         expect(scanViewModel.errorMessage, 'Exception: File is unsupported or corrupted.');
       },
     );

@@ -138,8 +138,9 @@ class LoggingForm extends StatelessWidget {
               }
             }
           },
-          size: Size(width * 0.75, 53),
+          size: Size(width * 0.72, 53),
         ),
+        // SizedBox
         IconButton(
           onPressed: lvm.isFavourited ? lvm.setNotFav : lvm.setAsFav,
           icon: Icon(

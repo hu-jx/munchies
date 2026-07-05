@@ -25,7 +25,7 @@ class GoalServices implements GoalServicesRepo {
       } else if (goal[0] is! Map<String, dynamic>) {
           throw Exception('Unexpected data format');
       }
-      
+      debugPrint("THE LATEST GOAL IS ${goal}");
       return Goal.fromJson(goal[0]);
     } else if (response.statusCode == 204) {
       return null;

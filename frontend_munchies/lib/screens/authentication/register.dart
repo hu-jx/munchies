@@ -34,6 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController lNameController = TextEditingController();
 
   String? errorMessage;
+  bool _isLoading = false;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -161,40 +162,66 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: GoogleFonts.poppins(color: Colours.grey),
                 ),
               ),
-              Center(
-                child: AppButton(
-                  text: 'Sign up now!',
-                  onPressed: () async {
-                    if (formKey.currentState?.validate() == true) {
-                      await tryRegister();
-                    }
-                  },
-                  size: Size(298, 48),
-                ),
-              ),
-              Row(
+              _isLoading ? 
+              Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // SizedBox(height: MediaQuery.of(context).size.height * 0.02,),
+                    Padding(
+                      padding: const EdgeInsets.all(40),
+                      child: SizedBox(
+                        height: 10,
+                        width: 298,
+                        child: LinearProgressIndicator(
+                          color: Colours.greyPink,
+                          backgroundColor: Colours.darkerBeige,
+                          // strokeWidth: 6.0,
+                        ),))])
+              : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    'Already have an account?',
-                    style: GoogleFonts.poppins(color: Colours.grey),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'Login now!',
-                      style: GoogleFonts.poppins(
-                        color: Colours.greyPink,
-                        decorationColor: Colours.greyPink,
-                        decoration: TextDecoration.underline,
-                      ),
+                  Center(
+                    child: AppButton(
+                      text: 'Sign up now!',
+                      onPressed: () async {
+                        if (formKey.currentState?.validate() == true) {
+                          await tryRegister();
+                        }
+                      },
+                      size: Size(298, 48),
                     ),
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account?',
+                        style: GoogleFonts.poppins(color: Colours.grey),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Login now!',
+                          style: GoogleFonts.poppins(
+                            color: Colours.greyPink,
+                            decorationColor: Colours.greyPink,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 50)
                 ],
               ),
-              ShowErrorMessage(errorMessage: errorMessage)
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: ShowErrorMessage(errorMessage: errorMessage),
+              )
               // Center(
               //   child: Text(
               //     errorMessage ?? "",
@@ -222,6 +249,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 48.0,
                 width: 140,
                 child: TextFormField(
+                  maxLines: 3,
+                  keyboardType: TextInputType.multiline,
                   controller: fNameController,
                   decoration: InputDecoration(
                     filled: true,
@@ -232,6 +261,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colours.grey),
                     ),
+                    errorMaxLines: 1,
                     suffixIcon: fNameController.text.isEmpty
                         ? Container(width: 0.0)
                         : IconButton(
@@ -290,6 +320,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> tryRegister() async {
     try {
+      setState(() {
+        _isLoading = true;
+        errorMessage = null;
+      });
       await widget.authentication.register(
         emailController.text,
         pwController.text,
@@ -298,7 +332,8 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       if (!mounted) return;
       setState(() {
-        errorMessage = null;
+        // errorMessage = null;
+        _isLoading = false;
       });
       Navigator.push(
         context,
@@ -306,7 +341,9 @@ class _RegisterPageState extends State<RegisterPage> {
          settings: RouteSettings(name: '/home')),
       );
     } catch (e) {
+      debugPrint('caught error $e');
       setState(() {
+        _isLoading = false;
         errorMessage = e.toString();
       });
     }
