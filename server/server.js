@@ -10,6 +10,7 @@ import userRouter from './routes/user_routes.js'
 import requestRouter from './routes/request_routes.js'
 import goalRouter from './routes/goal_routes.js'
 import streakRouter from './routes/streak_routes.js'
+import recommendationRouter from './routes/recommendations_routes.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -26,6 +27,7 @@ app.use('/api', userRouter)
 app.use('/api', requestRouter)
 app.use('/api', goalRouter)
 app.use('/api', streakRouter)
+app.use('/api', recommendationRouter)
 
 const startServer = async () => {
     await connectDB()

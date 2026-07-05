@@ -1,6 +1,6 @@
 import { verifyToken } from '../middleware/auth_middleware.js'
 import express from 'express'
-import { createRecord, getAllRecords, getRecord, updateRecord, deleteRecord, getItemName, getDashboardData, getFriendsPost, addLike, removeLike, getThisWeekRecordCount, getRecommendations } from '../controllers/record_controller.js';
+import { createRecord, getAllRecords, getRecord, updateRecord, deleteRecord, getItemName, getDashboardData, getFriendsPost, addLike, removeLike, getThisWeekRecordCount } from '../controllers/record_controller.js';
 import upload from '../middleware/multer.js'
 const recordRouter = express.Router()
 
@@ -23,6 +23,6 @@ recordRouter.patch('/records/unlike/:id', removeLike);
 recordRouter.get('/week', getThisWeekRecordCount)
 
 //route for getting recommendations
-recordRouter.get('/recommendations', getRecommendations)
+//recordRouter.get('/recommendations', getRecommendations)
 
 export default recordRouter
