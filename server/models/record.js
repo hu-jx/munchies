@@ -1,8 +1,16 @@
 import { Int32 } from 'mongodb'
-import { Schema, model } from 'mongoose'
+import { Schema, model, mongoose } from 'mongoose'
 
 //schema 
 const recordSchema = new Schema({
+    user_mongo_id: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        trim: true,
+        immutable: true,
+        ref: 'User',
+    },
+
     user_uid: {
         type: String,
         required: true,
@@ -18,7 +26,7 @@ const recordSchema = new Schema({
     },
 
     date: {
-        type: Date, 
+        type: Date,
         required: true,
         default: new Date(Date.now())
     },
@@ -35,7 +43,7 @@ const recordSchema = new Schema({
         required: false,
         default: null
     },
-    
+
     category: {
         type: String,
         required: false,
@@ -61,6 +69,13 @@ const recordSchema = new Schema({
         required: true,
         default: false,
         immutable: false
+    },
+
+    likes: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+        required: false,
+        default: [],
+        immutable: false,
     }
 },
     {

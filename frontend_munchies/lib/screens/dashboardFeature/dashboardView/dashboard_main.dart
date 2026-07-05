@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardViewModel/dashboard_view_model.dart';
-import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/date_helpers.dart';
+import 'package:frontend_munchies/screens/dashboardFeature/dashboardViewModel/date_helpers.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/pie_chart_builder.dart';
 
 class DashboardMain extends StatelessWidget {
@@ -47,8 +47,19 @@ class DashboardMain extends StatelessWidget {
               behavior: ScrollBehavior().copyWith(overscroll: false),
               child: SingleChildScrollView(
                 child: (model.categoryData.isEmpty)
-                    ? Text("No data. Please log your consumption first", 
-                    style: TextStyle(fontFamily: "Poppins", color: Colours.lightBrown),)
+                    ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Text(
+                          (model.selectedView.name == "futureView")
+                              ? "Not enough data for a prediction. A minimum of 3 months worth of data entered is required to make a prediction"
+                              : "No data. Please log your consumption first",
+                          maxLines: null,
+                          style: TextStyle(
+                            fontFamily: "Poppins",
+                            color: Colours.lightBrown,
+                          ),
+                        ),
+                    )
                     : Column(
                         children: [
                           Padding(
@@ -98,30 +109,37 @@ class DashboardMain extends StatelessWidget {
   }
 
   Widget dateNavigator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          onPressed: () {
-            onBackButton(goBack(model.selectedView, model.chosenDate));
-          },
-          icon: const Icon(Icons.arrow_left),
-          iconSize: 30,
-          color: Colours.greyPink,
-        ),
-        Text(
-          displayRange(model.selectedView, model.chosenDate),
-          style: TextStyle(color: Colours.greyPink, fontFamily: 'Poppins'),
-        ),
-        IconButton(
-          onPressed: () {
-            onForwardButton(goForward(model.selectedView, model.chosenDate));
-          },
-          icon: const Icon(Icons.arrow_right),
-          iconSize: 30,
-          color: Colours.greyPink,
-        ),
-      ],
-    );
+    if (model.selectedView.name == "futureView") {
+      return Text(
+        "Future 6 Months",
+        style: TextStyle(color: Colours.greyPink, fontFamily: 'Poppins'),
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: () {
+              onBackButton(goBack(model.selectedView, model.chosenDate));
+            },
+            icon: const Icon(Icons.arrow_left),
+            iconSize: 30,
+            color: Colours.greyPink,
+          ),
+          Text(
+            displayRange(model.selectedView, model.chosenDate),
+            style: TextStyle(color: Colours.greyPink, fontFamily: 'Poppins'),
+          ),
+          IconButton(
+            onPressed: () {
+              onForwardButton(goForward(model.selectedView, model.chosenDate));
+            },
+            icon: const Icon(Icons.arrow_right),
+            iconSize: 30,
+            color: Colours.greyPink,
+          ),
+        ],
+      );
+    }
   }
 }

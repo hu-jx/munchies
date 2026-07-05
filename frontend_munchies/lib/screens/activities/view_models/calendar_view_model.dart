@@ -12,7 +12,6 @@ class CalendarViewModel extends ChangeNotifier implements RecordHandler {
   late StreamSubscription _subscription;
 
   CalendarViewModel({required this.recordRepo}) {
-
     _subscription = recordRepo.recordStream.listen((rec) {
       getMonthlyRecords(DateTime.now());
     });
@@ -24,6 +23,7 @@ class CalendarViewModel extends ChangeNotifier implements RecordHandler {
   List<Record> _records = [];
   List<DateTime> _datesWithRecord = [];
   DateTime _focusedDay = DateTime.now();
+  DateTime _dataAsOfDay = DateTime.now();
   DateTime? _selectedDay;
   CancelableOperation<List<Record>>? fetchOperation;
   final Debouncer debouncer = Debouncer();
@@ -38,7 +38,7 @@ class CalendarViewModel extends ChangeNotifier implements RecordHandler {
     if (selectedDay == null) return _records;
     return _records.where((r) => isSameDay(r.date, selectedDay)).toList();
   }
-
+  DateTime get dataAsOfDay => _dataAsOfDay;
   @override
   void onLoading() {
     _isLoading = true;
@@ -52,10 +52,12 @@ class CalendarViewModel extends ChangeNotifier implements RecordHandler {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     super.dispose();
+    await fetchOperation?.cancel();
     _isDisposed = true;
     _subscription.cancel();
+    debouncer.cancel();
   }
 
   @override
@@ -63,53 +65,61 @@ class CalendarViewModel extends ChangeNotifier implements RecordHandler {
     if (!_isDisposed) {
       super.notifyListeners();
     }
+    return;
   }
 
   Future<void> setSelectedDay(DateTime? selectedDay) async {
     _selectedDay = selectedDay;
-    if (selectedDay == null) {
-      getMonthlyRecords(focusedDay);
-    }
     notifyListeners();
   }
 
-  void onDaySelected(DateTime focusedDay, DateTime? selectedDay) {
-    _selectedDay = selectedDay;
-    // _focusedDay = focusedDay;
-    notifyListeners();
-  }
+  // void onDaySelected(DateTime focusedDay, DateTime? selectedDay) {
+  //   _selectedDay = selectedDay;
+  //   // _focusedDay = focusedDay;
+  //   notifyListeners();
+  // }
 
   void getMonthlyRecords(DateTime date) async {
-    _focusedDay = date;
-    debugPrint("FOCUSED DAY AT START IS $_focusedDay");
-    String month = date.month.toString();
-    String year = date.year.toString();
-    String query = '$month,$year';
-    onLoading();
-    fetchOperation = CancelableOperation<List<Record>>.fromFuture(
-      recordRepo.fetchAllRecords({'monthly': query}),
-      onCancel: () => debugPrint('Operation cancelled.'),
-    );
-    fetchOperation!.value.then((data) {
-      List<DateTime> dates = data.map((rec) => rec.date).toSet().toList();
-      _selectedDay = null;
-      _records = data;
-      _datesWithRecord = dates;
-      notifyListeners();
+    try {
+      await fetchOperation?.cancel();
+      String query = '${date.month},${date.year}';
+      onLoading();
+      fetchOperation = CancelableOperation<List<Record>>.fromFuture(
+        recordRepo.fetchAllRecords({'monthly': query}),
+        onCancel: () => debugPrint('Operation cancelled.'),
+      );
+      //onCancel, data will be a null value -> it must not change if the value is null
+      final data = await fetchOperation!.valueOrCancellation(null);
+      if (data != null) {
+        _dataAsOfDay = date;
+        _focusedDay = _dataAsOfDay;
+        List<DateTime> dates = data.map((rec) => rec.date).toSet().toList();
+        _selectedDay = null;
+        _records = data;
+        _datesWithRecord = dates;
+        notifyListeners();
+        offLoading();
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
       offLoading();
-    });
-    debugPrint("FOCUSED DAY AT END IS $_focusedDay");
+    }
   }
 
   void onPageChanged(DateTime focusedDay) async {
-    await fetchOperation?.cancel();
-    debouncer.debounce(
-      duration: Duration(seconds: 1), 
-      onDebounce: ()
-        {_selectedDay = null;
-        _focusedDay = focusedDay;
-         getMonthlyRecords(focusedDay);}
-    );
+    try {
+      await fetchOperation?.cancel();
+      _focusedDay = focusedDay;
+      debouncer.debounce(
+        duration: Duration(milliseconds: 500),
+        onDebounce: () {
+          _selectedDay = null;
+          getMonthlyRecords(focusedDay);
+        },
+      );
+    } catch (e) {
+      _errorMessage = e.toString();
+    }
   }
 
   @override
@@ -120,4 +130,3 @@ class CalendarViewModel extends ChangeNotifier implements RecordHandler {
     offLoading();
   }
 }
-

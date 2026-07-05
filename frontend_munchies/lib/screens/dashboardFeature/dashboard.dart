@@ -5,12 +5,24 @@ import 'package:frontend_munchies/screens/dashboardFeature/view_opt.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/dashboard_base.dart';
 
 class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
+
   @override
   State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
   final model = DashboardViewModel();
+
+  @override
+  void initState() {
+    super.initState();
+    //further refinement ltr on
+    Future.delayed(const Duration(milliseconds: 0), () async {
+      await model.getData();
+      setState(() {});
+    });
+  }
 
   void onChangeView(ViewOpt view) async {
     model.changeView(view);

@@ -94,7 +94,7 @@ class ScanPicture extends StatelessWidget {
                     )
                   else
                     Padding(
-                      padding: const EdgeInsets.only(left: 20.0, top: 20.0),
+                      padding: const EdgeInsets.only(left: 25.0, top: 20.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -112,7 +112,7 @@ class ScanPicture extends StatelessWidget {
                     ),
                   SizedBox(height: 15),
                   ImageSelectionButton(
-                    boxSize: Size(width * 0.95, height * 0.55),
+                    boxSize: Size(width * 0.90, height * 0.55),
                     sendBackPhotoFile: (photoFile) =>
                         svm.setPhotoFile(photoFile),
                   ),
@@ -120,17 +120,19 @@ class ScanPicture extends StatelessWidget {
                   AppButton(
                     text: 'Scan',
                     onPressed: () => _onScanButtonPressed(svm, context),
-                    size: Size(width * 0.75, 53),
+                    size: Size(width * 0.90, 53),
                   ),
                   svm.errorMessage != null
                       ? Padding(
                           padding: const EdgeInsets.only(
+                            top: 15.0,
                             left: 40.0,
                             right: 40.0,
                           ),
                           child: ShowErrorMessage(errorMessage: svm.errorMessage),
                         )
                       : SizedBox(height: 50),
+                SizedBox(height: 50,)
                 ],
               ),
             ),
@@ -142,6 +144,7 @@ class ScanPicture extends StatelessWidget {
 
   //TODO: ABSTRACT OUT THE SHOWLOADING FOR ALL FEATURES 
   void showLoading(ScanViewModel svm, BuildContext context) {
+    if (!context.mounted) return;
     showDialog(
       context: context,
       builder: (context) => ChangeNotifierProvider.value(

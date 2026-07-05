@@ -7,9 +7,9 @@ import 'package:frontend_munchies/models/record.dart';
 import 'package:http/http.dart' as http;
 
 class RecordServices {
-  // static const String _baseUrl = "http://10.0.2.2:3000/api";
-  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
-  
+  static const String _baseUrl = "http://10.0.2.2:3000/api";
+  // static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+
   //POST http request (createRec)
   static Future<void> createRecord(String idToken, Record record) async {
     var request = http.MultipartRequest('POST', Uri.parse('$_baseUrl/records'));
@@ -35,11 +35,11 @@ class RecordServices {
 
     http.StreamedResponse response = await request.send();
 
-    if (response.statusCode == 201) {
-      debugPrint(await response.stream.bytesToString());
-    } else {
-      debugPrint(response.reasonPhrase);
-    }
+    // if (response.statusCode == 201) {
+    //   debugPrint(await response.stream.bytesToString());
+    // } else {
+    //   debugPrint(response.reasonPhrase);
+    // }
 
     //   headers: {
     //     'Authorization': 'Bearer $idToken',
@@ -154,7 +154,7 @@ class RecordServices {
     String id,
     Map<String, dynamic> updates,
   ) async {
-    debugPrint("AT RECORD SERVICES ${updates.toString()}");
+    // debugPrint("AT RECORD SERVICES ${updates.toString()}");
     var headers = {
       'Authorization': 'Bearer $idToken',
       'Content-Type': 'application/json',
@@ -226,22 +226,26 @@ class RecordServices {
     }
   }
 
+  //functions used for dashboard and feed feature which require record data
   static Future<Map<String, dynamic>> getDashboardData({
     required String idToken,
     required String user_uid,
     required String startDate,
     required String endDate,
     required String view,
+    http.Client? client,
   }) async {
-    //make API call here
+    //added for mocking, if test client is provided, use that, if not default to current one
+    final httpClient = client ?? http.Client();
+
     String url =
         '$_baseUrl/dashboard?startDate=$startDate&endDate=$endDate&view=$view&user_uid=$user_uid';
-    final res = await http.get(
+    final res = await httpClient.get(
       Uri.parse(url),
       headers: {
         'Accept': '*/*',
         'Authorization': 'Bearer $idToken',
-        'Content-Type': '	application/json',
+        'Content-Type': 'application/json',
         'Connection': 'keep-alive',
       },
     );
@@ -249,5 +253,105 @@ class RecordServices {
     // print("BODY: ${res.body}");
     //error here
     return jsonDecode(res.body);
+  }
+
+  static Future<List<Record>> getFriendsPosts({required String idToken}) async {
+    String url = '$_baseUrl/friends_post';
+    final res = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Accept': '*/*',
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': 'application/json',
+        'Connection': 'keep-alive',
+      },
+    );
+
+    if (res.statusCode == 200) {
+      final decoded = jsonDecode(res.body);
+      List<Record> recordsList = [];
+      for (final rec in decoded) {
+        recordsList.add(Record.fromJson(rec as Map<String, dynamic>));
+      }
+      return recordsList;
+    } else {
+      debugPrint('Status: ${res.statusCode}, Body: ${res.body}, Reason: ${res.reasonPhrase}');
+      //Exception: Failed to fetch the list of friends posts
+      throw Exception('Failed to fetch the list of friends posts');
+    }
+  }
+
+  static Future<void> addLike(
+    String idToken,
+    String recordId,
+    {http.Client? client}
+  ) async {
+    final httpClient = client ?? http.Client();
+
+    String url = '$_baseUrl/records/like/$recordId';
+    final res = await httpClient.patch(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (res.statusCode != 201) {
+      debugPrint(res.reasonPhrase);
+      throw Exception('Failed to update profile');
+    }
+  }
+
+  static Future<void> removeLike(
+    String idToken,
+    String recordId,
+    {http.Client? client}
+  ) async {
+    final httpClient = client ?? http.Client();
+
+    String url = '$_baseUrl/records/unlike/$recordId';
+    final res = await httpClient.patch(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (res.statusCode != 201) {
+      // debugPrint("STATUS: ${res.statusCode}");
+      // debugPrint("BODY: ${res.body}");
+      throw Exception('Failed to update profile');
+    }
+  }
+
+  static Future<int> getCurrentConsumption(String idToken, {http.Client? client}) async {
+    final httpClient = client ?? http.Client();
+    String url = '$_baseUrl/week';
+    final res = await httpClient.get(Uri.parse(url), 
+    headers: {
+      'Authorization': 'Bearer $idToken',
+      'Content-Type': 'application/json',
+    });
+    debugPrint(res.reasonPhrase);
+    if (res.statusCode == 200) {
+      var consumption = jsonDecode(res.body);
+      if (consumption is! List) {
+        throw Exception('Unexpected data format');
+      } else if (consumption.isEmpty) {
+        throw Exception('No records found');
+      } else {
+        if (consumption[0] is! Map<String, dynamic>) {
+          debugPrint('reached here');
+          throw Exception('Unexpected data format');
+        }
+      }
+      debugPrint("${consumption[0]} is before count then ${consumption[0]['count']} is after");
+      return consumption[0]['count'] ?? 0;
+    } else {
+      debugPrint(res.reasonPhrase);
+      throw Exception('Failed to retrieve current consumption');
+    }
   }
 }

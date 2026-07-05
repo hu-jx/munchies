@@ -2,9 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/main_screen.dart';
-import 'package:frontend_munchies/screens/login.dart';
+import 'package:frontend_munchies/screens/authentication/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
+import 'package:frontend_munchies/services/auth/authentication.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
@@ -26,8 +27,9 @@ class MainApp extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Homepage();
+          // return Homepage();
         }
-        return LoginPage();
+        return LoginPage(authentication: Authentication.real(),);
       }),
     );
   }

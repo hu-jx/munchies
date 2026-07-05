@@ -8,23 +8,38 @@ import cloudinary from '../config/cloudinary.js'
 import { extractPublicId } from 'cloudinary-build-url'
 config({ quiet: true })
 import fs from 'fs'
+import { User } from '../models/user.js';
 const ObjectId = mongoose.Types.ObjectId
+import { predictData } from '../controllers/prediction_service.js'
+
 
 dayjs.locale('en-sg')
+
+var sow = dayjs().startOf('week').toDate()
+var eow = dayjs().endOf('week').toDate()
 //Create following CRUD 
 export async function createRecord(req, res) {
     try {
         var { user_uid, itemName, date, cost, category, isFavourited, details, isVisible } = req.body
-            //TODO: UPLOAD FILE ONTO CLOUDINARY INSTEAD
-            // photo = Buffer.from(photo, 'base64')
+
+        //TODO: UPLOAD FILE ONTO CLOUDINARY INSTEAD
+        // photo = Buffer.from(photo, 'base64')
         var url;
         if (req.file != null) {
             const { path } = req.file
-            const photo = await cloudinary.uploader.upload(req.file.path, {folder: 'uploads'})
+            const photo = await cloudinary.uploader.upload(req.file.path, { folder: 'uploads' })
             url = photo.secure_url
             fs.unlinkSync(path)
         }
+        const currentUser = await User.findOne(
+            {
+                firebase_uid: user_uid,
+            })
+
+        const mongo_id = currentUser['_id']
+
         const new_record = new Record({
+            user_mongo_id: mongo_id,
             user_uid: user_uid,
             itemName: itemName,
             date: date,
@@ -35,7 +50,9 @@ export async function createRecord(req, res) {
             isVisible: isVisible,
             photo: url
         })
+
         await new_record.save()
+
         return res.status(201).json({ message: "Successfully created new record" })
     } catch (error) {
         console.error("createRecord error: ", error)
@@ -142,8 +159,7 @@ function filterRecords(query_records, query_params, user_uid) {
                 ]
             )
         } else if (query_params.freq == 'weekly') {
-            var sow = dayjs().startOf('week').toDate()
-            var eow = dayjs().endOf('week').toDate()
+            
             return Record.aggregate(
                 [
                     {
@@ -213,7 +229,7 @@ export async function updateRecord(req, res) {
         var photo_url;
         if (req.file != null) {
             const { path } = req.file
-            const photo = await cloudinary.uploader.upload(req.file.path, {folder: 'uploads'})
+            const photo = await cloudinary.uploader.upload(req.file.path, { folder: 'uploads' })
             photo_url = photo.secure_url
             fs.unlinkSync(path)
         }
@@ -260,8 +276,9 @@ export async function deleteRecord(req, res) {
 }
 
 export async function getItemName(req, res) {
+    
     var delay = 2000;
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 3; i++) {
         try {
             if (i > 1) {
                 delay = delay * 2
@@ -333,6 +350,18 @@ export async function getDashboardData(req, res) {
         console.log("Date objects:", new Date(startDate), new Date(endDate))
         console.log("view:", view, "dateFormat:", dateFormat)
 
+        if (view === "futureView") {
+            //call the prediction model, which should return data in this format
+            //predict timeData, predict catData
+            const predictions = await predictData(user_uid);
+
+            if (predictions.summary === null && Object.keys(predictions.catData).length === 0) {
+                return res.status(200).json({ message: "Not enough data to generate predictions yet" });
+            }
+
+            return res.status(200).json(predictions);
+        }
+
 
         const timeData = await Record.aggregate([
             {
@@ -371,17 +400,17 @@ export async function getDashboardData(req, res) {
             },
             {
                 $group: {
-                    _id: { category: '$category'},
+                    _id: { category: '$category' },
                     costPerCat: { $sum: '$cost' },
-                    numPerCat: { $sum: 1}
+                    numPerCat: { $sum: 1 }
                 }
-            }        
+            }
         ])
 
-        res.json({
+        return res.status(200).json({
             summary: timeData,
             catData: catData
-            })
+        })
 
     } catch (error) {
         console.error("getDashboardData error: ", error)
@@ -389,4 +418,103 @@ export async function getDashboardData(req, res) {
     }
 }
 
-//http://localhost:3000/api/dashboard?startDate=2026-06-01&endDate=2026-06-30&viewMode=weekly&user_uid=BqCmKTsSE3dNmEzpJ6No9zCD3ZN2 
+export async function getFriendsPost(req, res) {
+    try {
+        const currentUser = await User.findOne(
+            {
+                firebase_uid: req.uid,
+            })
+        //temp fix, edge case when a user creates a new acc but doesnt hv the id registered i think
+        if (!currentUser) {
+            return res.status(200).json([]);
+        }
+        const friendsList = currentUser['friends']
+        var friendsPosts = await Record.find({ user_mongo_id: { $in: friendsList }, isVisible: true })
+            //.populate('user_mongo_id')
+            .sort({ date: -1 })
+        return res.status(200).json(friendsPosts)
+    } catch (e) {
+        console.log("Get friends' posts" + e)
+        return res.status(500).json({ message: "Server error" })
+    }
+}
+
+// functions to edit likes
+export async function addLike(req, res) {
+    try {
+        const { id } = req.params
+        const currentUser = await User.findOne(
+            {
+                firebase_uid: req.uid,
+            })
+
+        /* to check if it is already liked but add to set handles that
+        const already_liked = await Record.findOne({ _id: new ObjectId(id), likes: currentUser.mongo_id})
+
+        //else if it is already in the database
+        if (already_liked) {
+            return res.status(400).json({ message: "Already liked" });
+        }
+            */
+
+        await Record.findByIdAndUpdate(new ObjectId(id), {
+            $addToSet: { likes: currentUser }
+        })
+
+        return res.status(201).json({ message: "Successfully added like" })
+    } catch (e) {
+        console.error("addLike error: ", e)
+        return res.status(500).json({ message: "Server error" })
+    }
+}
+
+export async function removeLike(req, res) {
+    try {
+        const { id } = req.params
+        const currentUser = await User.findOne(
+            {
+                firebase_uid: req.uid,
+            })
+
+        await Record.findByIdAndUpdate(new ObjectId(id), {
+            $pull: { likes: currentUser._id }
+        })
+
+        return res.status(201).json({ message: "Successfully removed like" })
+    } catch (e) {
+        console.error("addLike error: ", e)
+        return res.status(500).json({ message: "Server error" })
+    }
+}
+
+export async function getThisWeekRecordCount(req, res) {
+    try {
+        //shape: {"count": value}
+        console.log(sow, eow)
+        var count_data = await Record.aggregate(
+                [
+                    {
+                        $match: {
+                            'user_uid': req.uid,
+                            'date': { $gte: sow, $lte: eow }
+                        }
+                    }, 
+                    {
+                        $count: "count"
+                    }
+                ]
+            )
+        console.log(count_data)
+        if (count_data.length == 0) {
+            count_data = [
+                {
+                    "count": 0
+                }
+            ]
+        }
+        return res.status(200).json(count_data)
+    } catch (error) {
+        console.error("getThisWeekRecordCount error: ", e)
+        return res.status(500).json({ message: "Server error" })
+    }
+}
