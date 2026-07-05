@@ -65,7 +65,7 @@ void main() {
 
     setUp(() {
       when(
-        () => mockRepo.fetchAllRecords({'monthly': '6,2026'}),
+        () => mockRepo.fetchAllRecords({'monthly': '7,2026'}),
       ).thenAnswer((_) async => mockRecords);
       viewModel = CalendarViewModel(recordRepo: mockRepo);
     });
@@ -97,7 +97,7 @@ void main() {
 
     setUp(() async {
       when(
-        () => mockRepo.fetchAllRecords({'monthly': '6,2026'}),
+        () => mockRepo.fetchAllRecords({'monthly': '7,2026'}),
       ).thenAnswer((_) async => mockRecords);
       viewModel = CalendarViewModel(recordRepo: mockRepo);
       await pumpEventQueue();
@@ -145,21 +145,21 @@ void main() {
       mockRecords = [
         Record(
           itemName: 'Monthly test',
-          date: DateTime(2026, 6, 22),
+          date: DateTime(2026, 7, 22),
           cost: 500,
           isFavourited: false,
           isVisible: false,
         ),
         Record(
           itemName: 'Selected day test',
-          date: DateTime(2026, 6, 1),
+          date: DateTime(2026, 7, 1),
           cost: 500,
           isFavourited: false,
           isVisible: false,
         ),
       ];
-      mockDateList = [DateTime(2026, 6, 22), DateTime(2026, 6, 1)];
-      query = {'monthly': '6,2026'};
+      mockDateList = [DateTime(2026, 7, 22), DateTime(2026, 7, 1)];
+      query = {'monthly': '7,2026'};
     });
     //test on success
     test(
@@ -169,11 +169,11 @@ void main() {
           () => mockRepo.fetchAllRecords(query),
         ).thenAnswer((_) async => mockRecords);
         CalendarViewModel viewModel = CalendarViewModel(recordRepo: mockRepo);
-        viewModel.getMonthlyRecords(DateTime(2026, 6, 1));
+        viewModel.getMonthlyRecords(DateTime(2026, 7, 1));
         await pumpEventQueue();
 
         expect(viewModel.recordDetails, mockRecords);
-        expect(viewModel.focusedDay, DateTime(2026, 6, 1));
+        expect(viewModel.focusedDay, DateTime(2026, 7, 1));
         expect(viewModel.isLoading, false);
         expect(viewModel.errorMessage, null);
         expect(viewModel.selectedDay, null);
@@ -205,7 +205,7 @@ void main() {
         final CancelableOperation? firstOperation = viewModel.fetchOperation;
 
         //second fetch triggered here. execute fetchOperation assignment by pumping event queue
-        viewModel.getMonthlyRecords(DateTime(2026, 6, 1));
+        viewModel.getMonthlyRecords(DateTime(2026, 7, 1));
         await pumpEventQueue();
         final CancelableOperation? secondOperation = viewModel.fetchOperation;
 
@@ -243,7 +243,7 @@ void main() {
         CalendarViewModel viewModel = CalendarViewModel(recordRepo: mockRepo);
         await pumpEventQueue();
 
-        viewModel.getMonthlyRecords(DateTime(2026, 6, 1));
+        viewModel.getMonthlyRecords(DateTime(2026, 7, 1));
         await pumpEventQueue();
 
         expect(viewModel.errorMessage, 'Exception: Test Exception');
@@ -261,14 +261,14 @@ void main() {
 
     setUp(() async {
       when(
-        () => mockRepo.fetchAllRecords({'monthly': '6,2026'}),
-      ).thenAnswer((_) async => juneRecords);
+        () => mockRepo.fetchAllRecords({'monthly': '7,2026'}),
+      ).thenAnswer((_) async => julyRecords);
       viewModel = CalendarViewModel(recordRepo: mockRepo);
       await pumpEventQueue();
     });
 
     test('Initial state on current month June', () {
-      expect(viewModel.recordDetails, mockRecords.sublist(1, 2));
+      expect(viewModel.recordDetails, mockRecords.sublist(2, 3));
       expect(viewModel.errorMessage, null);
     });
 
@@ -302,7 +302,7 @@ void main() {
         await Future.delayed(Duration(seconds: 1));
         await pumpEventQueue();
 
-        expect(viewModel.recordDetails, juneRecords);
+        expect(viewModel.recordDetails, julyRecords);
         expect(isSameDay(viewModel.dataAsOfDay, DateTime.now()), true);
         expect(viewModel.isLoading, false);
         expect(viewModel.errorMessage, 'Exception: Test Exception');
