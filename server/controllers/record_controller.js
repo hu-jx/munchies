@@ -159,7 +159,7 @@ function filterRecords(query_records, query_params, user_uid) {
                 ]
             )
         } else if (query_params.freq == 'weekly') {
-            
+
             return Record.aggregate(
                 [
                     {
@@ -276,7 +276,7 @@ export async function deleteRecord(req, res) {
 }
 
 export async function getItemName(req, res) {
-    
+
     var delay = 2000;
     for (let i = 1; i <= 3; i++) {
         try {
@@ -340,15 +340,16 @@ export async function getDashboardData(req, res) {
         if (view === 'weekly') {
             dateFormat = "day"
         } else if (view === 'monthly') {
-            //temp before i figure out how to group in weeks
             dateFormat = "week"
         } else if (view === 'annually') {
             dateFormat = "month"
         }
 
+        /* debug logs
         console.log("Querying:", { user_uid, startDate, endDate })
         console.log("Date objects:", new Date(startDate), new Date(endDate))
         console.log("view:", view, "dateFormat:", dateFormat)
+        */
 
         if (view === "futureView") {
             //call the prediction model, which should return data in this format
@@ -492,18 +493,18 @@ export async function getThisWeekRecordCount(req, res) {
         //shape: {"count": value}
         console.log(sow, eow)
         var count_data = await Record.aggregate(
-                [
-                    {
-                        $match: {
-                            'user_uid': req.uid,
-                            'date': { $gte: sow, $lte: eow }
-                        }
-                    }, 
-                    {
-                        $count: "count"
+            [
+                {
+                    $match: {
+                        'user_uid': req.uid,
+                        'date': { $gte: sow, $lte: eow }
                     }
-                ]
-            )
+                },
+                {
+                    $count: "count"
+                }
+            ]
+        )
         console.log(count_data)
         if (count_data.length == 0) {
             count_data = [
@@ -518,3 +519,128 @@ export async function getThisWeekRecordCount(req, res) {
         return res.status(500).json({ message: "Server error" })
     }
 }
+
+export async function getRecommendations(req, res) {
+    try {
+        const currentUser = await User.findOne(
+            {
+                firebase_uid: req.uid,
+            })
+        //query to get the most frequently consumed food and top categories
+        const topItems = await Record.aggregate(
+            [
+                {
+                    $match: {
+                        user_uid: currentUser.firebase_uid
+                    },
+                },
+                {
+                    //group by category/item name, then sort, then limit top 3
+                    $group: {
+                        _id: "$itemName",
+                        itemCount: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: {
+                        itemCount: -1
+                    }
+                },
+                {
+                    $limit: 5
+                }
+            ]
+        )
+
+        const topCategory = await Record.aggregate(
+            [
+                {
+                    $match: {
+                        user_uid: currentUser.firebase_uid
+                    },
+                },
+                {
+                    //group by category/item name, then sort, then limit top 3
+                    $group: {
+                        _id: "$category",
+                        categoryCount: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: {
+                        categoryCount: -1
+                    }
+                },
+                {
+                    $limit: 3
+                }
+            ]
+        )
+
+        if (topItems.length == 0 || topCategory.length == 0) {
+            return res.status(200).json({ message: 'No data provided, not able to provide recommendations' });
+        }
+
+        const prompt = `
+    This is the consumption data of a user of a sweet treat tracker.
+
+    Top 5 categories consumed: ${JSON.stringify(topCategory.map(cat => cat._id))}
+    Top 5 item names inputted by the user: ${JSON.stringify(topItems.map(item => item._id))}
+
+    Ignore any null categories. Ignore item names that appear to not be food items.
+
+    Based on this data, do two things:
+    1. Identify the overall taste preferences of the user
+    2. Recommend exactly 3 other healthier choices with a similar taste profile
+    
+    Respond with ONLY JSON, return the data in this JSON format:
+    {
+        "tastePreference": "Brief description of the user's taste preference"
+        "recommendations" [
+            { "name": "name of healthier alternative treat", "reason": "a maximum of 6 descriptive words about texture/flavour", "benefit": "concise sentence on why it is healthier (e.g. less sugar if applicable)" },
+            { "name": "name of healthier alternative treat", "reason": "a maximum of 6 descriptive words about texture/flavour", "benefit": "concise sentence on why it is healthier (e.g. less sugar if applicable)" },
+            { "name": "name of healthier alternative treat", "reason": "a maximum of 6 descriptive words about texture/flavour", "benefit": "concise sentence on why it is healthier (e.g. less sugar if applicable)" },
+        ]
+    }
+    `;
+
+        const GEMINI_API_KEY = process.env.GEMINI_API_KEY
+        const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+        console.log("API key present?", !!process.env.GEMINI_API_KEY);
+
+
+        let parsed = null;
+        let prevError = null;
+        for (let i = 1; i <= 3; i++) {
+            try {
+                const result = await ai.models.generateContent(
+                    {
+                        model: "gemini-2.5-flash",
+                        contents: prompt,
+                    }
+                )
+                console.log("Full response:", JSON.stringify(result.text, null, 2));
+                console.log(result.text);
+
+                const text = result.text;
+                const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+                return res.status(200).json(parsed);
+            } catch (e) {
+                prevError = e;
+                console.log("Gemini attempt failed: " + e)
+                if (i < 3) {
+                    await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i - 1)))
+                }
+            }
+        }
+
+        if (!parsed) {
+            return res.status(500).json({ message: "All Gemini attempts failed" })
+        }
+        return res.status(200).json(parsed);
+    } catch (e) {
+        console.log("Get recommendations error: " + e)
+        return res.status(500).json({ message: "Server error" })
+    }
+};
