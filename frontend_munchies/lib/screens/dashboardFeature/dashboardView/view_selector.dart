@@ -9,7 +9,7 @@ String getLabel(ViewOpt view) {
     case ViewOpt.monthly:
       return "Monthly";
     case ViewOpt.annually:
-      return "Annually";
+      return "Yearly";
     case ViewOpt.futureView:
       return "Future";
   }
@@ -50,7 +50,7 @@ return [
           child: Padding(
             padding: EdgeInsets.only(left: 10.0),
             child: Text(
-              'Annually',
+              'Yearly',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 16,

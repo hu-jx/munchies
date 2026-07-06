@@ -18,13 +18,21 @@ class DashboardMain extends StatelessWidget {
     required this.isLoading,
   });
 
+  num calcTotal(List list, String sortBy) {
+    num total = 0;
+    for (final item in list) {
+      total += item[sortBy];
+    }
+    return total;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double height = size.height;
 
     if (isLoading) {
-      return Center(child: CircularProgressIndicator(color: Colours.greyPink,));
+      return Center(child: CircularProgressIndicator(color: Colours.greyPink));
     }
 
     return Scaffold(
@@ -86,13 +94,20 @@ class DashboardMain extends StatelessWidget {
                               horizontal: 30,
                               vertical: 10,
                             ),
-                            child: PieChartBuilder(
-                              summaryData: model.summaryData,
-                              categoryData: model.categoryData,
-                              selectedView: model.selectedView,
-                              sortBy: "costPerCat",
-                              chosenDate: model.chosenDate,
-                            ),
+                            // EXPENSES PIECHART
+                            child:
+                                /*(calcTotal(model.categoryData, "costPerCat") ==
+                                    0)
+                                ? Text("Total expense is 0")
+                                : 
+                                */
+                                PieChartBuilder(
+                                    summaryData: model.summaryData,
+                                    categoryData: model.categoryData,
+                                    selectedView: model.selectedView,
+                                    sortBy: "costPerCat",
+                                    chosenDate: model.chosenDate,
+                                  ),
                           ),
                         ],
                       ),
