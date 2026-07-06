@@ -13,14 +13,13 @@ export async function getCurrentStreak(req, res) {
             return res.status(204).json({ message: "No active goals found" })
         }
         const oldest_goal_date = dayjs(active_goals[0].start_date).startOf('week').toDate()
-        console.log(oldest_goal_date)
         const record_count_by_week = await Record.aggregate(
             [
                 {
                     $match: {
                         user_uid: req.uid,
                         date: {
-                            $gte: oldest_goal_date
+                            $gte: oldest_goal_date,
                         }
                     }
                 },
@@ -30,7 +29,8 @@ export async function getCurrentStreak(req, res) {
                             $dateTrunc: {
                                 date: "$date",
                                 unit: "week",
-                                startOfWeek: "monday"
+                                startOfWeek: "monday",
+                                timezone: "Asia/Singapore"
                             }
                         }
                         ,

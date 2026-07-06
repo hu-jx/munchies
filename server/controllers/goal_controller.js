@@ -141,7 +141,8 @@ export async function getPureAdaptiveGoal(req, res) {
                                     $dateTrunc: {
                                         date: "$date",
                                         unit: "week",
-                                        startOfWeek: "monday"
+                                        startOfWeek: "monday",
+                                        timezone: "Asia/Singapore"
                                     }
                                 }
                                 ,
