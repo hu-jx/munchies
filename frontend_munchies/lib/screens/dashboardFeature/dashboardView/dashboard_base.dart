@@ -10,13 +10,15 @@ class DashboardView extends StatelessWidget {
   final Function(ViewOpt) onChangeView;
   final Function(DateTime) onBackButton;
   final Function(DateTime) onForwardButton;
+  bool isLoading; 
 
-  const DashboardView({
+  DashboardView({
     super.key,
     required this.model,
     required this.onChangeView,
     required this.onBackButton,
     required this.onForwardButton,
+    required this.isLoading,
   });
 
   String getLabel(ViewOpt view) {
@@ -46,6 +48,7 @@ class DashboardView extends StatelessWidget {
             model: model,
             onBackButton: onBackButton,
             onForwardButton: onForwardButton,
+            isLoading: isLoading,
           ),
         ],
       ),
