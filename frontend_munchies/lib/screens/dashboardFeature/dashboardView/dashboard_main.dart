@@ -8,18 +8,24 @@ class DashboardMain extends StatelessWidget {
   DashboardViewModel model;
   final Function(DateTime) onBackButton;
   final Function(DateTime) onForwardButton;
+  bool isLoading;
 
   DashboardMain({
     super.key,
     required this.model,
     required this.onBackButton,
     required this.onForwardButton,
+    required this.isLoading,
   });
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double height = size.height;
+
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator(color: Colours.greyPink,));
+    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -48,8 +54,8 @@ class DashboardMain extends StatelessWidget {
               child: SingleChildScrollView(
                 child: (model.categoryData.isEmpty)
                     ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                      child: Text(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Text(
                           (model.selectedView.name == "futureView")
                               ? "Not enough data for a prediction. A minimum of 3 months worth of data entered is required to make a prediction"
                               : "No data. Please log your consumption first",
@@ -59,7 +65,7 @@ class DashboardMain extends StatelessWidget {
                             color: Colours.lightBrown,
                           ),
                         ),
-                    )
+                      )
                     : Column(
                         children: [
                           Padding(

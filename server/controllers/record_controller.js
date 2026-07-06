@@ -159,7 +159,7 @@ function filterRecords(query_records, query_params, user_uid) {
                 ]
             )
         } else if (query_params.freq == 'weekly') {
-            
+
             return Record.aggregate(
                 [
                     {
@@ -276,7 +276,7 @@ export async function deleteRecord(req, res) {
 }
 
 export async function getItemName(req, res) {
-    
+
     var delay = 2000;
     for (let i = 1; i <= 3; i++) {
         try {
@@ -340,15 +340,16 @@ export async function getDashboardData(req, res) {
         if (view === 'weekly') {
             dateFormat = "day"
         } else if (view === 'monthly') {
-            //temp before i figure out how to group in weeks
             dateFormat = "week"
         } else if (view === 'annually') {
             dateFormat = "month"
         }
 
+        /* debug logs
         console.log("Querying:", { user_uid, startDate, endDate })
         console.log("Date objects:", new Date(startDate), new Date(endDate))
         console.log("view:", view, "dateFormat:", dateFormat)
+        */
 
         if (view === "futureView") {
             //call the prediction model, which should return data in this format
@@ -492,18 +493,18 @@ export async function getThisWeekRecordCount(req, res) {
         //shape: {"count": value}
         console.log(sow, eow)
         var count_data = await Record.aggregate(
-                [
-                    {
-                        $match: {
-                            'user_uid': req.uid,
-                            'date': { $gte: sow, $lte: eow }
-                        }
-                    }, 
-                    {
-                        $count: "count"
+            [
+                {
+                    $match: {
+                        'user_uid': req.uid,
+                        'date': { $gte: sow, $lte: eow }
                     }
-                ]
-            )
+                },
+                {
+                    $count: "count"
+                }
+            ]
+        )
         console.log(count_data)
         if (count_data.length == 0) {
             count_data = [

@@ -2,7 +2,6 @@ import { verifyToken } from '../middleware/auth_middleware.js'
 import express from 'express'
 import upload from '../middleware/multer.js'
 import { checkStatus, createRequest, getPendingRequest, updateRequest } from '../controllers/request_controller.js';
-import { updateRecord } from '../controllers/record_controller.js';
 
 const requestRouter = express.Router();
 
