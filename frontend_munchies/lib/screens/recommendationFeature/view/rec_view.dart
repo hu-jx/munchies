@@ -31,6 +31,7 @@ class _RecViewState extends State<RecView> {
       setState(() {
         errorMessage = "Something went wrong, please try again later";
         recsLoading = false;
+        showDefault = true;
       });
     } else if (recs.containsKey('message')) {
       setState(() {
@@ -78,12 +79,41 @@ class _RecViewState extends State<RecView> {
 
   Widget recsFormat() {
     if (showDefault) {
+      //default recommendations, plus a little message
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "We'd require some data to give you your personalised recommendations! For now, here are some general recommendations.",
+            "We'd require some data to give you personalised recommendations! For now, here are some general recommendations.",
             style: recStyle,
           ),
+          //ONE REC ITEM
+          SizedBox(height: 10),
+          Text(
+            "1. Smoothie Bowl with Mixed Berries",
+            style: TextStyle(
+              fontFamily: "Poppins",
+              color: Colours.darkBrown,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text("  - Fruity, creamy, refreshing, thick, sweet ", style: recStyle),
+          Text("  - Rich in vitamins and antioxidants with natural fruit sugars. ", style: recStyle),
+          SizedBox(height: 5,),
+          //NEXT REC ITEM
+          Text(
+            "2. Dark Chocolate with Nuts",
+            style: TextStyle(
+              fontFamily: "Poppins",
+              color: Colours.darkBrown,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text("  - Bitter-sweet, rich, crunchy, nutty, smooth ", style: recStyle),
+          Text("  - Contains antioxidants and healthy fats, lower sugar than milk chocolate. ", style: recStyle),
+          SizedBox(height: 5,),
         ],
       );
     } else {
