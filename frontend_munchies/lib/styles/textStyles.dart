@@ -31,3 +31,9 @@ final searchDisplayTS = TextStyle(
   color: Colours.lightBeige,
   fontSize: 16,
 );
+
+final recStyle = TextStyle(
+  fontFamily: "Poppins",
+  color: Colours.darkBrown,
+  fontSize: 15,
+);

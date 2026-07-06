@@ -56,7 +56,7 @@ class ActivitiesView extends StatelessWidget {
                     color: const Color.fromARGB(255, 183, 115, 125),
                   )
                 : (avm.recordDetails.isNotEmpty
-                      ? ScrollConfiguration(
+                      ? ScrollConfiguration( 
                           behavior: ScrollBehavior().copyWith(
                             overscroll: false,
                           ),
