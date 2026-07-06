@@ -87,6 +87,7 @@ class GoalViewModel extends ChangeNotifier {
       onLoading();
       Goal? goal = await goalRepo.getLatestGoal();
       _latestGoal = goal;
+      debugPrint("THE LATEST GOAL IS ${goal?.quantity}");
       int streak = await goalRepo.getCurrentStreak();
       _streak = streak;
       int currentFreq = await goalRepo.getCurrentConsumption();
@@ -171,7 +172,8 @@ class GoalViewModel extends ChangeNotifier {
 
   bool isSameWeek(DateTime date1, DateTime date2) {
     DateTime monday1 = date1.subtract(Duration(days: date1.weekday - 1));
-    DateTime monday2 = date2.subtract(Duration(days: date1.weekday - 1));
+    DateTime monday2 = date2.subtract(Duration(days: date2.weekday - 1));
+    debugPrint(monday1.toIso8601String() + monday2.toIso8601String());
 
     return monday1.year == monday2.year && monday1.month == monday2.month && monday1.day == monday1.day;
   }

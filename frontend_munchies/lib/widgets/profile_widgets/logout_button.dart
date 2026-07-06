@@ -14,18 +14,31 @@ class LogoutButton extends StatefulWidget {
 class _LogoutButtonState extends State<LogoutButton> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          TextButton(
-            onPressed: _showConfirmationModal,
-            child: Text('Log Out', style: importantTextStyle),
-          ),
-        ],
-      ),
+    return PopupMenuButton(
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem(value: 'Log out', child: Text('Log out', style: inputTextStyle,)),
+      ],
+      onSelected: (value) async {
+        if (value == 'Log out') {
+          await _showConfirmationModal();
+        }
+      },
+      color: Colours.lightBeige,
+      icon: Icon(Icons.person),
     );
+
+    // Padding(
+    //   padding: const EdgeInsets.only(left: 12.0),
+    //   child: Row(
+    //     mainAxisAlignment: MainAxisAlignment.start,
+    //     children: [
+    //       TextButton(
+    //         onPressed: _showConfirmationModal,
+    //         child: Text('Log Out', style: importantTextStyle),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Future<void> _onLogoutPressed() async {
@@ -33,7 +46,9 @@ class _LogoutButtonState extends State<LogoutButton> {
     if (!mounted) return;
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage(authentication: Authentication.real(),)),
+      MaterialPageRoute(
+        builder: (context) => LoginPage(authentication: Authentication.real()),
+      ),
     );
   }
 
@@ -47,30 +62,32 @@ class _LogoutButtonState extends State<LogoutButton> {
           titleTextStyle: importantTextStyle,
           actionsAlignment: MainAxisAlignment.center,
           actions: [
-              TextButton(
-                onPressed: _onLogoutPressed,
-                style: TextButton.styleFrom(foregroundColor: Colours.lightBrown,),
-                child: Text(
-                  'Log Out',
-                  style: TextStyle(
-                    color: Colors.red[400],
-                    fontFamily: 'Poppins',
-                    fontSize: 18
-                  ),
+            TextButton(
+              onPressed: _onLogoutPressed,
+              style: TextButton.styleFrom(foregroundColor: Colours.lightBrown),
+              child: Text(
+                'Log Out',
+                style: TextStyle(
+                  color: Colors.red[400],
+                  fontFamily: 'Poppins',
+                  fontSize: 18,
                 ),
               ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: TextButton.styleFrom(foregroundColor: Colours.lightBrown),
-                child: Text('Cancel',
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(foregroundColor: Colours.lightBrown),
+              child: Text(
+                'Cancel',
                 style: TextStyle(
                   color: Colours.darkBrown,
                   fontFamily: 'Poppins',
-                  fontSize: 18
-                ),)
+                  fontSize: 18,
+                ),
               ),
-            ],
-          );
+            ),
+          ],
+        );
       },
     );
   }

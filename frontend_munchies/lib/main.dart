@@ -31,6 +31,9 @@ class MainApp extends StatelessWidget {
         }
         return LoginPage(authentication: Authentication.real(),);
       }),
+      routes: {
+        '/home': (context) => const Homepage()
+      },
     );
   }
 }

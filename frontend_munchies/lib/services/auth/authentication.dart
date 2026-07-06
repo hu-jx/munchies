@@ -51,14 +51,15 @@ class Authentication {
     String firstName,
     String lastName,
   ) async {
+    User? user;
     try {
       final cred = await firebaseAuth.createUserWithEmailAndPassword(
         email: emailAddress,
         password: password,
       );
-      final user = cred.user!;
+      user = cred.user!;
       final String? idToken = await user.getIdToken();
-      return apiServices.createProfile(
+      await apiServices.createProfile(
         idToken!,
         UserProfile(
           firebase_uid: user.uid,
@@ -81,6 +82,19 @@ class Authentication {
             'Password is too weak. Please fulfill password requirements.',
           );
       }
+    } catch (e) {
+      //if registering fails on backend, cannot create on firebase side either -> delete it 
+      print('outside here');
+      if (user != null) {
+        try {
+          print('preparing to delete');
+          await user.delete();
+        } catch (e) {
+          print('Critical error: Failed to delete Firebase user during rollback: $e');
+          rethrow;
+        }
+      }
+      rethrow;
     }
   }
 

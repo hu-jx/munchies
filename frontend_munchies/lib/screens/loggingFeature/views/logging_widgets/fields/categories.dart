@@ -51,6 +51,7 @@ class _CategoryMenuState extends State<CategoryMenu> {
       width: widget.maxWidth,
       inputDecorationTheme: optionalInputdecorationtheme,
       onSelected: (CategoryItem? cat) {
+        if (!mounted) return;
         setState(() {
           _selectedCategory = cat;
         });
