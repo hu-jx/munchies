@@ -28,11 +28,13 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
   Image? image;
   void checkIfUpdate() {
     if (widget.existing_url != null) {
+      if (!mounted) return;
     setState(() {
       image = Image.network(widget.existing_url!, fit: BoxFit.contain);
     });
   }
   if (widget.existing_photo_file != null) {
+    if (!mounted) return;
     setState(() {
       image = Image.file(widget.existing_photo_file!);
     });

@@ -52,6 +52,8 @@ class GoalPostView extends StatelessWidget {
               alignment: Alignment.center,
               child: CircularProgressIndicator(color: Colours.greyPink),
             )
+          : viewModel.errorMesage != null 
+          ? ShowErrorMessage(errorMessage: viewModel.errorMesage)
           : Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -184,7 +186,9 @@ class GoalPostView extends StatelessWidget {
               actions: [
                 TapDebouncer(
                   onTap: () async {
+                    debugPrint("Reached onTap");
                     if (_formKey.currentState?.validate() == true) {
+                      debugPrint("goalController text is ${goalController.text}");
                       await viewModel.onSavePressed(
                         int.parse(goalController.text),
                       );
@@ -268,24 +272,26 @@ class GoalDisplay extends StatelessWidget {
                     color: Colours.greyPink.withValues(alpha: 0.4),
                     size: 100,
                   ),
-            Column(
-              spacing: 0,
-              children: [
-                Text(
-                  '${viewModel.latestGoal == null ? DateField.formatDate(DateTime.now()) : DateField.formatDate(viewModel.latestGoal?.start_date)} -> ${DateField.formatDate(DateTime.now())}',
-                  style: importantTextStyle,
-                ),
-                Text(
-                  '${viewModel.currentStreak} WEEK STREAK',
-                  style: TextStyle(
-                    fontFamily: 'Cherry_Bomb_One',
-                    color: viewModel.currentStreak != 0
-                        ? Colours.greyPink
-                        : Colours.greyPink.withValues(alpha: 0.7),
-                    fontSize: 30,
+            Flexible(
+              child: Column(
+                spacing: 0,
+                children: [
+                  Text(
+                    '${viewModel.latestGoal == null ? DateField.formatDate(DateTime.now()) : DateField.formatDate(viewModel.latestGoal?.start_date)} -> ${DateField.formatDate(DateTime.now())}',
+                    style: importantTextStyle,
                   ),
-                ),
-              ],
+                  Text(
+                    '${viewModel.currentStreak} WEEK STREAK',
+                    style: TextStyle(
+                      fontFamily: 'Cherry_Bomb_One',
+                      color: viewModel.currentStreak != 0
+                          ? Colours.greyPink
+                          : Colours.greyPink.withValues(alpha: 0.7),
+                      fontSize: 30,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -313,7 +319,7 @@ class GoalDisplay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircularPercentIndicator(
-                radius: height * 0.08,
+                radius: height * 0.1,
                 percent: viewModel.currentQuota 
                 > 1
                     ? 1
@@ -338,7 +344,7 @@ class GoalDisplay extends StatelessWidget {
                   viewModel.remainingConsumption < 0
                       ? 'Exceeded'
                       : '${viewModel.remainingConsumption}\ntimes left',
-                  style: importantTextStyle.copyWith(fontSize: 22),
+                  style: importantTextStyle.copyWith(fontSize: 20),
                   textAlign: TextAlign.center,
                 ),
               ),
