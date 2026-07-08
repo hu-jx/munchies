@@ -55,7 +55,8 @@ class LoggingViewModel extends ChangeNotifier {
   }
 
   @override 
-  void dispose() {
+  void dispose() async {
+    await recordOperation?.cancel();
     _isDisposed = true;
     super.dispose();
   }
