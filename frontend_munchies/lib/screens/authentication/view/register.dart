@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/services/auth/authentication.dart';
+import 'package:frontend_munchies/screens/authentication/view_model/authentication.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/general_textfield.dart';
@@ -137,7 +137,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 padding: const EdgeInsets.only(top: 10, left: 30, bottom: 5),
                 child: Text('Enter Password *', style: widget.textStyle),
               ),
-              PasswordTextfield(pwController: pwController, labelText: 'Password'),
+              PasswordTextfield(
+                pwController: pwController,
+                labelText: 'Password',
+              ),
               Padding(
                 padding: const EdgeInsets.only(top: 10, left: 30, bottom: 5),
                 child: Text('Confirm Password *', style: widget.textStyle),
@@ -162,66 +165,69 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: GoogleFonts.poppins(color: Colours.grey),
                 ),
               ),
-              _isLoading ? 
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    // SizedBox(height: MediaQuery.of(context).size.height * 0.02,),
-                    Padding(
-                      padding: const EdgeInsets.all(40),
-                      child: SizedBox(
-                        height: 10,
-                        width: 298,
-                        child: LinearProgressIndicator(
-                          color: Colours.greyPink,
-                          backgroundColor: Colours.darkerBeige,
-                          // strokeWidth: 6.0,
-                        ),))])
-              : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Center(
-                    child: AppButton(
-                      text: 'Sign up now!',
-                      onPressed: () async {
-                        if (formKey.currentState?.validate() == true) {
-                          await tryRegister();
-                        }
-                      },
-                      size: Size(298, 48),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Already have an account?',
-                        style: GoogleFonts.poppins(color: Colours.grey),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          'Login now!',
-                          style: GoogleFonts.poppins(
-                            color: Colours.greyPink,
-                            decorationColor: Colours.greyPink,
-                            decoration: TextDecoration.underline,
+              _isLoading
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // SizedBox(height: MediaQuery.of(context).size.height * 0.02,),
+                        Padding(
+                          padding: const EdgeInsets.all(40),
+                          child: SizedBox(
+                            height: 10,
+                            width: 298,
+                            child: LinearProgressIndicator(
+                              color: Colours.greyPink,
+                              backgroundColor: Colours.darkerBeige,
+                              // strokeWidth: 6.0,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 50)
-                ],
-              ),
+                      ],
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Center(
+                          child: AppButton(
+                            text: 'Sign up now!',
+                            onPressed: () async {
+                              if (formKey.currentState?.validate() == true) {
+                                await tryRegister();
+                              }
+                            },
+                            size: Size(298, 48),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Already have an account?',
+                              style: GoogleFonts.poppins(color: Colours.grey),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                'Login now!',
+                                style: GoogleFonts.poppins(
+                                  color: Colours.greyPink,
+                                  decorationColor: Colours.greyPink,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: ShowErrorMessage(errorMessage: errorMessage),
-              )
+              ),
               // Center(
               //   child: Text(
               //     errorMessage ?? "",
@@ -239,29 +245,37 @@ class _RegisterPageState extends State<RegisterPage> {
     return Padding(
       padding: EdgeInsets.only(left: 22, right: 22, top: 10),
       child: Row(
+        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
+            mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('First Name *', style: widget.textStyle),
               SizedBox(
-                height: 48.0,
+                // height: 48.0,
                 width: 140,
                 child: TextFormField(
-                  maxLines: 3,
+                  
+                  // maxLines: 3,
                   keyboardType: TextInputType.multiline,
                   controller: fNameController,
                   decoration: InputDecoration(
+                    isDense: true, 
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 16,
+                    ),
                     filled: true,
                     fillColor: Colors.white,
                     labelText: 'First Name',
                     labelStyle: GoogleFonts.poppins(color: Colours.grey),
-                    errorStyle: GoogleFonts.poppins(color: Colors.red),
+                    errorStyle: GoogleFonts.poppins(color: Colors.red,height:  1.0),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colours.grey),
                     ),
-                    errorMaxLines: 1,
+                    errorMaxLines: 3,
                     suffixIcon: fNameController.text.isEmpty
                         ? Container(width: 0.0)
                         : IconButton(
@@ -281,6 +295,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ],
           ),
           Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Last Name', style: widget.textStyle),
@@ -337,8 +352,10 @@ class _RegisterPageState extends State<RegisterPage> {
       });
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => widget.homepage ?? Homepage(),
-         settings: RouteSettings(name: '/home')),
+        MaterialPageRoute(
+          builder: (context) => widget.homepage ?? Homepage(),
+          settings: RouteSettings(name: '/home'),
+        ),
       );
     } catch (e) {
       debugPrint('caught error $e');

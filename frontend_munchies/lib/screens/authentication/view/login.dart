@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_munchies/screens/authentication/view/forgot_pw.dart';
 // import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/main_screen.dart';
 import 'package:frontend_munchies/styles/colours.dart';
@@ -6,9 +7,9 @@ import 'package:frontend_munchies/widgets/errorMessage.dart';
 import 'package:frontend_munchies/widgets/pw_textfield.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_munchies/widgets/general_textfield.dart';
-import 'package:frontend_munchies/screens/authentication/register.dart';
+import 'package:frontend_munchies/screens/authentication/view/register.dart';
 import 'package:frontend_munchies/widgets/button.dart';
-import 'package:frontend_munchies/services/auth/authentication.dart';
+import 'package:frontend_munchies/screens/authentication/view_model/authentication.dart';
 // Use GoogleFonts.font_family to obtain desired font (e.g. GoogleFonts.poppins)
 
 class LoginPage extends StatefulWidget {
@@ -118,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            //redirect to reset pw page
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ResetPage()));
                           },
                           child: Text(
                             'Forget password',

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/services/auth/api_services.dart';
 import 'package:frontend_munchies/services/auth/auth_exception.dart';
@@ -100,5 +101,13 @@ class Authentication {
 
   static Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  static Future<void> sendPasswordLink(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseException {
+      rethrow;
+    }
   }
 }
