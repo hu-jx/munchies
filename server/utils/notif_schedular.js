@@ -2,6 +2,7 @@ import cron from "node-cron"
 import admin from 'firebase-admin';
 import { User } from "../models/user.js"
 import { Record } from "../models/record.js"
+import { ScheduledNotifs } from "../models/scheduledNotifs.js";
 
 export async function sendNotif(user) {
     try {
@@ -34,15 +35,20 @@ function scheduleNotifs(user, count) {
     const intervals = msPerWeek / (count + 1)
 
     for (let i = 1; i <= count; i++) {
-        setTimeout(() => sendNotif(user), intervals * i);
+        const sendAt = new Date(Date.now() + intervals * i);
+        ScheduledNotifs.create({
+            user_mongo_id: user._id,
+            firebase_uid: user.firebase_uid,
+            sendAt: sendAt,
+        })
     }
     console.log('Set notifications for the week')
 }
 
 export async function startScheduling(req, res) {
     //THIS VER IS FOR TESTING
-    cron.schedule('40 22 * * *', async () => {
-    // cron.schedule('0 18 * * 0', async () => {
+    cron.schedule('6 0 * * *', async () => {
+    //cron.schedule('0 18 * * 0', async () => {
         console.log('Weekly scheduling initiated:', new Date().toISOString());
 
         const prevWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
@@ -65,3 +71,37 @@ export async function startScheduling(req, res) {
         }
     })
 }
+
+cron.schedule('*/5 * * * *', async () => {
+    const scheduledNow = await ScheduledNotifs.find({
+        sendAt: { $lte: new Date() },
+        sent: false,
+    })
+
+    for (const notif of scheduledNow) {
+        try {
+            const user = await User.findOne(
+                { firebase_uid: notif.firebase_uid }
+            )
+
+            if (!user?.fcmToken) {
+                notif.sent = true;
+                await notif.save();
+                continue;
+            }
+
+            await sendNotif(user);
+            notif.sent = true;
+            await notif.save();
+
+            console.log('Sent scheduled notification to user', user.firebase_uid)
+
+        } catch (e) {
+            console.error('FAILED TO SEND SCHEDULED NOTIF')
+            notif.sent = true;
+            await notif.save();
+        }
+
+    }
+
+})
