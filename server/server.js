@@ -11,6 +11,8 @@ import requestRouter from './routes/request_routes.js'
 import goalRouter from './routes/goal_routes.js'
 import streakRouter from './routes/streak_routes.js'
 import recommendationRouter from './routes/recommendations_routes.js'
+import testNotifRouter from './routes/testNotifs_routes.js'
+import { startScheduling } from './utils/notif_schedular.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -28,6 +30,8 @@ app.use('/api', requestRouter)
 app.use('/api', goalRouter)
 app.use('/api', streakRouter)
 app.use('/api', recommendationRouter)
+app.use('/api', testNotifRouter)
+
 
 const startServer = async () => {
     await connectDB()
@@ -35,3 +39,4 @@ const startServer = async () => {
 }
 
 startServer()
+startScheduling()
