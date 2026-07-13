@@ -9,8 +9,8 @@ import 'package:frontend_munchies/services/auth/auth_exception.dart';
 import 'package:http/http.dart' as http;
 
 class UserServices {
-  // static const String _baseUrl = "http://10.0.2.2:3000/api";
-  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  static const String _baseUrl = "http://10.0.2.2:3000/api";
+  //static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   static Future<UserProfile?> searchUser({
     required String emailAddress,
@@ -109,6 +109,31 @@ class UserServices {
     } else {
       debugPrint(res.reasonPhrase);
       throw Exception('Failed to fetch records data');
+    }
+  }
+
+  static Future<void> removeFriend({
+    required String sender_id,
+    required String receiver_id,
+    required String idToken,
+    http.Client? client,
+  }) async {
+    String url = '$_baseUrl/remove_friend';
+
+    final httpClient = client ?? http.Client();
+
+    final res = await httpClient.delete(
+      Uri.parse(url),
+      headers: {
+        'Accept': '*/*',
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': '	application/json',
+        'Connection': 'keep-alive',
+      },
+      body: jsonEncode({'sender_id': sender_id, 'receiver_id': receiver_id}),
+    );
+    if (res.statusCode != 200) {
+      throw Exception('Failed to remove friend');
     }
   }
 }

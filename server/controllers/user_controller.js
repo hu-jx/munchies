@@ -1,5 +1,7 @@
 // search for other users using email
 
+import { Record } from "../models/record.js"
+import { Request } from "../models/request.js"
 import { User } from "../models/user.js"
 
 //this finds user info using their mongo unique id in the database
@@ -17,7 +19,7 @@ export async function findUserInfo(req, res) {
         console.error("findUserInfo error: ", error)
         return res.status(500).json({ message: "Server error" })
     }
-}    
+}
 
 export async function searchUser(req, res) {
     try {
@@ -53,6 +55,72 @@ export async function findFriends(req, res) {
         console.error("findFriends error: ", error)
         return res.status(500).json({ message: "Server error" })
     }
+}
+
+export async function addFCMToken(req, res) {
+    try {
+        const { token } = req.body;
+
+        await User.findOneAndUpdate(
+            { firebase_uid: req.uid },
+            { fcmToken: token }
+        );
+
+        return res.status(200).json({ message: "Successfully added FCM Token to User" })
+    } catch (e) {
+        console.error("addFCMToken error: ", e)
+        return res.status(500).json({ message: "Server error" })
+    }
+}
+
+export async function removeFriend(req, res) {
+    try {
+        var { sender_id, receiver_id } = req.body
+        const existingReq = await Request.findOneAndDelete({
+            $or: [
+                { sender_id: sender_id, receiver_id: receiver_id },
+                { sender_id: receiver_id, receiver_id: sender_id }
+            ]
+        });
+
+        if (!existingReq) {
+            return res.status(404).json({ message: "Friend request not found" });
+        }
+        //REMEMBER TO delete the request in the database 
+
+        await User.findByIdAndUpdate(
+            sender_id,
+            { $pull: { friends: receiver_id } });
+        await User.findByIdAndUpdate(
+            receiver_id,
+            { $pull: { friends: sender_id } });
+
+        return res.status(200).json({ message: "Friend successfully removed" })
+    } catch (e) {
+        console.error("removeFriend error: ", e)
+        return res.status(500).json({ message: "Server error" })
+    }
+}
+
+
+export async function getNotifCount(req, res) {
+    try {
+        const prevWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+
+        const count = await Record.countDocuments({
+            user_uid: req.uid,
+            createdAt: { $gte: prevWeek }
+        })
+
+        const notifCount = Math.floor(count / 2)
+
+        return res.status(200).json(notifCount)
+
+    } catch (e) {
+        console.error("getNotifCount error: ", e)
+        return res.status(500).json({ message: "Server error" })
+    }
+
 }
 
 //http://localhost:3000/api/search?search_email=email...y&user_uid=BqCmKTsSE3dNmEzpJ6No9zCD3ZN2 

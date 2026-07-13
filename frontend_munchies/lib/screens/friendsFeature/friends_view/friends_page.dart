@@ -3,8 +3,10 @@ import 'package:frontend_munchies/models/friend_request.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/friendsFeature/friends_view/search_page.dart';
 import 'package:frontend_munchies/screens/friendsFeature/friends_view_model/friends_page_vm.dart';
+import 'package:frontend_munchies/services/user_services.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
+import 'package:frontend_munchies/utils/streams.dart';
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
@@ -85,7 +87,17 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ),
         //body, navigate between current friends and friend requests
-        body: TabBarView(children: [friendsDisplay(), requestsDisplay()]),
+        body: TabBarView(
+          children: [
+            RefreshIndicator(
+              onRefresh: () async {
+                await loadFriends(); // or loadPendingRequests()
+              },
+              child: friendsDisplay(),
+            ),
+            requestsDisplay(),
+          ],
+        ),
       ),
     );
   }
@@ -103,6 +115,62 @@ class _FriendsPageState extends State<FriendsPage> {
       },
       icon: const Icon(Icons.arrow_back),
     );
+  }
+
+  Widget removeFriendButton(UserProfile friend) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: Colours.lightBrown,
+      ),
+      onPressed: () async {
+        confirmRemoveFriend(friend);
+      },
+      child: Text("Remove Friend", style: searchDisplayTS),
+    );
+  }
+
+  Future<void> confirmRemoveFriend(UserProfile friend) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colours.darkerBeige,
+        title: Text("Remove Friend", style: TextStyle(fontFamily: 'Poppins')),
+        content: Text(
+          "Are you sure you want to remove ${friend.firstName} as a friend?",
+          style: TextStyle(fontFamily: 'Poppins'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false), // cancel
+            child: Text("Cancel", style: TextStyle(fontFamily: 'Poppins')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true), // confirm
+            child: Text(
+              "Remove",
+              style: TextStyle(color: Colors.red, fontFamily: 'Poppins'),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final currentUser = await UserServices.getCurrentUP();
+    final currentUserId = currentUser.mongo_id;
+    final friendId = friend.mongo_id;
+    if (currentUserId == null || friendId == null) {
+      throw Exception('Invalid ids');
+    }
+
+    if (confirmed == true) {
+      setState(() {
+        friendsListLoading = true;
+      });
+      await removeFriend(currentUserId, friendId);
+      friendsUpdatedController.add(null);
+      await loadFriends();
+    }
   }
 
   Widget friendsDisplay() {
@@ -126,19 +194,22 @@ class _FriendsPageState extends State<FriendsPage> {
               color: Colours.darkerBeige,
               borderRadius: BorderRadius.circular(25),
             ),
-            height: 100,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Name: ${user.firstName}',
-                  style: TextStyle(fontFamily: "Poppins", fontSize: 18),
-                ),
-                Text(
-                  'Email: ${user.emailAddress}',
-                  style: TextStyle(fontFamily: "Poppins", fontSize: 16),
-                ),
-              ],
+            child: Padding(
+              padding: EdgeInsetsGeometry.symmetric(vertical: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Name: ${user.firstName}',
+                    style: TextStyle(fontFamily: "Poppins", fontSize: 18),
+                  ),
+                  Text(
+                    'Email: ${user.emailAddress}',
+                    style: TextStyle(fontFamily: "Poppins", fontSize: 16),
+                  ),
+                  removeFriendButton(user),
+                ],
+              ),
             ),
           ),
         );
@@ -153,7 +224,9 @@ class _FriendsPageState extends State<FriendsPage> {
         child: CircularProgressIndicator(color: Colours.greyPink),
       );
     } else if (requestList.isEmpty) {
-      return Center(child: Text("No friend requests currently", style: normalTextStyle));
+      return Center(
+        child: Text("No friend requests currently", style: normalTextStyle),
+      );
     }
     return ListView.separated(
       physics: const ClampingScrollPhysics(),
@@ -195,8 +268,9 @@ class _FriendsPageState extends State<FriendsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton.icon(
-              onPressed: () {
-                sendResponse(req, "accepted");
+              onPressed: () async {
+                await sendResponse(req, "accepted");
+                friendsUpdatedController.add(null);
               },
               label: Text("Accept", style: normalTextStyle),
               icon: Icon(Icons.check),

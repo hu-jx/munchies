@@ -36,6 +36,11 @@ const userSchema = new Schema({
         required: false,
         default: []
     },
+
+    fcmToken : {
+        type: String,
+        default: null
+    }
 },
     {
         timestamps: true
