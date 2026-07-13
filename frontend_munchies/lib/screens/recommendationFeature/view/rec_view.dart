@@ -58,7 +58,7 @@ class _RecViewState extends State<RecView> {
           style: TextStyle(
             fontFamily: 'Cherry_Bomb_One',
             color: Colours.darkBrown,
-            fontSize: 30,
+            fontSize: 24,
           ),
           textAlign: TextAlign.left,
         ),

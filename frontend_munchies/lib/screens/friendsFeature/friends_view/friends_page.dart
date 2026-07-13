@@ -6,6 +6,7 @@ import 'package:frontend_munchies/screens/friendsFeature/friends_view_model/frie
 import 'package:frontend_munchies/services/user_services.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
+import 'package:frontend_munchies/utils/streams.dart';
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
@@ -86,7 +87,17 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ),
         //body, navigate between current friends and friend requests
-        body: TabBarView(children: [friendsDisplay(), requestsDisplay()]),
+        body: TabBarView(
+          children: [
+            RefreshIndicator(
+              onRefresh: () async {
+                await loadFriends(); // or loadPendingRequests()
+              },
+              child: friendsDisplay(),
+            ),
+            requestsDisplay(),
+          ],
+        ),
       ),
     );
   }
@@ -145,7 +156,6 @@ class _FriendsPageState extends State<FriendsPage> {
       ),
     );
 
-    
     final currentUser = await UserServices.getCurrentUP();
     final currentUserId = currentUser.mongo_id;
     final friendId = friend.mongo_id;
@@ -154,7 +164,11 @@ class _FriendsPageState extends State<FriendsPage> {
     }
 
     if (confirmed == true) {
+      setState(() {
+        friendsListLoading = true;
+      });
       await removeFriend(currentUserId, friendId);
+      friendsUpdatedController.add(null);
       await loadFriends();
     }
   }
@@ -254,8 +268,9 @@ class _FriendsPageState extends State<FriendsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton.icon(
-              onPressed: () {
-                sendResponse(req, "accepted");
+              onPressed: () async {
+                await sendResponse(req, "accepted");
+                friendsUpdatedController.add(null);
               },
               label: Text("Accept", style: normalTextStyle),
               icon: Icon(Icons.check),

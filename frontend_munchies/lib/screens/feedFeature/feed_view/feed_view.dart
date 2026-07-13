@@ -5,6 +5,8 @@ import 'package:frontend_munchies/screens/feedFeature/view_models/post_view_mode
 import 'package:frontend_munchies/screens/friendsFeature/friends_view/friends_button.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/feedFeature/feed_view/record_display.dart';
+import 'dart:async';
+import 'package:frontend_munchies/utils/streams.dart';
 
 class FeedView extends StatefulWidget {
   const FeedView({super.key});
@@ -16,12 +18,22 @@ class FeedView extends StatefulWidget {
 class _FeedViewState extends State<FeedView> {
   List<Post> friendsPosts = [];
   bool friendsPostsLoading = true;
+  late StreamSubscription _subscription;
 
   //initState, setState, helpers calling the getFriendsPosts function in the view model
   @override
   void initState() {
     super.initState();
     loadFriendsPosts();
+    _subscription = friendsUpdatedStream.listen((_) async {
+      await loadFriendsPosts(); 
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 
   Future<void> loadFriendsPosts() async {

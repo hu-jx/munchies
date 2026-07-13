@@ -132,7 +132,7 @@ class UserServices {
       },
       body: jsonEncode({'sender_id': sender_id, 'receiver_id': receiver_id}),
     );
-    if (res.statusCode != 201) {
+    if (res.statusCode != 200) {
       throw Exception('Failed to remove friend');
     }
   }
