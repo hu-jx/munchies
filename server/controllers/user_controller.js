@@ -1,6 +1,7 @@
 // search for other users using email
 
 import { Record } from "../models/record.js"
+import { Request } from "../models/request.js"
 import { User } from "../models/user.js"
 
 //this finds user info using their mongo unique id in the database
@@ -72,17 +73,46 @@ export async function addFCMToken(req, res) {
     }
 }
 
+export async function removeFriend(req, res) {
+    try {
+        var { sender_id, receiver_id } = req.body
+        const existingReq = await Request.findOneAndDelete({
+            $or: [
+                { sender_id: sender_id, receiver_id: receiver_id },
+                { sender_id: receiver_id, receiver_id: sender_id }
+            ]
+        });
+
+        if (!existingReq) {
+            return res.status(404).json({ message: "Friend request not found" });
+        }
+        //REMEMBER TO delete the request in the database 
+
+        await User.findByIdAndUpdate(
+            sender_id,
+            { $pull: { friends: receiver_id } });
+        await User.findByIdAndUpdate(
+            receiver_id,
+            { $pull: { friends: sender_id } });
+
+        return res.status(200).json({ message: "Friend successfully removed" })
+    } catch (e) {
+        console.error("removeFriend error: ", e)
+        return res.status(500).json({ message: "Server error" })
+    }
+}
+
 
 export async function getNotifCount(req, res) {
     try {
         const prevWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-        
+
         const count = await Record.countDocuments({
             user_uid: req.uid,
-            createdAt: { $gte : prevWeek }
+            createdAt: { $gte: prevWeek }
         })
 
-        const notifCount = Math.floor(count/2)
+        const notifCount = Math.floor(count / 2)
 
         return res.status(200).json(notifCount)
 

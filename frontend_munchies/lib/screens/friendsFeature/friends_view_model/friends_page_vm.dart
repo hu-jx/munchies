@@ -46,3 +46,21 @@ Future<void> updateRequest(
     client: client
   );
 }
+
+Future<void> removeFriend(
+  String sender_id,
+  String receiver_id, {
+  FirebaseAuth? auth,
+  http.Client? client,
+}) async {
+  final authInstance = auth ?? FirebaseAuth.instance;
+  final firebaseInfo = await userIdToken(authInstance);
+  final idToken = firebaseInfo.idToken;
+
+  await UserServices.removeFriend(
+    sender_id: sender_id,
+    receiver_id: receiver_id,
+    idToken: idToken,
+    client: client,
+  );
+}

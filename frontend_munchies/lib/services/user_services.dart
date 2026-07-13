@@ -111,4 +111,29 @@ class UserServices {
       throw Exception('Failed to fetch records data');
     }
   }
+
+  static Future<void> removeFriend({
+    required String sender_id,
+    required String receiver_id,
+    required String idToken,
+    http.Client? client,
+  }) async {
+    String url = '$_baseUrl/remove_friend';
+
+    final httpClient = client ?? http.Client();
+
+    final res = await httpClient.delete(
+      Uri.parse(url),
+      headers: {
+        'Accept': '*/*',
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': '	application/json',
+        'Connection': 'keep-alive',
+      },
+      body: jsonEncode({'sender_id': sender_id, 'receiver_id': receiver_id}),
+    );
+    if (res.statusCode != 201) {
+      throw Exception('Failed to remove friend');
+    }
+  }
 }

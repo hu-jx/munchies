@@ -28,9 +28,9 @@ export async function sendNotif(user) {
 }
 
 function scheduleNotifs(user, count) {
-    //const msPerWeek = 24 * 60 * 60 * 1000
+    const msPerWeek = 24 * 60 * 60 * 1000
     //msPerWeek for TESTING PURPOSES
-    const msPerWeek = 5 * 60 * 1000;
+    //const msPerWeek = 5 * 60 * 1000;
     //add 1 to deal with the case that count is 0
     const intervals = msPerWeek / (count + 1)
 
@@ -47,8 +47,8 @@ function scheduleNotifs(user, count) {
 
 export async function startScheduling(req, res) {
     //THIS VER IS FOR TESTING
-    cron.schedule('6 0 * * *', async () => {
-    //cron.schedule('0 18 * * 0', async () => {
+    //cron.schedule('6 0 * * *', async () => {
+    cron.schedule('5 19 * * 0', async () => {
         console.log('Weekly scheduling initiated:', new Date().toISOString());
 
         const prevWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)

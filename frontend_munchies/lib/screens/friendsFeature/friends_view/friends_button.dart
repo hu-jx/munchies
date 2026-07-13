@@ -24,7 +24,7 @@ class _FriendsButtonState extends State<FriendsButton> {
                 MaterialPageRoute(builder: (context) => FriendsPage()),
               );
             },
-            child: Text('Friends', style: importantTextStyle),
+            child: Text('Manage friends', style: importantTextStyle),
           ),
         ],
       ),
