@@ -55,7 +55,7 @@ class GoalServices implements GoalServicesRepo {
         throw Exception('Unexpected data format');
       }
       data.map((key, val) {
-          debugPrint("TYPES ARE ${val.runtimeType}");
+          debugPrint("TYPES ARE ${val}");
           return MapEntry(key, val);
         } );
       return [data['streak'], data['last_success']];

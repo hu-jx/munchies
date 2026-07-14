@@ -37,7 +37,7 @@ export function computeStreak(active_goals, record_count_by_week) {
     let curr_goal_qty = null
     let next_goal_index = 0
     let streak = 0
-    let last_success = active_goals[0].start_date
+    let last_success = active_goals[0].start_date.startOf('week')
     console.log("LAST SUCCESS IS ", last_success)
     var count_this_week
 
