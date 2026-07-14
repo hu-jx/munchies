@@ -247,6 +247,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Column(
             mainAxisSize: MainAxisSize.max,
@@ -257,12 +258,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 // height: 48.0,
                 width: 140,
                 child: TextFormField(
-                  
                   // maxLines: 3,
                   keyboardType: TextInputType.multiline,
                   controller: fNameController,
                   decoration: InputDecoration(
-                    isDense: true, 
+                    isDense: true,
                     contentPadding: const EdgeInsets.symmetric(
                       vertical: 5,
                       horizontal: 16,
@@ -271,7 +271,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     fillColor: Colors.white,
                     labelText: 'First Name',
                     labelStyle: GoogleFonts.poppins(color: Colours.grey),
-                    errorStyle: GoogleFonts.poppins(color: Colors.red,height:  1.0),
+                    errorStyle: GoogleFonts.poppins(
+                      color: Colors.red,
+                      height: 1.0,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colours.grey),
                     ),
