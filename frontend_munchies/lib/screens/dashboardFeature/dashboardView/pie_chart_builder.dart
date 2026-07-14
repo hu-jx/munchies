@@ -109,9 +109,12 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
       return PieChartSectionData(
         value: cate[widget.sortBy].toDouble(),
         //title: cate["_id"]["category"],
-        title:
-            (cate[widget.sortBy].toDouble() / total * 100).round().toString() +
-            "%",
+        title: (total == 0)
+            ? "0"
+            : ((cate[widget.sortBy].toDouble() / total * 100)
+                      .round()
+                      .toString() +
+                  "%"),
         color: colourList[preppedData.indexOf(cate)],
         radius: 100,
       );
@@ -150,7 +153,7 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
     }).toList();
 
     return Container(
-      height: height * (0.35 + sectionList.length * 0.02),
+      //height: height * (0.35 + sectionList.length * 0.02),
       color: Colours.darkerBeige,
       child: Column(
         children: [
@@ -172,18 +175,28 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
           ),
           SizedBox(height: 15),
           SizedBox(
-            height: 200,
-            child: PieChart(
-              //issue fixing
-              key: ValueKey(
-                widget.selectedView.toString() + widget.chosenDate.toString(),
-              ),
-              PieChartData(sections: sectionList),
-            ),
+            height: (total == 0) ? 20 : 200,
+            child: (total == 0)
+                ? Text(
+                    "\$0 spent!",
+                    style: TextStyle(
+                      fontFamily: "Poppins",
+                      color: Colours.darkBrown,
+                    ),
+                  )
+                : PieChart(
+                    //issue fixing
+                    key: ValueKey(
+                      widget.selectedView.toString() +
+                          widget.chosenDate.toString(),
+                    ),
+                    PieChartData(sections: sectionList),
+                  ),
           ),
           SizedBox(height: 15),
           ...legend,
           //for testing Text("legend"),
+          SizedBox(height: 20),
         ],
       ),
     );

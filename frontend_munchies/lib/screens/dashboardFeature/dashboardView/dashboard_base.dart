@@ -28,7 +28,7 @@ class DashboardView extends StatelessWidget {
       case ViewOpt.monthly:
         return "Monthly";
       case ViewOpt.annually:
-        return "Annually";
+        return "Yearly";
       case ViewOpt.futureView:
         return "Future";
     }
@@ -123,7 +123,7 @@ class DashboardView extends StatelessWidget {
           alignment: AlignmentGeometry.centerEnd,
           children: [
             Container(
-              width: 124,
+              width: 130,
               height: 40,
               decoration: BoxDecoration(
                 color: Colours.mutedPink,

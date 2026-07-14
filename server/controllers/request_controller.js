@@ -50,6 +50,10 @@ export async function updateRequest(req, res) {
             ]
         });
 
+        if (! existingReq.status ) {
+            return res.status(400).json({ message: "No existing request between these 2 users" });
+        }
+
         if (existingReq.status === "accepted") {
             return res.status(400).json({ message: "Already accepted request, cannot modify" });
         }

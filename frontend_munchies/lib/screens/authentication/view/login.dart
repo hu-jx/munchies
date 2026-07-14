@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/screens/authentication/view/forgot_pw.dart';
+import 'package:frontend_munchies/screens/authentication/notif_helper.dart';
 // import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/main_screen.dart';
 import 'package:frontend_munchies/styles/colours.dart';
@@ -216,6 +217,9 @@ class _LoginPageState extends State<LoginPage> {
         emailController.text,
         pwController.text,
       );
+      // TO DO: IF SUCCESSFUL, add the FCM Token to the User profile(call addFCMToken in the backend)
+      print("helper registerToken function called");
+      await registerToken();
       // if (!mounted) return;
       // setState(() {
       //   errorMessage = null;

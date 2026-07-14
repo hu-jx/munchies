@@ -41,7 +41,7 @@ class _ProfileViewState extends State<ProfileView> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  FriendsButton(),
+                  //FriendsButton(),
                   GoalPost(),
                   SizedBox(height: 20,),
                   RecView(),

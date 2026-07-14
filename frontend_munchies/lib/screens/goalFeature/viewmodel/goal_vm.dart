@@ -87,9 +87,10 @@ class GoalViewModel extends ChangeNotifier {
       onLoading();
       Goal? goal = await goalRepo.getLatestGoal();
       _latestGoal = goal;
-      debugPrint("THE LATEST GOAL IS ${goal?.quantity}");
-      int streak = await goalRepo.getCurrentStreak();
+      if (goal != null) {
+        int streak = await goalRepo.getCurrentStreak();
       _streak = streak;
+      debugPrint(_streak.toString());
       int currentFreq = await goalRepo.getCurrentConsumption();
       _currentConsumption = currentFreq;
       int adaptiveGoal = await goalRepo.getAdaptiveGoal();
@@ -98,6 +99,7 @@ class GoalViewModel extends ChangeNotifier {
         adaptiveGoal = (adaptiveGoal * 0.9).round();
       }
       _reccGoal = adaptiveGoal < 0 ? 0 : adaptiveGoal;
+      }
       notifyListeners();
     } catch (e) {
       _errorMessage = e.toString();
