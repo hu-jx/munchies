@@ -277,7 +277,7 @@ class GoalDisplay extends StatelessWidget {
                 spacing: 0,
                 children: [
                   Text(
-                    '${viewModel.latestGoal == null ? DateField.formatDate(DateTime.now()) : DateField.formatDate(viewModel.latestGoal?.start_date)} -> ${DateField.formatDate(DateTime.now())}',
+                    '${viewModel.latestGoal == null ? DateField.formatDate(DateTime.now()) : DateField.formatDate(viewModel.earliest_success)} -> ${DateField.formatDate(DateTime.now())}',
                     style: importantTextStyle,
                   ),
                   Text(

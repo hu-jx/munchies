@@ -10,7 +10,8 @@ export function computeStreak(active_goals, record_count_by_week) {
 
     active_goals = active_goals.filter(doc => doc.isActive).map(doc => ({
         start_week: parseInt(doc.start_week),
-        quantity: parseInt(doc.quantity)
+        quantity: parseInt(doc.quantity),
+        start_date: dayjs(doc.start_date)
     }))
 
     // active_goals = isActive_goals.flatMap(v1 => 
@@ -36,6 +37,8 @@ export function computeStreak(active_goals, record_count_by_week) {
     let curr_goal_qty = null
     let next_goal_index = 0
     let streak = 0
+    let last_success = active_goals[0].start_date
+    console.log("LAST SUCCESS IS ", last_success)
     var count_this_week
 
     for (let week = oldest_week; week <= curr_week; week++) {
@@ -53,12 +56,19 @@ export function computeStreak(active_goals, record_count_by_week) {
         } else if (count_this_week <= curr_goal_qty) {
             streak++
         } else {
+            if (week + 1 > curr_week) {
+                last_success = EPOCH.add(week, 'week')
+            } else {
+                last_success =  EPOCH.add(week + 1, 'week')
+            }
+            console.log(last_success)
+            console.log(console.log(last_success.format('YYYY-MM-DD dddd')));
             streak = 0
         }
         console.log(`On week ${week} of ${EPOCH.add(week, 'week')}, the streak is ${streak} with the count being ${count_this_week} and current goal quantity being ${curr_goal_qty}`)
 
     }
-    return streak
+    return [streak, last_success.format('YYYY-MM-DD')]
 }
 
 // let active_goals = [

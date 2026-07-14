@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_munchies/screens/friendsFeature/friends_view/friends_button.dart';
 import 'package:frontend_munchies/screens/goalFeature/view/goal_view.dart';
 import 'package:frontend_munchies/screens/recommendationFeature/view/rec_view.dart';
 import 'package:frontend_munchies/styles/colours.dart';

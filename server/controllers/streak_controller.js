@@ -48,8 +48,9 @@ export async function getCurrentStreak(req, res) {
         if (record_count_by_week == undefined || record_count_by_week == null) {
             record_count_by_week = []
         }
-        var streak = computeStreak(active_goals, record_count_by_week, oldest_goal_date)
-        return res.status(200).json({ "streak": streak })
+        var [streak, last_success] = computeStreak(active_goals, record_count_by_week, oldest_goal_date)
+        console.log(streak, last_success)
+        return res.status(200).json({ "streak": streak, "last_success": last_success })
     } catch (error) {
         if (error instanceof DataError) {
             return res.status(204).json({message: "Not enough data"})

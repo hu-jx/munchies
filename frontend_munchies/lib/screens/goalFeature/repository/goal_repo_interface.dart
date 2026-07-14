@@ -6,7 +6,7 @@ abstract class GoalRepoInterface {
   Future<void> createNewGoal(Goal goal);
   Future<void> updateGoalById(String goalId, Map<String, dynamic> updates);
   Future<void> createHigherGoal(Goal goal);
-  Future<int> getCurrentStreak();
+  Future<List> getCurrentStreak();
   Future<int> getCurrentConsumption();
   Future<int> getAdaptiveGoal();
 }

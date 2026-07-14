@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
-import 'package:frontend_munchies/services/recommendation_services.dart';
+// import 'package:frontend_munchies/services/recommendation_services.dart';
 import 'package:frontend_munchies/screens/recommendationFeature/view_model/rec_view_model.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 
@@ -27,7 +27,7 @@ class _RecViewState extends State<RecView> {
     final recs = await getRec();
     if (!mounted) return;
 
-    if (recs == null || recs['error'] == true) {
+    if (recs.isEmpty || recs['error'] == true) {
       setState(() {
         errorMessage = "Something went wrong, please try again later";
         recsLoading = false;
@@ -154,7 +154,7 @@ class _RecViewState extends State<RecView> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    double height = size.height;
+    // double height = size.height;
     double width = size.width;
 
     return Container(

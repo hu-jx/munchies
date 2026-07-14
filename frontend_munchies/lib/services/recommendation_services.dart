@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:frontend_munchies/models/friend_request.dart';
+// import 'package:flutter/foundation.dart';
+// import 'package:frontend_munchies/models/friend_request.dart';
 import 'package:http/http.dart' as http;
 
 class RecommendationServices {
