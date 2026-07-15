@@ -128,7 +128,7 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
           children: [
             Container(
               height: 10,
-              width: 10,
+              // width: 10,
               //color: colourList[preppedData.indexOf(cate) + 1],
             ),
             Text(
