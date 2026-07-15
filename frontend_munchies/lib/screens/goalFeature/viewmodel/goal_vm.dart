@@ -35,7 +35,7 @@ class GoalViewModel extends ChangeNotifier {
   String? get errorMesage => _errorMessage;
   bool get loadingStatus => _isLoading;
   double get currentQuota {
-    debugPrint("$_currentConsumption at VM");
+    // debugPrint("$_currentConsumption at VM");
     if (latestGoal == null || _currentConsumption == null) {
       return 0;
     }
@@ -45,7 +45,7 @@ class GoalViewModel extends ChangeNotifier {
     return _currentConsumption! / latestGoal!.quantity;
   }
   int get remainingConsumption {
-    debugPrint("${_currentConsumption.toString()} is current consump");
+    // debugPrint("${_currentConsumption.toString()} is current consump");
     if (latestGoal == null || _currentConsumption == null) return 0;
     int diff = latestGoal!.quantity - _currentConsumption!;
     // if (diff < 0) {
@@ -93,14 +93,14 @@ class GoalViewModel extends ChangeNotifier {
       if (goal != null) {
         List data = await goalRepo.getCurrentStreak();
         int? streak = data[0];
-        debugPrint("$streak");
+        // debugPrint("$streak");
         DateTime? last_success = DateTime.tryParse(data[1]);
         if (streak == null || last_success == null) {
           throw Exception('Server error');
         }
       _streak = streak;
       _last_success = last_success;
-      debugPrint(_streak.toString());
+      // debugPrint(_streak.toString());
       int currentFreq = await goalRepo.getCurrentConsumption();
       _currentConsumption = currentFreq;
       int adaptiveGoal = await goalRepo.getAdaptiveGoal();
