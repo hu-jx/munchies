@@ -37,3 +37,9 @@ final recStyle = TextStyle(
   color: Colours.darkBrown,
   fontSize: 15,
 );
+
+final titleStyle = TextStyle(
+                fontFamily: 'Cherry_Bomb_One',
+                fontSize: 36,
+                color: Colours.greyPink,
+              );

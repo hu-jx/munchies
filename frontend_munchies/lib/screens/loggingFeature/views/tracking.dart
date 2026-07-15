@@ -29,6 +29,7 @@ class _TrackingPageState extends State<TrackingPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
           iconTheme: IconThemeData(
             color: Colours.greyPink, //change your color here
           ),

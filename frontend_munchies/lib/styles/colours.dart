@@ -16,4 +16,5 @@ class Colours {
   static const piePurple = Color(0xffEED7FF);
   static const piePink = Color(0xffFECFED);
   static const pieGreen = Color(0xffCDF7D9);
+  static const tintPink = Color.fromARGB(255, 255, 208, 213);
 }

@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:frontend_munchies/models/friend_request.dart';
+// import 'package:flutter/foundation.dart';
+// import 'package:frontend_munchies/models/friend_request.dart';
 import 'package:http/http.dart' as http;
 
 class RecommendationServices {
-  static const String _baseUrl = "http://10.0.2.2:3000/api";
-  //static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  // static const String _baseUrl = "http://10.0.2.2:3000/api";
+  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   //RETURNED null in this function
   static Future<Map<String, dynamic>> getRecommendation({

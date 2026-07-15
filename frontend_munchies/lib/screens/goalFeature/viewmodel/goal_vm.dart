@@ -27,6 +27,8 @@ class GoalViewModel extends ChangeNotifier {
   int _streak = 0;
   int? _currentConsumption;
   int _reccGoal = 2;
+  DateTime? _last_success;
+
 
   Goal? get latestGoal => _latestGoal;
   int get currentStreak => _streak;
@@ -53,6 +55,7 @@ class GoalViewModel extends ChangeNotifier {
     // }
   }
   int get reccGoal => _reccGoal;
+  DateTime get earliest_success => _last_success ?? _latestGoal!.start_date;
 
   void onLoading() {
     _isLoading = true;
@@ -88,8 +91,15 @@ class GoalViewModel extends ChangeNotifier {
       Goal? goal = await goalRepo.getLatestGoal();
       _latestGoal = goal;
       if (goal != null) {
-        int streak = await goalRepo.getCurrentStreak();
+        List data = await goalRepo.getCurrentStreak();
+        int? streak = data[0];
+        debugPrint("$streak");
+        DateTime? last_success = DateTime.tryParse(data[1]);
+        if (streak == null || last_success == null) {
+          throw Exception('Server error');
+        }
       _streak = streak;
+      _last_success = last_success;
       debugPrint(_streak.toString());
       int currentFreq = await goalRepo.getCurrentConsumption();
       _currentConsumption = currentFreq;

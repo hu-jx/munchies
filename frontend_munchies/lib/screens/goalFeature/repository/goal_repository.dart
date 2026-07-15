@@ -40,7 +40,7 @@ class GoalRepoImpl implements GoalRepoInterface {
   }
 
   @override
-  Future<int> getCurrentStreak() async {
+  Future<List> getCurrentStreak() async {
     await getUserToken();
     return service.getCurrentStreak(null, idToken!); 
   }
