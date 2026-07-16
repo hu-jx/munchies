@@ -81,6 +81,7 @@ class ForgotPW extends StatelessWidget {
                     labelStyle: backgroundTextStyle,
                   ),
             ),
+            viewModel.status == 'Loading...' ? LinearProgressIndicator(color: Colours.greyPink,):
             AppButton(
               text: 'Send link',
               onPressed: () async =>
