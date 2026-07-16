@@ -52,8 +52,8 @@ class GoalPostView extends StatelessWidget {
               alignment: Alignment.center,
               child: CircularProgressIndicator(color: Colours.greyPink),
             )
-          : viewModel.errorMesage != null 
-          ? ShowErrorMessage(errorMessage: viewModel.errorMesage)
+          : viewModel.loadErrorMessage != null 
+          ? ShowErrorMessage(errorMessage: viewModel.loadErrorMessage)
           : Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -177,7 +177,7 @@ class GoalPostView extends StatelessWidget {
                           viewModel: viewModel,
                           goalController: goalController,
                         ),
-                        ShowErrorMessage(errorMessage: viewModel.errorMesage),
+                        ShowErrorMessage(errorMessage: viewModel.setErrorMessage),
                       ],
                     ),
                   ),
@@ -192,7 +192,7 @@ class GoalPostView extends StatelessWidget {
                       await viewModel.onSavePressed(
                         int.parse(goalController.text),
                       );
-                      if (viewModel.errorMesage == null && context.mounted) {
+                      if (viewModel.setErrorMessage == null && context.mounted) {
                         Navigator.popUntil(context, (route) {
                           return route.settings.name == '/home' ||
                               route.isFirst;

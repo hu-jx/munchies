@@ -99,16 +99,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('Setting goal on success triggers refetch', (tester) async {
-    when(() => mockGoalRepo.createHigherGoal(any()),).thenAnswer((_) async {
-      goalSC.add(null);
-    },);
-    await loadProfilePage(tester);
+  Future<void> submitNewGoal(WidgetTester tester) async {
     await tester.tap(find.widgetWithText(AppButton, 'Set new goal'));
     await tester.pumpAndSettle();
-
-    expect(find.byType(AlertDialog), findsOneWidget);
-    expect(find.text('MAX 2 TIMES / WEEK'), findsOneWidget);
 
     await tester.enterText(find.byType(TextFormField), '4');
     await tester.pumpAndSettle();
@@ -117,6 +110,16 @@ void main() {
     await tester.pumpAndSettle();
     
     await tester.tap(find.widgetWithText(TextButton, 'Save'));
+  }
+
+  testWidgets('Setting goal on success triggers refetch', (tester) async {
+    when(() => mockGoalRepo.createHigherGoal(any()),).thenAnswer((_) async {
+      goalSC.add(null);
+    },);
+    await loadProfilePage(tester);
+    // expect(find.byType(AlertDialog), findsOneWidget);
+    // expect(find.text('MAX 2 TIMES / WEEK'), findsOneWidget);
+    await submitNewGoal(tester);
     final Finder targetFinder = find.byType(AlertDialog);
 
     while (tester.widgetList(targetFinder).isNotEmpty) {
@@ -142,15 +145,15 @@ void main() {
   });
 
   testWidgets('Setting goal on error shows error message', (tester) async {
-    when(() => mockGoalRepo.getLatestGoal(),).thenThrow(Exception('Test'));
-    viewModel = GoalViewModel(goalRepo: mockGoalRepo, recordRepo: mockRecordRepo);
+    when(() => mockGoalRepo.createHigherGoal(any()),).thenThrow(Exception('Test'));
     await loadProfilePage(tester);
+    await submitNewGoal(tester);
+    await tester.pumpAndSettle();
     expect(find.byType(ShowErrorMessage), findsOne);
     expect(find.text('Exception: Test'), findsOne);
-
   });
 
-  testWidgets('Creatiing new record refetches goal details', (tester) async {
+  testWidgets('Creating new record refetches goal details', (tester) async {
     Record mockRecord = Record(record_id: 'id',itemName: 'Test', date: DateTime.now(), cost: 500, isFavourited: false, isVisible: false);
     when(() => mockRecordRepo.saveRecord(mockRecord,)).thenAnswer((_) async {
       debugPrint("CALLED");

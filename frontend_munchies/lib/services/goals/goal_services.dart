@@ -5,8 +5,8 @@ import 'package:frontend_munchies/services/goals/goal_services_repo.dart';
 import 'package:http/http.dart' as http;
 
 class GoalServices implements GoalServicesRepo {
-  static const String _baseUrl = "http://10.0.2.2:3000/api";
-  // static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  // static const String _baseUrl = "http://10.0.2.2:3000/api";
+  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   @override
   Future<Goal?> getLatestGoal(http.Client? client, String idToken) async {
