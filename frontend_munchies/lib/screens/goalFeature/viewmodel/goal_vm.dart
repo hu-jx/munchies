@@ -21,7 +21,8 @@ class GoalViewModel extends ChangeNotifier {
   }
 
   Goal? _latestGoal;
-  String? _errorMessage;
+  String? _setErrorMessage;
+  String? _loadErrorMessage;
   bool _isLoading = false;
   bool _isDisposed = false;
   int _streak = 0;
@@ -29,31 +30,32 @@ class GoalViewModel extends ChangeNotifier {
   int _reccGoal = 2;
   DateTime? _last_success;
 
-
   Goal? get latestGoal => _latestGoal;
   int get currentStreak => _streak;
-  String? get errorMesage => _errorMessage;
+  String? get setErrorMessage => _setErrorMessage;
+  String? get loadErrorMessage => _loadErrorMessage;
   bool get loadingStatus => _isLoading;
   double get currentQuota {
-    debugPrint("$_currentConsumption at VM");
+    // debugPrint("$_currentConsumption at VM");
     if (latestGoal == null || _currentConsumption == null) {
       return 0;
-    }
-     else if (latestGoal!.quantity == 0) {
+    } else if (latestGoal!.quantity == 0) {
       return 1;
     }
     return _currentConsumption! / latestGoal!.quantity;
   }
+
   int get remainingConsumption {
-    debugPrint("${_currentConsumption.toString()} is current consump");
+    // debugPrint("${_currentConsumption.toString()} is current consump");
     if (latestGoal == null || _currentConsumption == null) return 0;
     int diff = latestGoal!.quantity - _currentConsumption!;
     // if (diff < 0) {
     //   return 0;
     // } else {
-      return diff;
+    return diff;
     // }
   }
+
   int get reccGoal => _reccGoal;
   DateTime get earliest_success => _last_success ?? _latestGoal!.start_date;
 
@@ -81,7 +83,7 @@ class GoalViewModel extends ChangeNotifier {
   }
 
   Future<void> onSetNewGoalPressed() async {
-    _errorMessage = null;
+    _setErrorMessage = null;
     notifyListeners();
   }
 
@@ -93,26 +95,26 @@ class GoalViewModel extends ChangeNotifier {
       if (goal != null) {
         List data = await goalRepo.getCurrentStreak();
         int? streak = data[0];
-        debugPrint("$streak");
+        // debugPrint("$streak");
         DateTime? last_success = DateTime.tryParse(data[1]);
         if (streak == null || last_success == null) {
           throw Exception('Server error');
         }
-      _streak = streak;
-      _last_success = last_success;
-      debugPrint(_streak.toString());
-      int currentFreq = await goalRepo.getCurrentConsumption();
-      _currentConsumption = currentFreq;
-      int adaptiveGoal = await goalRepo.getAdaptiveGoal();
-      //add streak bonus 
-      if (_streak >= 4 && adaptiveGoal > 2) {
-        adaptiveGoal = (adaptiveGoal * 0.9).round();
-      }
-      _reccGoal = adaptiveGoal < 0 ? 0 : adaptiveGoal;
+        _streak = streak;
+        _last_success = last_success;
+        // debugPrint(_streak.toString());
+        int currentFreq = await goalRepo.getCurrentConsumption();
+        _currentConsumption = currentFreq;
+        int adaptiveGoal = await goalRepo.getAdaptiveGoal();
+        //add streak bonus
+        if (_streak >= 4 && adaptiveGoal > 2) {
+          adaptiveGoal = (adaptiveGoal * 0.9).round();
+        }
+        _reccGoal = adaptiveGoal < 0 ? 0 : adaptiveGoal;
       }
       notifyListeners();
     } catch (e) {
-      _errorMessage = e.toString();
+      _loadErrorMessage = e.toString();
       notifyListeners();
     } finally {
       offLoading();
@@ -133,8 +135,10 @@ class GoalViewModel extends ChangeNotifier {
     await goalRepo.updateGoalById(curr_goal_id, updates);
   }
 
-  Future<void> onSavePressed(int quantity) async {
-    _errorMessage = null;
+  Future<void> onSavePressed(int quantity, {DateTime? start_date}) async {
+    print(start_date);
+    _setErrorMessage = null;
+    _loadErrorMessage = null;
     try {
       if (quantity < 0) {
         throw Exception('Invalid value for goal');
@@ -142,7 +146,11 @@ class GoalViewModel extends ChangeNotifier {
       onLoading();
       if (_latestGoal == null) {
         await goalRepo.createNewGoal(
-          Goal(start_date: DateTime.now(), isActive: true, quantity: quantity),
+          Goal(
+            start_date: start_date ?? DateTime.now(),
+            isActive: true,
+            quantity: quantity,
+          ),
         );
       } else {
         int curr_qty = _latestGoal!.quantity;
@@ -150,12 +158,12 @@ class GoalViewModel extends ChangeNotifier {
           debugPrint('ended at createHigherGoal in vm');
           await goalRepo.createHigherGoal(
             Goal(
-              start_date: DateTime.now(),
+              start_date: start_date ?? DateTime.now(),
               isActive: true,
               quantity: quantity,
             ),
           );
-        } else if (isSameWeek(_latestGoal!.start_date, DateTime.now())) {
+        } else if (isSameWeek(_latestGoal!.start_date, start_date ?? DateTime.now())) {
           debugPrint('ended at updateGoalById in vm');
           debugPrint(_latestGoal?.goal_id.toString());
           //update goal by id
@@ -163,11 +171,11 @@ class GoalViewModel extends ChangeNotifier {
             'quantity': quantity,
           });
         } else if (quantity < curr_qty) {
-           debugPrint('ended at createNewGoal in vm');
+          debugPrint('ended at createNewGoal in vm');
           //create new higher goal
           await goalRepo.createNewGoal(
             Goal(
-              start_date: DateTime.now(),
+              start_date: start_date ?? DateTime.now(),
               isActive: true,
               quantity: quantity,
             ),
@@ -175,7 +183,7 @@ class GoalViewModel extends ChangeNotifier {
         }
       }
     } catch (e) {
-      _errorMessage = e.toString();
+      _setErrorMessage = e.toString();
       notifyListeners();
     } finally {
       offLoading();
@@ -187,6 +195,8 @@ class GoalViewModel extends ChangeNotifier {
     DateTime monday2 = date2.subtract(Duration(days: date2.weekday - 1));
     debugPrint(monday1.toIso8601String() + monday2.toIso8601String());
 
-    return monday1.year == monday2.year && monday1.month == monday2.month && monday1.day == monday1.day;
+    return monday1.year == monday2.year &&
+        monday1.month == monday2.month &&
+        monday1.day == monday1.day;
   }
 }

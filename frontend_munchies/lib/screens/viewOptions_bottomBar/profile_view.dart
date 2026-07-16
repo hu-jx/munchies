@@ -6,7 +6,8 @@ import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/widgets/profile_widgets/logout_button.dart';
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
+  final List<Widget>? pageWidgets;
+  const ProfileView({super.key, this.pageWidgets});
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -39,7 +40,7 @@ class _ProfileViewState extends State<ProfileView> {
             behavior: ScrollBehavior().copyWith(overscroll: false),
             child: SingleChildScrollView(
               child: Column(
-                children: [
+                children: widget.pageWidgets ?? [
                   //FriendsButton(),
                   GoalPost(),
                   SizedBox(height: 20,),
