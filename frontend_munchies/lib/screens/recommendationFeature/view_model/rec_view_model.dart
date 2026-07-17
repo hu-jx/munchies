@@ -8,5 +8,5 @@ Future<Map<String, dynamic>> getRec({FirebaseAuth? auth, http.Client? client}) a
   final firebaseInfo = await userIdToken(authInstance);
   final idToken = firebaseInfo.idToken;
 
-  return RecommendationServices.getRecommendation(idToken: idToken);
+  return RecommendationServices.getRecommendation(idToken: idToken, client: client);
 }

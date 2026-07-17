@@ -5,7 +5,9 @@ import 'package:frontend_munchies/screens/recommendationFeature/view_model/rec_v
 import 'package:frontend_munchies/styles/colours.dart';
 
 class RecView extends StatefulWidget {
-  const RecView({super.key});
+  final Future<Map<String, dynamic>> Function()? getRecTest;
+
+  const RecView({super.key, this.getRecTest});
 
   @override
   State<RecView> createState() => _RecViewState();
@@ -24,7 +26,7 @@ class _RecViewState extends State<RecView> {
   }
 
   Future<void> loadRecs() async {
-    final recs = await getRec();
+    final recs = (widget.getRecTest!= null) ? await widget.getRecTest!() : await getRec();
     if (!mounted) return;
 
     if (recs.isEmpty || recs['error'] == true) {
@@ -135,7 +137,7 @@ class _RecViewState extends State<RecView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "${recommendations.indexOf(item)+1}.  ${item["name"]} ",
+            "${recommendations.indexOf(item)+1}. ${item["name"]} ",
             style: TextStyle(
               fontFamily: "Poppins",
               color: Colours.darkBrown,
