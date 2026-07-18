@@ -14,6 +14,7 @@ class RecordDisplay extends StatefulWidget {
   final Record record;
   final double height;
   final double width;
+  final Future<void> Function()? toggleLikesTest;
 
   RecordDisplay({
     super.key,
@@ -22,6 +23,7 @@ class RecordDisplay extends StatefulWidget {
     required this.record,
     required this.height,
     required this.width,
+    this.toggleLikesTest
   });  
 
   @override
@@ -82,7 +84,10 @@ class _RecordDisplayState extends State<RecordDisplay> {
                   children: [
                     LikeButton(
                       isLiked: _isLiked,
-                      onPressed: (() => toggleLikes()),
+                      onPressed: widget.toggleLikesTest ?? () {
+                        toggleLikes();
+                      },
+                      //onPressed: (() => toggleLikes()),
                     ),
                     Text(likesCount.toString()),
                   ],

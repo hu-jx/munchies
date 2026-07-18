@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_munchies/models/post.dart';
+import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/feedFeature/view_models/feed_view_model.dart';
 import 'package:frontend_munchies/screens/feedFeature/view_models/post_view_model.dart';
 import 'package:frontend_munchies/screens/friendsFeature/friends_view/friends_button.dart';
@@ -7,9 +9,19 @@ import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/feedFeature/feed_view/record_display.dart';
 import 'dart:async';
 import 'package:frontend_munchies/utils/streams.dart';
+import 'package:frontend_munchies/models/record.dart';
 
 class FeedView extends StatefulWidget {
-  const FeedView({super.key});
+  final Future<List<Record>> Function()? getFriendsPostsTest;
+  final Future<UserProfile> Function(String)? findUserInfoTest;
+  final Future<bool> Function(Record)? userLikedTest;
+
+  const FeedView({
+    super.key,
+    this.getFriendsPostsTest,
+    this.findUserInfoTest,
+    this.userLikedTest,
+  });
 
   @override
   State<FeedView> createState() => _FeedViewState();
@@ -26,7 +38,7 @@ class _FeedViewState extends State<FeedView> {
     super.initState();
     loadFriendsPosts();
     _subscription = friendsUpdatedStream.listen((_) async {
-      await loadFriendsPosts(); 
+      await loadFriendsPosts();
     });
   }
 
@@ -37,32 +49,28 @@ class _FeedViewState extends State<FeedView> {
   }
 
   Future<void> loadFriendsPosts() async {
-    final result = await getFriendsPosts();
+    final List<Record> result = (widget.getFriendsPostsTest != null)
+        ? await widget.getFriendsPostsTest!()
+        : await getFriendsPosts();
+    //final result = await getFriendsPosts();
     print("FETCHING FRIEND POSTS");
-
-    /*transform Records into Post
-    List<Post> newList = [];
-    for (final record in result) {
-      final mongo_id = record.mongo_user_id;
-      //friendsPosts.add(new Post())
-      if (mongo_id == null) {
-        continue;
-      } else {
-        final poster = await findUserInfo(mongo_id);
-        final liked = await userLiked(record);
-        newList.add(
-          Post(record: record, posterProfile: poster, isLiked: liked),
-        );
-      }
-    }
-    */
 
     final posts = await Future.wait(
       result.map((record) async {
-        final user = await findUserInfo(record.mongo_user_id!);
-        final liked = await userLiked(record);
+        final user = widget.findUserInfoTest != null
+            ? await widget.findUserInfoTest!(record.mongo_user_id!)
+            : await findUserInfo(record.mongo_user_id!);
 
-        return Post(record: record, posterProfile: user, isLiked: liked, count: record.likes?.length ?? 0);
+        final liked = widget.userLikedTest != null
+            ? await widget.userLikedTest!(record)
+            : await userLiked(record);
+
+        return Post(
+          record: record,
+          posterProfile: user,
+          isLiked: liked,
+          count: record.likes?.length ?? 0,
+        );
       }),
     );
 
@@ -78,14 +86,14 @@ class _FeedViewState extends State<FeedView> {
   double getHeight(Post post, double height) {
     final record = post.record;
     if ((record.photo_URL == null) && (record.details != null)) {
-      return height * 0.20;
+      return height * 0.25;
     } else if ((record.photo_URL != null) && (record.details == null)) {
-      return height * 0.38;
-    } else if ((record.photo_URL != null) && (record.details != null)) {
       return height * 0.40;
+    } else if ((record.photo_URL != null) && (record.details != null)) {
+      return height * 0.42;
       // return 400;
     } else {
-      return height * 0.15;
+      return height * 0.20;
     }
   }
 
@@ -96,6 +104,10 @@ class _FeedViewState extends State<FeedView> {
     Size size = MediaQuery.of(context).size;
     double height = size.height;
     double width = size.width;
+
+    if (friendsPostsLoading) {
+      return CircularProgressIndicator(color: Colours.greyPink);
+    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -110,7 +122,7 @@ class _FeedViewState extends State<FeedView> {
                 await loadFriendsPosts();
               },
               child: ((friendsPosts.isEmpty)
-                  ? Text("No posts from friends")
+                  ? Text("No posts from friends, or no friends added yet")
                   : ListView.builder(
                       physics: ClampingScrollPhysics(),
                       padding: const EdgeInsets.all(8),
