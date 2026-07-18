@@ -53,6 +53,7 @@ class DashboardView extends StatelessWidget {
         ],
       ),
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         //backgroundColor: Color(0xff696969).withValues(alpha: 0.0),

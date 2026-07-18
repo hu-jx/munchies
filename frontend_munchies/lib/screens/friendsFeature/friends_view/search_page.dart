@@ -50,6 +50,7 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       backgroundColor: Colours.lightBeige,
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: Text("Search for friends", style: inputTextStyle),
         centerTitle: true,
         leading: IconButton(

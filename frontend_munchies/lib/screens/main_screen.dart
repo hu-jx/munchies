@@ -5,7 +5,7 @@ import 'package:frontend_munchies/screens/activities/domain/repositories/record_
 import 'package:frontend_munchies/screens/dashboardFeature/dashboard.dart';
 import 'package:frontend_munchies/screens/feedFeature/feed_view/feed_view.dart';
 import 'package:frontend_munchies/screens/activities/views/homePageView.dart';
-import 'package:frontend_munchies/screens/viewOptions_bottomBar/profile_view.dart';
+import 'package:frontend_munchies/screens/profile/profile_view.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/logging_options.dart';
 import 'package:popover/popover.dart';
@@ -20,10 +20,10 @@ class Homepage extends StatefulWidget {
       //DashboardView(),
       Dashboard(),
       //const Center(child: Text('Dashboard. Not yet implemented.')),
-      Center(child: Text('Track. Not yet implemented.')),
+      Center(child: Text('Track.')),
       //const Center(child: Text('Feed. Not yet implemented.')),
       FeedView(),
-      ProfileView(),
+      ProfilePage(),
     ],
   });
 
@@ -46,7 +46,7 @@ class _HomepageState extends State<Homepage> {
   void getToken() async {
     await FirebaseMessaging.instance.deleteToken();
     String? token = await FirebaseMessaging.instance.getToken();
-    print("FCM TOKEN: $token");
+    debugPrint("FCM TOKEN: $token");
   }
 
   @override

@@ -50,7 +50,12 @@ class _LoginPageState extends State<LoginPage> {
   Widget buildCenterBox() {
     return Center(
       child: Container(
-        padding: EdgeInsets.only(top:12.0, bottom: 20.0, left: 12.0, right: 12.0),
+        padding: EdgeInsets.only(
+          top: 12.0,
+          bottom: 20.0,
+          left: 12.0,
+          right: 12.0,
+        ),
         width: 342.0,
         // height: 430.0,
         decoration: BoxDecoration(
@@ -80,10 +85,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Text(
             'You need an account to continue!',
-            style: GoogleFonts.poppins(
-              color: Colours.greyPink,
-              fontSize: 16.0,
-            ),
+            style: GoogleFonts.poppins(color: Colours.greyPink, fontSize: 16.0),
           ),
           SizedBox(height: 10.0),
           buildTextfields(),
@@ -120,7 +122,12 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => ResetPage()));
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResetPage(),
+                              ),
+                            );
                           },
                           child: Text(
                             'Forget password',
@@ -219,7 +226,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       // TO DO: IF SUCCESSFUL, add the FCM Token to the User profile(call addFCMToken in the backend)
       print("helper registerToken function called");
-      await registerToken();
+     widget.homepage == null ? await registerToken() : null;
       // if (!mounted) return;
       // setState(() {
       //   errorMessage = null;
@@ -228,14 +235,25 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         _isLoading = false;
       });
-      widget.homepage != null ? Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => widget.homepage!,
-          settings: RouteSettings(name: '/home'),
-        ),
-        (Route<dynamic> route) => false,
-      ) : Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+      widget.homepage != null
+          ? Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => widget.homepage!,
+                settings: RouteSettings(name: '/home'),
+              ),
+              (Route<dynamic> route) => false,
+            )
+          : Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    Homepage(),
+                settings: RouteSettings(name: '/home'),
+              ),
+              (Route<dynamic> route) => false,
+            );
+            debugPrint("NAVIGATION COMPLETE");
     } catch (e) {
       if (!mounted) return;
       setState(() {

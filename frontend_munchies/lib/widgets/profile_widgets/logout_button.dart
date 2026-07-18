@@ -24,7 +24,7 @@ class _LogoutButtonState extends State<LogoutButton> {
         }
       },
       color: Colours.lightBeige,
-      icon: Icon(Icons.person),
+      icon: Icon(Icons.logout_rounded, color: Colours.darkBrown,),
     );
 
     // Padding(

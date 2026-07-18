@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_munchies/models/goal.dart';
+import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/goalFeature/repository/goal_repo_interface.dart';
 import 'package:frontend_munchies/screens/goalFeature/view/goal_view.dart';
 import 'package:frontend_munchies/screens/goalFeature/viewmodel/goal_vm.dart';
-import 'package:frontend_munchies/screens/viewOptions_bottomBar/profile_view.dart';
+import 'package:frontend_munchies/screens/profile/profile_view.dart';
+import 'package:frontend_munchies/screens/profile/profile_vm.dart';
 import 'package:frontend_munchies/services/goals/goal_services_repo.dart';
 import 'package:frontend_munchies/widgets/button.dart';
 import 'package:frontend_munchies/widgets/errorMessage.dart';
@@ -23,6 +25,7 @@ class MockGoalRepo extends Mock implements GoalRepoInterface {}
 class MockGoalService extends Mock implements GoalServicesRepo {}
 
 class MockRecordRepo extends Mock implements RecordRepository {}
+class MockProfileVM extends Mock implements ProfileVMRepo {}
 
 void main() {
   late RecordRepository mockRecordRepo;
@@ -32,6 +35,7 @@ void main() {
   late Goal mockGoal;
   late StreamController recordSC;
   late StreamController goalSC;
+  late MockProfileVM profileVM;
 
   setUpAll(() {
     registerFallbackValue( Goal(start_date: DateTime.now(), isActive: true, quantity: 4));
@@ -65,12 +69,18 @@ void main() {
       goalRepo: mockGoalRepo,
       recordRepo: mockRecordRepo,
     );
+    final UserProfile mockUser = UserProfile(firebase_uid: 'uid', emailAddress: 'email', password: 'pw', firstName: 'name');
+
+    profileVM = MockProfileVM();
+    when(() => profileVM.emailAddress).thenReturn("email");
+    when(() => profileVM.name).thenReturn("name");
+    when(() => profileVM.profile).thenReturn(mockUser);
   });
   Widget createProfilePage() {
     return Provider<RecordRepository>.value(
       value: mockRecordRepo,
-      child: ChangeNotifierProvider.value(
-        value: viewModel,
+      child: MultiProvider(
+        providers: [ChangeNotifierProvider<ProfileVMRepo>.value(value: profileVM), ChangeNotifierProvider.value(value: viewModel), ],
         child: MaterialApp(
           initialRoute: '/home',
           routes: {
