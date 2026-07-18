@@ -55,6 +55,7 @@ class _FriendsPageState extends State<FriendsPage> {
       child: Scaffold(
         backgroundColor: Colours.lightBeige,
         appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
           title: Text("Friends", style: inputTextStyle),
           centerTitle: true,
           leading: backButton(),

@@ -41,6 +41,7 @@ class _HomePageViewState extends State<HomePageView>
 
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: false,
         backgroundColor: Color(0xff696969).withValues(alpha: 0.1),
         title: const Align(

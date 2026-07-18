@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_munchies/models/filters.dart';
@@ -11,6 +12,7 @@ import 'package:frontend_munchies/models/record.dart';
 import '../../mocks/mock_navi_observer.dart';
 
 class MockRecordRepo extends Mock implements RecordRepository {}
+class MockFirebaseMessaging extends Mock implements FirebaseMessaging {}
 
 void main() {
   late List<Record> records;
@@ -18,8 +20,10 @@ void main() {
   late MockNaviObserver mockObserver;
   late StreamController<void> streamController;
   late ActivityFilter filter;
+  late MockFirebaseMessaging mockFirebaseMessaging;
 
   setUp(() {
+    mockFirebaseMessaging = MockFirebaseMessaging();
     records = [
       Record(
         record_id: 'id',
@@ -39,7 +43,9 @@ void main() {
     ).thenAnswer((_) => streamController.stream);
     when(() => mockRepo.fetchAllRecords(filter.query)).thenAnswer((_) async {
       return Future.delayed(Durations.medium4, () => records);
-    });
+    });   
+    // when(() => mockFirebaseMessaging.getToken()).thenAnswer((_) async => 'token');
+    // when(() => mockFirebaseMessaging.deleteToken()).thenAnswer((_) async {});
   });
 
   Widget createHomepage({
@@ -54,7 +60,7 @@ void main() {
           const Placeholder(),
           const Placeholder(),
           const Placeholder()
-        ],),
+        ], messaging: mockFirebaseMessaging,),
         navigatorObservers: navigatorObs,
       ),
     );
