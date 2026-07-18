@@ -3,13 +3,21 @@ import 'package:frontend_munchies/models/friend_request.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/friendsFeature/friends_view/search_page.dart';
 import 'package:frontend_munchies/screens/friendsFeature/friends_view_model/friends_page_vm.dart';
+import 'package:frontend_munchies/screens/friendsFeature/friends_view_model/search_view_model.dart';
 import 'package:frontend_munchies/services/user_services.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 import 'package:frontend_munchies/utils/streams.dart';
 
 class FriendsPage extends StatefulWidget {
-  const FriendsPage({super.key});
+  final Future<List<UserProfile>> Function()? getFriendsListTest;
+  final Future<List<FriendRequest>> Function()? getPendingRequestTest;
+
+  const FriendsPage({
+    super.key,
+    this.getFriendsListTest,
+    this.getPendingRequestTest,
+  });
 
   @override
   State<FriendsPage> createState() => _FriendsPageState();
@@ -29,7 +37,10 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   Future<void> loadFriends() async {
-    final result = await getFriendsList();
+    final result = widget.getFriendsListTest != null
+    ? await widget.getFriendsListTest!()
+    : await getFriendsList();
+
     if (!mounted) return;
     setState(() {
       friendsList = result;
@@ -38,7 +49,9 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   Future<void> loadRequests() async {
-    final requests = await getPendingRequest();
+    final requests = widget.getPendingRequestTest != null
+    ? await widget.getPendingRequestTest!()
+    : await getPendingRequest();
 
     if (!mounted) return;
     setState(() {
@@ -64,7 +77,9 @@ class _FriendsPageState extends State<FriendsPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SearchPage()),
+                  MaterialPageRoute(
+                    builder: (context) => SearchPage(vm: SearchViewModel()),
+                  ),
                 );
               },
               icon: const Icon(Icons.search),

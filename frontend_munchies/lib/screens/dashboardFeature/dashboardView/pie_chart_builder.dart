@@ -96,8 +96,8 @@ class _PieChartBuilderState extends State<PieChartBuilder> {
   Widget build(BuildContext context) {
     final listCopy = List<dynamic>.from(widget.categoryData);
 
-    Size size = MediaQuery.of(context).size;
-    double height = size.height;
+    //Size size = MediaQuery.of(context).size;
+    //double height = size.height;
 
     List<dynamic> preppedData = List<dynamic>.from(
       prepPieData(listCopy, widget.sortBy),

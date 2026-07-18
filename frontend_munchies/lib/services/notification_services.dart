@@ -27,7 +27,6 @@ class NotificationServices {
       if (idToken != null) {
         await registerToken(idToken: idToken);
       } else {
-        print("No logged-in user — skipping token refresh registration");
       }
     });
 

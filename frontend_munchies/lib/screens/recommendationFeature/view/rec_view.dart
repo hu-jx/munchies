@@ -5,7 +5,9 @@ import 'package:frontend_munchies/screens/recommendationFeature/view_model/rec_v
 import 'package:frontend_munchies/styles/colours.dart';
 
 class RecView extends StatefulWidget {
-  const RecView({super.key});
+  final Future<Map<String, dynamic>> Function()? getRecTest;
+
+  const RecView({super.key, this.getRecTest});
 
   @override
   State<RecView> createState() => _RecViewState();
@@ -24,7 +26,9 @@ class _RecViewState extends State<RecView> {
   }
 
   Future<void> loadRecs() async {
-    final recs = await getRec();
+    final recs = (widget.getRecTest != null)
+        ? await widget.getRecTest!()
+        : await getRec();
     if (!mounted) return;
 
     if (recs.isEmpty || recs['error'] == true) {
@@ -98,9 +102,15 @@ class _RecViewState extends State<RecView> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Text("  - Fruity, creamy, refreshing, thick, sweet ", style: recStyle),
-          Text("  - Rich in vitamins and antioxidants with natural fruit sugars. ", style: recStyle),
-          SizedBox(height: 5,),
+          Text(
+            "  - Fruity, creamy, refreshing, thick, sweet ",
+            style: recStyle,
+          ),
+          Text(
+            "  - Rich in vitamins and antioxidants with natural fruit sugars. ",
+            style: recStyle,
+          ),
+          SizedBox(height: 5),
           //NEXT REC ITEM
           Text(
             "2. Dark Chocolate with Nuts",
@@ -111,9 +121,15 @@ class _RecViewState extends State<RecView> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Text("  - Bitter-sweet, rich, crunchy, nutty, smooth ", style: recStyle),
-          Text("  - Contains antioxidants and healthy fats, lower sugar than milk chocolate. ", style: recStyle),
-          SizedBox(height: 5,),
+          Text(
+            "  - Bitter-sweet, rich, crunchy, nutty, smooth ",
+            style: recStyle,
+          ),
+          Text(
+            "  - Contains antioxidants and healthy fats, lower sugar than milk chocolate. ",
+            style: recStyle,
+          ),
+          SizedBox(height: 5),
         ],
       );
     } else {
@@ -122,7 +138,10 @@ class _RecViewState extends State<RecView> {
         children: [
           Text(info!["tastePreference"], style: recStyle),
           SizedBox(height: 10),
-          Column(children: buildRec()),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: buildRec(),
+          ),
         ],
       );
     }
@@ -135,7 +154,7 @@ class _RecViewState extends State<RecView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "${recommendations.indexOf(item)+1}.  ${item["name"]} ",
+            "${recommendations.indexOf(item) + 1}. ${item["name"]} ",
             style: TextStyle(
               fontFamily: "Poppins",
               color: Colours.darkBrown,
@@ -145,7 +164,7 @@ class _RecViewState extends State<RecView> {
           ),
           Text("  - ${item["flavours"]}", style: recStyle),
           Text("  - ${item["benefit"]}", style: recStyle),
-          SizedBox(height: 5,)
+          SizedBox(height: 10),
         ],
       );
     }).toList();

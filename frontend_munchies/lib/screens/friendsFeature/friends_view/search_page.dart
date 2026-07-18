@@ -6,7 +6,16 @@ import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  final SearchViewModel vm;
+  final Future<UserProfile> Function()? getCurrentUPTest;
+  final Future<String> Function(String, String)? checkStatusTest;
+
+  const SearchPage({
+    super.key,
+    required this.vm,
+    this.getCurrentUPTest,
+    this.checkStatusTest,
+  });
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -15,21 +24,31 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController searchController = TextEditingController();
   bool isSearching = false;
+  bool isLoading = false;
 
-  final vm = SearchViewModel();
   UserProfile? foundUser;
 
   void onSearch() async {
     final query = searchController.text;
-    await vm.findUsers(query);
+    if (query.isEmpty) {
+      setState(() {
+        isSearching = false;
+        foundUser = null;
+      });
+      return;
+    }
 
     setState(() {
-      foundUser = vm.foundUser;
-      if (searchController.text != "") {
-        isSearching = true;
-      } else {
-        isSearching = false;
-      }
+      isLoading = true;
+      isSearching = true;
+    });
+
+    await widget.vm.findUsers(query);
+
+    setState(() {
+      foundUser = widget.vm.foundUser;
+      isSearching = true;
+      isLoading = false;
     });
   }
 
@@ -87,14 +106,30 @@ class _SearchPageState extends State<SearchPage> {
   Widget searchResults() {
     if (isSearching == false) {
       return Center(child: Text(""));
-    } 
-    final user = foundUser; 
-    if (user == null) {
-      return Center(child: Text("No user found", style: TextStyle(fontFamily: "Poppins", fontSize: 20, color: Colours.greyPink),));
     }
-    return 
-    SearchedProfile(key: ValueKey(user.mongo_id), userProfile: user);
-      
-      //Text(foundUser!.firstName + ": " + foundUser!.emailAddress);
+    if (isLoading) {
+      return CircularProgressIndicator(color: Colours.greyPink);
+    }
+    final user = foundUser;
+    if (user == null) {
+      return Center(
+        child: Text(
+          "No user found",
+          style: TextStyle(
+            fontFamily: "Poppins",
+            fontSize: 20,
+            color: Colours.greyPink,
+          ),
+        ),
+      );
+    }
+    return SearchedProfile(
+      key: ValueKey(user.mongo_id),
+      userProfile: user,
+      getCurrentUPTest: widget.getCurrentUPTest,
+      checkStatusTest: widget.checkStatusTest,
+    );
+
+    //Text(foundUser!.firstName + ": " + foundUser!.emailAddress);
   }
 }

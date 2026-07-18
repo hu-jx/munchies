@@ -3,7 +3,6 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:frontend_munchies/models/friend_request.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/screens/friendsFeature/friends_view_model/friends_page_vm.dart';
-import 'package:frontend_munchies/screens/friendsFeature/friends_view_model/search_view_model.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:http/http.dart' as http;
 
@@ -109,9 +108,38 @@ void main() {
     );
 
     verify(
-      () => mockClient.patch(
+      () => mockClient.patch(any(), headers: any(named: 'headers')),
+    ).called(1);
+  });
+
+  test('removeFriend calls the correct endpoint', () async {
+    final mockUser = MockUser(uid: 'test-uid');
+    final mockAuth = MockFirebaseAuth(mockUser: mockUser, signedIn: true);
+    final mockClient = MockClient();
+
+    when(
+      () => mockClient.delete(
         any(),
         headers: any(named: 'headers'),
+        body: any(named: 'body'),
+      ),
+    ).thenAnswer(
+      (_) async =>
+          http.Response(' { "messsage": "Friend successfully removed" }', 200),
+    );
+
+    await removeFriend(
+      "sender-id",
+      "receiver-id",
+      auth: mockAuth,
+      client: mockClient,
+    );
+
+    verify(
+      () => mockClient.delete(
+        any(),
+        headers: any(named: 'headers'),
+        body: any(named: 'body'),
       ),
     ).called(1);
   });
