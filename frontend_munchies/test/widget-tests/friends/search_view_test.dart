@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,7 +42,7 @@ void main() {
           getCurrentUPTest: () async {
             return user;
           },
-          checkStatusTest: (_, __) async => "Request does not exist",
+          checkStatusTest: (_, _) async => "Request does not exist",
         ),
       ),
     );
@@ -85,7 +84,7 @@ void main() {
             getCurrentUPTest: () async {
               return user;
             },
-            checkStatusTest: (_, __) async => "Request does not exist",
+            checkStatusTest: (_, _) async => "Request does not exist",
           ),
         ),
       );
@@ -126,7 +125,7 @@ void main() {
           getCurrentUPTest: () async {
             return user;
           },
-          checkStatusTest: (_, __) async => "Request does not exist",
+          checkStatusTest: (_, _) async => "Request does not exist",
         ),
       ),
     );

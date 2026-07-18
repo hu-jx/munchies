@@ -44,7 +44,7 @@ void main() {
           getCurrentUPTest: () async {
             return user;
           },
-          checkStatusTest: (_, __) async => "Request does not exist",
+          checkStatusTest: (_, _) async => "Request does not exist",
         ),
       ),
     );
@@ -91,7 +91,7 @@ void main() {
           getCurrentUPTest: () async {
             return user;
           },
-          checkStatusTest: (_, __) async => "Accepted",
+          checkStatusTest: (_, _) async => "Accepted",
         ),
       ),
     );
@@ -138,7 +138,7 @@ void main() {
           getCurrentUPTest: () async {
             return user;
           },
-          checkStatusTest: (_, __) async => "From user",
+          checkStatusTest: (_, _) async => "From user",
         ),
       ),
     );
@@ -185,7 +185,7 @@ void main() {
           getCurrentUPTest: () async {
             return user;
           },
-          checkStatusTest: (_, __) async => "To user",
+          checkStatusTest: (_, _) async => "To user",
         ),
       ),
     );
@@ -225,7 +225,7 @@ void main() {
           getCurrentUPTest: () async {
             return user;
           },
-          checkStatusTest: (_, __) async => "Own user",
+          checkStatusTest: (_, _) async => "Own user",
         ),
       ),
     );

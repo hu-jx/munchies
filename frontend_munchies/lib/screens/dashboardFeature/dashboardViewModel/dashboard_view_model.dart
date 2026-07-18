@@ -15,9 +15,20 @@ class DashboardViewModel {
   List categoryData = [];
   int requestId = 0;
 
-  DashboardViewModel({FirebaseAuth? auth, http.Client? client})
-    : _auth = auth ?? FirebaseAuth.instance,
-      _client = client;
+  bool _useTestData = false;
+
+  DashboardViewModel({
+    FirebaseAuth? auth,
+    http.Client? client,
+    List? testSummaryData,
+    List? testCategoryData,
+  }) : _auth = auth ?? FirebaseAuth.instance,
+       _client = client,
+       _useTestData = testCategoryData != null {
+    // if test data provided, populate immediately
+    if (testSummaryData != null) summaryData = testSummaryData;
+    if (testCategoryData != null) categoryData = testCategoryData;
+  }
 
   void changeView(ViewOpt newView) {
     selectedView = newView;
@@ -52,6 +63,8 @@ class DashboardViewModel {
   */
 
   Future<void> getData() async {
+    if (_useTestData) { return; };
+    
     final int currentRequest = ++requestId;
 
     final firebaseInfo = await userIdToken(_auth);
