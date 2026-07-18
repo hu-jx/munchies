@@ -13,11 +13,18 @@ class SearchViewModel {
 
   UserProfile? foundUser;
 
-  SearchViewModel({FirebaseAuth? auth, http.Client? client})
+  Future<void> Function(String)? findUsersTest;
+
+  SearchViewModel({FirebaseAuth? auth, http.Client? client, this.findUsersTest})
     : _auth = auth ?? FirebaseAuth.instance,
       _client = client;
 
   Future<void> findUsers(String emailAddress) async {
+    if (findUsersTest != null) {
+      await findUsersTest!(emailAddress);
+      return;
+    }
+
     final firebaseInfo = await userIdToken(_auth);
     final idToken = firebaseInfo.idToken;
     final usr = firebaseInfo.usr;
@@ -45,7 +52,7 @@ Future<String> checkStatus(
     sender_id: sender_id,
     receiver_id: receiver_id,
     idToken: idToken,
-    client: client
+    client: client,
   );
 }
 

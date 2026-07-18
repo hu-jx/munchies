@@ -11,8 +11,15 @@ import 'package:frontend_munchies/styles/textStyles.dart';
 
 class SearchedProfile extends StatefulWidget {
   final UserProfile userProfile;
+  final Future<UserProfile> Function()? getCurrentUPTest;
+  final Future<String> Function(String, String)? checkStatusTest;
 
-  const SearchedProfile({super.key, required this.userProfile});
+  const SearchedProfile({
+    super.key,
+    required this.userProfile,
+    this.getCurrentUPTest,
+    this.checkStatusTest,
+  });
 
   @override
   State<SearchedProfile> createState() => _SearchedProfileState();
@@ -24,12 +31,19 @@ class _SearchedProfileState extends State<SearchedProfile> {
   String status = "loading";
 
   Future<void> loadCurrentUP() async {
-    final retrievedProfile = await UserServices.getCurrentUP();
+    final retrievedProfile = widget.getCurrentUPTest != null
+        ? await widget.getCurrentUPTest!()
+        : await UserServices.getCurrentUP();
 
-    final newStatus = await checkStatus(
-      retrievedProfile.mongo_id!,
-      widget.userProfile.mongo_id!,
-    );
+    final newStatus = widget.checkStatusTest != null
+        ? await widget.checkStatusTest!(
+            retrievedProfile.mongo_id!,
+            widget.userProfile.mongo_id!,
+          )
+        : await checkStatus(
+            retrievedProfile.mongo_id!,
+            widget.userProfile.mongo_id!,
+          );
 
     //check if widget was changed before calling setState
     if (!mounted) return;
@@ -60,11 +74,10 @@ class _SearchedProfileState extends State<SearchedProfile> {
     final currentUser = currUser;
 
     if (currentUser == null) {
-      return Center(child: CircularProgressIndicator(color: Colours.greyPink,));
+      return Center(child: CircularProgressIndicator(color: Colours.greyPink));
     }
 
     return Container(
-      height: height * 0.195,
       width: width * 0.85,
       decoration: BoxDecoration(
         color: Colours.darkerBeige,
@@ -74,6 +87,7 @@ class _SearchedProfileState extends State<SearchedProfile> {
         padding: const EdgeInsets.all(25.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
               children: [
@@ -96,16 +110,16 @@ class _SearchedProfileState extends State<SearchedProfile> {
   Widget friendStatus(String status, UserProfile sender, UserProfile receiver) {
     //based on the returned status, determine which buttons to show
     if (status == "Accepted") {
-      return reuseContainer(400, "Friends");
+      return reuseContainer(410, "Friends");
     } else if (status == "From user") {
-      return reuseContainer(400, "Requested");
+      return reuseContainer(410, "Requested");
     } else if (status == "To user") {
-      return reuseContainer(400, "Requested by friend");
+      return reuseContainer(410, "Requested by friend");
     } else if (status == "Declined") {
       //change to RequestButton, when allowing for resending is added into the app
-      return reuseContainer(400, "Declined, resending not available ");
+      return reuseContainer(410, "Declined, resending not available ");
     } else if (status == "Own user") {
-      return reuseContainer(400, "Your own user!");
+      return reuseContainer(410, "Your own user!");
     } else if (status == "Request does not exist") {
       //Request Button
       return requestButton(sender, receiver);
