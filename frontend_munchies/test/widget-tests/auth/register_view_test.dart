@@ -12,6 +12,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 
 import '../../mocks/mock_navi_observer.dart';
+import '../activities/root_screen_test.dart';
 
 //view test
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
@@ -75,7 +76,8 @@ void main() {
         const Placeholder(),
         const Placeholder(),
         const Placeholder(),
-      ],),)),
+      ],
+      messaging: MockFirebaseMessaging(),),)),
     ),);
   }
 

@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 
 class Homepage extends StatefulWidget {
   final List<Widget> viewOptions;
+  final FirebaseMessaging? messaging; 
   const Homepage({
     super.key,
     this.viewOptions = const [
@@ -25,6 +26,7 @@ class Homepage extends StatefulWidget {
       FeedView(),
       ProfilePage(),
     ],
+    this.messaging
   });
 
   @override
@@ -44,9 +46,15 @@ class _HomepageState extends State<Homepage> {
 
   //REMOVE AFT JS TO GET TOKENS FOR NOTIF
   void getToken() async {
+    if (widget.messaging != null) {
+      debugPrint("GOT HERE");
+      return;
+    } else {
+      debugPrint("ENTERED NORMAL FIREBASE MESSAGING");
     await FirebaseMessaging.instance.deleteToken();
     String? token = await FirebaseMessaging.instance.getToken();
     debugPrint("FCM TOKEN: $token");
+    }
   }
 
   @override
