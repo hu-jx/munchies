@@ -1,12 +1,10 @@
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/dashboard_base.dart';
-import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/dashboard_main.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardView/pie_chart_builder.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/dashboardViewModel/dashboard_view_model.dart';
 import 'package:frontend_munchies/screens/dashboardFeature/view_opt.dart';
-
-import '../auth/login_view_test.dart';
 
 void main() {
   testWidgets("Dashboard displays Circular Progress Indicator when loading", (

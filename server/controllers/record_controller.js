@@ -369,15 +369,15 @@ export async function getDashboardData(req, res) {
                 $match: {
                     user_uid: user_uid,
                     date: {
-                        $gte: new Date(startDate),
-                        $lte: new Date(endDate)
+                        $gte: new Date(`${startDate}T00:00:00+08:00`),
+                        $lte: new Date(`${endDate}T23:59:59.999+08:00`)
                     }
                 }
             },
             {
                 $group: {
                     //group by day/week/month, totalCost and Num for that period
-                    _id: { $dateTrunc: { date: "$date", unit: dateFormat } },
+                    _id: { $dateTrunc: { date: "$date", unit: dateFormat, timezone: "Asia/Singapore" } },
                     totalCost: { $sum: '$cost' },
                     totalNum: { $sum: 1 }
 
@@ -394,8 +394,8 @@ export async function getDashboardData(req, res) {
                 $match: {
                     user_uid: user_uid,
                     date: {
-                        $gte: new Date(startDate),
-                        $lte: new Date(endDate)
+                        $gte: new Date(`${startDate}T00:00:00+08:00`),
+                        $lte: new Date(`${endDate}T23:59:59.999+08:00`)
                     }
                 }
             },
