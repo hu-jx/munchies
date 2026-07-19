@@ -143,7 +143,6 @@ class ScanPicture extends StatelessWidget {
     );
   }
 
-  //TODO: ABSTRACT OUT THE SHOWLOADING FOR ALL FEATURES 
   void showLoading(ScanViewModel svm, BuildContext context) {
     if (!context.mounted) return;
     showDialog(

@@ -87,13 +87,17 @@ class _HomepageState extends State<Homepage> {
           ),
 
           bottomNavigationBar: BottomNavigationBar(
+            // showUnselectedLabels: false,
             currentIndex: _selectedIndex,
+            
             type: BottomNavigationBarType.fixed,
-            selectedLabelStyle: TextStyle(fontFamily: 'Poppins', height: 1),
+            selectedLabelStyle: TextStyle(fontFamily: 'Poppins', height: 1, overflow: TextOverflow.visible),
             unselectedLabelStyle: TextStyle(
+              fontSize: 12,
               fontFamily: 'Poppins',
               height: 1,
               color: Colours.greyPink.withValues(alpha: 0.75),
+              overflow: TextOverflow.visible
             ),
             selectedItemColor: Colours.greyPink,
             unselectedItemColor: Colours.greyPink.withValues(alpha: 0.4),

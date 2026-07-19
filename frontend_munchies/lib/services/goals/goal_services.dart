@@ -25,7 +25,7 @@ class GoalServices implements GoalServicesRepo {
       } else if (goal[0] is! Map<String, dynamic>) {
           throw Exception('Unexpected data format');
       }
-      debugPrint("THE LATEST GOAL IS ${goal}");
+      debugPrint("THE LATEST GOAL IS $goal");
       return Goal.fromJson(goal[0]);
     } else if (response.statusCode == 204) {
       return null;
@@ -55,7 +55,7 @@ class GoalServices implements GoalServicesRepo {
         throw Exception('Unexpected data format');
       }
       data.map((key, val) {
-          debugPrint("TYPES ARE ${val}");
+          debugPrint("TYPES ARE $val");
           return MapEntry(key, val);
         } );
       return [data['streak'], data['last_success']];

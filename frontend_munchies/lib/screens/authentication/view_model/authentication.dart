@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:frontend_munchies/models/user_profile.dart';
 import 'package:frontend_munchies/services/auth/api_services.dart';
 import 'package:frontend_munchies/services/auth/auth_exception.dart';
@@ -85,13 +84,13 @@ class Authentication {
       }
     } catch (e) {
       //if registering fails on backend, cannot create on firebase side either -> delete it 
-      print('outside here');
+      // print('outside here');
       if (user != null) {
         try {
-          print('preparing to delete');
+          // print('preparing to delete');
           await user.delete();
         } catch (e) {
-          print('Critical error: Failed to delete Firebase user during rollback: $e');
+          // print('Critical error: Failed to delete Firebase user during rollback: $e');
           rethrow;
         }
       }

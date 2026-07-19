@@ -147,9 +147,6 @@ void main() {
         await tester.enterText(find.byType(CostField), 'invalid');
         await tester.pump();
 
-        //FIXME: if wrong value, it should not be saved to the VM
-        // debugPrint(vm.cost);
-
         FocusManager.instance.primaryFocus?.unfocus();
         await tester.pumpAndSettle();
         expect(find.text('Invalid value for cost.'), findsOne);

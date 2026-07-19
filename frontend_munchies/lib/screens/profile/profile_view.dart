@@ -28,7 +28,7 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ProfileVMRepo viewModel = context.read<ProfileVMRepo>();
+    final ProfileVMRepo viewModel = context.watch<ProfileVMRepo>();
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colours.lightBeige,
@@ -109,6 +109,9 @@ class ProfileView extends StatelessWidget {
   }
 
   Widget buildUserNameRow(ProfileVMRepo viewModel) {
+    if (viewModel.isLoading) {
+      return Center(child: CircularProgressIndicator(color: Colours.greyPink),);
+    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

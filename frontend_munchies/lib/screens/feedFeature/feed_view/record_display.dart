@@ -65,8 +65,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
         bottom: 8.0,
       ),
       child: Container(
-        height: widget.height * 0.40,
-        width: widget.width * 0.90,
+        width: widget.width * 0.9,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
           color: Colours.darkerBeige,
@@ -76,10 +75,12 @@ class _RecordDisplayState extends State<RecordDisplay> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
                 padding: const EdgeInsets.only(right: 15.0),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     LikeButton(
@@ -121,6 +122,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
                       ],
                     ),
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
@@ -131,7 +133,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
                             fontSize: 16,
                           ),
                         ),
-                        Flexible(
+                        Expanded(
                           child: Text(
                             widget.record.itemName,
                             style: TextStyle(
@@ -147,11 +149,12 @@ class _RecordDisplayState extends State<RecordDisplay> {
                     //IMAGE HERE
                     imgUrl != null
                         ? Row(
+                          mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SizedBox(
-                                height: 200,
-                                width: 278,
+                                height: widget.height * 0.25,
+                                width: widget.width * 0.9 * 0.7,
                                 child: Image.network(
                                   imgUrl,
                                   fit: BoxFit.cover,
@@ -164,9 +167,10 @@ class _RecordDisplayState extends State<RecordDisplay> {
                     imgUrl != null ? SizedBox(height: 10) : Row(),
                     //CAPTION HERE
                     (widget.record.details == null)
-                        ? SizedBox(height: 0)
+                        ? Row()
                         : Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 widget.posterProfile.firstName.toString(),

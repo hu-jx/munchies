@@ -6,6 +6,7 @@ import 'package:frontend_munchies/screens/feedFeature/view_models/post_view_mode
 import 'package:frontend_munchies/screens/friendsFeature/friends_view/friends_button.dart';
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/feedFeature/feed_view/record_display.dart';
+import 'package:frontend_munchies/styles/textStyles.dart';
 import 'dart:async';
 import 'package:frontend_munchies/utils/streams.dart';
 import 'package:frontend_munchies/models/record.dart';
@@ -105,7 +106,17 @@ class _FeedViewState extends State<FeedView> {
     double width = size.width;
 
     if (friendsPostsLoading) {
-      return CircularProgressIndicator(color: Colours.greyPink);
+      return Container(
+        width: width,
+        height: height * 0.9,
+        color: Colours.lightBeige,
+        child: Center(child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: Colours.greyPink),
+          ],
+        )),
+      );
     }
 
     return Scaffold(
@@ -117,32 +128,36 @@ class _FeedViewState extends State<FeedView> {
           ScrollConfiguration(
             behavior: ScrollBehavior().copyWith(overscroll: false),
             child: RefreshIndicator(
+              backgroundColor: Colours.darkerBeige,
+              color: Colours.greyPink,
               onRefresh: () async {
                 await loadFriendsPosts();
               },
               child: ((friendsPosts.isEmpty)
-                  ? Text("No posts from friends, or no friends added yet")
+                  ? Center(
+                      child: Text(
+                        "No posts from friends, or no friends added yet",
+                        style: backgroundTextStyle,
+                      ),
+                    )
                   : ListView.builder(
                       physics: ClampingScrollPhysics(),
                       padding: const EdgeInsets.all(8),
                       itemCount: friendsPosts.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          //height: (friendsPosts[index].photo_URL == null) ? 120 : 350,
-                          height: getHeight(friendsPosts[index], height),
-                          child: Center(
-                            child: RecordDisplay(
-                              key: ValueKey(
-                                friendsPosts[index].record.record_id,
-                              ),
-                              post: friendsPosts[index],
-                              posterProfile: friendsPosts[index].posterProfile,
-                              record: friendsPosts[index].record,
-                              height: height,
-                              width: width,
-                            ),
-                            //child: Text('Entry ${friendsPosts[index]}'),
+                        return
+                        //height: (friendsPosts[index].photo_URL == null) ? 120 : 350,
+                        // height: getHeight(friendsPosts[index], height),
+                        Center(
+                          child: RecordDisplay(
+                            key: ValueKey(friendsPosts[index].record.record_id),
+                            post: friendsPosts[index],
+                            posterProfile: friendsPosts[index].posterProfile,
+                            record: friendsPosts[index].record,
+                            height: height,
+                            width: width,
                           ),
+                          //child: Text('Entry ${friendsPosts[index]}'),
                         );
                       },
                     )),
