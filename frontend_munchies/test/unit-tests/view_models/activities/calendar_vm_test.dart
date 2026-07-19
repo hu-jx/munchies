@@ -394,6 +394,5 @@ void main() {
   });
 
   //test onDeletePressed - this has been tested in Activities VM and has passed the tests
-  //TODO: This method should be abstracted to its parent class, but how?
   group('onDeletePressed', () {});
 }

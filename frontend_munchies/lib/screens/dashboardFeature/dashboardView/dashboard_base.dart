@@ -65,7 +65,7 @@ class DashboardView extends StatelessWidget {
               "DASHBOARD",
               style: TextStyle(
                 fontFamily: 'Cherry_Bomb_One',
-                fontSize: 55,
+                fontSize: 50,
                 color: Colours.greyPink,
               ),
             ),

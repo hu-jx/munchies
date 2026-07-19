@@ -68,7 +68,7 @@ class _SearchedProfileState extends State<SearchedProfile> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    double height = size.height;
+    // double height = size.height;
     double width = size.width;
 
     final currentUser = currUser;

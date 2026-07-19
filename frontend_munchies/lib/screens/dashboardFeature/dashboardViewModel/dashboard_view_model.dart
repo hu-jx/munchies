@@ -63,7 +63,7 @@ class DashboardViewModel {
   */
 
   Future<void> getData() async {
-    if (_useTestData) { return; };
+    if (_useTestData) { return; }
     
     final int currentRequest = ++requestId;
 
