@@ -235,8 +235,12 @@ void main() {
         ).thenAnswer((_) async => debugPrint('save record'));
         when(
           () => mockRepo.patchRecord('id', updates),
-        ).thenAnswer((_) async => debugPrint('update record'));
+        ).thenAnswer((_) async {
+          debugPrint('update record');
+          print("patch record called");
+        } );
         await updateViewModel.onSavePressed();
+        print(logs);
 
         expect(logs.length, 1);
         expect(logs, ['update record']);
