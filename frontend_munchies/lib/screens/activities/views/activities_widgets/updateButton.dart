@@ -21,6 +21,7 @@ class UpdateButton extends StatelessWidget {
           context,
           listen: false,
         ).getRecord(recordId);
+        debugPrint(rec.record_id.toString());
         if (!context.mounted) return;
         Navigator.of(context).pop();
         Navigator.push(

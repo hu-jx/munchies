@@ -82,6 +82,7 @@ class LoggingViewModel extends ChangeNotifier {
   //check state of values in record
   static dynamic checkIfUpdate(dynamic original, dynamic newVal) {
     if (original != null && newVal == null) {
+      debugPrint("ENTERED HERE: $original");
       return original;
     } else {
       return newVal;
@@ -224,15 +225,17 @@ class LoggingViewModel extends ChangeNotifier {
         'photo_file': _existing_file,
         'category': _category,
         'isFavourited': _isFavourited,
-        'details': _details,
+        'details': _details ?? '',
         'isVisible': _isVisible,
       };
+      debugPrint("UPDATES ARE" + updates.toString());
       if (updates.entries.every((val) => val.value == null)) {
         return;
       }
       if (_isDisposed) return;
       recordOperation = CancelableOperation.fromFuture(recordChanger.patchRecord(record!.record_id!, updates), onCancel: () => debugPrint("Update Operation Cancelled"));
       await recordOperation?.valueOrCancellation(null);
+      debugPrint("COMPLETED OPERATION");
       _errorMessage = null;
       // notifyListeners();
     } on FormatException {
