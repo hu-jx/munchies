@@ -42,7 +42,7 @@ class Record {
       itemName: json['itemName']?.toString() ?? '',
       date: DateTime.parse(json['date']?.toString() ?? DateTime.now().toIso8601String()).toLocal(),
       cost: int.parse(json['cost']?.toString() ?? "0"),
-      isFavourited: bool.parse(json['lisFavourited']?.toString() ?? 'false'),
+      isFavourited: bool.parse(json['isFavourited']?.toString() ?? 'false'),
       category: json['category'] ?? 'Other',
       photo_URL: json['photo']?.toString(),
       details: json['details']?.toString(),

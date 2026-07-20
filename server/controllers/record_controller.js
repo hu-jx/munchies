@@ -233,6 +233,7 @@ export async function updateRecord(req, res) {
             photo_url = photo.secure_url
             fs.unlinkSync(path)
         }
+        // console.log("DETAILS ARE" + details)
 
         //check if exists then assign 
         if (itemName) record.itemName = itemName
@@ -241,7 +242,7 @@ export async function updateRecord(req, res) {
         if (photo_url) record.photo = photo_url
         if (category) record.category = category
         if (isFavourited != null) record.isFavourited = isFavourited
-        if (details) record.details = details
+        if (details != null) record.details = details
         if (isVisible != null) record.isVisible = isVisible
 
         //must save to the db 

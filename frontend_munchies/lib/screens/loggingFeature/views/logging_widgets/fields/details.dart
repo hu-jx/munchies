@@ -11,7 +11,10 @@ class DetailsField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      onChanged: (value) => lvm.setDetails(value),
+      onChanged: (value) {
+        // debugPrint(value);
+        lvm.setDetails(value);
+      } ,
       style: inputTextStyle,
       controller: detailsController,
       decoration: InputDecoration(

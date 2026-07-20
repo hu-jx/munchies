@@ -74,6 +74,7 @@ class ActivitiesView extends StatelessWidget {
                                       cost: rec.cost,
                                       //CHANGE THIS INTO URL
                                       image_url: rec.photo_URL,
+                                      
                                     );
                                   }
                                 );

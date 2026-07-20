@@ -134,11 +134,20 @@ class _FeedViewState extends State<FeedView> {
                 await loadFriendsPosts();
               },
               child: ((friendsPosts.isEmpty)
-                  ? Center(
-                      child: Text(
-                        "No posts from friends, or no friends added yet",
-                        style: backgroundTextStyle,
-                      ),
+                  ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              "No posts from friends, or no friends added yet",
+                              style: backgroundTextStyle,
+                            ),
+                          ),
+                        ],
+                      )],
                     )
                   : ListView.builder(
                       physics: ClampingScrollPhysics(),

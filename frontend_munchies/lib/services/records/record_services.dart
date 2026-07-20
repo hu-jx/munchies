@@ -7,8 +7,8 @@ import 'package:frontend_munchies/models/record.dart';
 import 'package:http/http.dart' as http;
 
 class RecordServices {
-  // static const String _baseUrl = "http://10.0.2.2:3000/api";
-  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  static const String _baseUrl = "http://10.0.2.2:3000/api";
+  // static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   //POST http request (createRec)
   static Future<void> createRecord(String idToken, Record record) async {
@@ -154,7 +154,7 @@ class RecordServices {
     String id,
     Map<String, dynamic> updates,
   ) async {
-    // debugPrint("AT RECORD SERVICES ${updates.toString()}");
+    debugPrint("AT RECORD SERVICES ${updates.toString()}");
     var headers = {
       'Authorization': 'Bearer $idToken',
       'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ class RecordServices {
     Map<String, String> data = updates.map(
       (key, value) => MapEntry(key, value.toString()),
     );
-
+    debugPrint("UPDATES ARE $data");
     request.fields.addAll(data);
     request.headers.addAll(headers);
 
