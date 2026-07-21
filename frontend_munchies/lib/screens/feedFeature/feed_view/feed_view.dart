@@ -150,7 +150,7 @@ class _FeedViewState extends State<FeedView> {
                       )],
                     )
                   : ListView.builder(
-                      physics: ClampingScrollPhysics(),
+                      physics: AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(8),
                       itemCount: friendsPosts.length,
                       itemBuilder: (BuildContext context, int index) {
