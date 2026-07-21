@@ -168,7 +168,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
                     //CAPTION HERE
                     (widget.record.details == null)
                         ? Row()
-                        : Row(
+                        : widget.record.details!.isEmpty ? Row() : Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                             children: [
