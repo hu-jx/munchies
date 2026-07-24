@@ -14,7 +14,7 @@ const recordSchema = new Schema({
     user_uid: {
         type: String,
         required: true,
-        unique: true,
+        //unique: true,
         trim: true,
         immutable: true
     },
