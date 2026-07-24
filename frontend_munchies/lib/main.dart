@@ -11,10 +11,25 @@ import 'package:frontend_munchies/screens/authentication/view_model/authenticati
 import 'package:frontend_munchies/services/notification_services.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (kIsWeb) {}
+  else if (Platform.isAndroid) {
+    await initializeNotif();
+  }
+  runApp(
+    Provider<RecordRepository>(
+      create: (context) => RecordRepoImpl(),
+      child: const MainApp(),
+    ),
+  );
+}
+Future<void> initializeNotif() async {
+  
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 
   const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -31,13 +46,6 @@ void main() async {
         AndroidFlutterLocalNotificationsPlugin
       >()
       ?.createNotificationChannel(channel);
-
-  runApp(
-    Provider<RecordRepository>(
-      create: (context) => RecordRepoImpl(),
-      child: const MainApp(),
-    ),
-  );
 }
 
 @pragma('vm:entry-point')

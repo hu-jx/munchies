@@ -13,8 +13,9 @@ import streakRouter from './routes/streak_routes.js'
 import recommendationRouter from './routes/recommendations_routes.js'
 import testNotifRouter from './routes/testNotifs_routes.js'
 import { startScheduling } from './utils/notif_schedular.js'
-
+import cors from 'cors';
 const app = express()
+app.use(cors())
 const PORT = process.env.PORT || 3000
 
 //Configuration

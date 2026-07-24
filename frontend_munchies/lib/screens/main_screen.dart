@@ -10,6 +10,8 @@ import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/logging_options.dart';
 import 'package:popover/popover.dart';
 import 'package:provider/provider.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class Homepage extends StatefulWidget {
   final List<Widget> viewOptions;
@@ -60,7 +62,10 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
-    getToken();
+    if (kIsWeb) {}
+    else if (Platform.isAndroid) {
+      getToken();
+    }
     Provider.of<RecordRepository>(context, listen: false);
   }
 
