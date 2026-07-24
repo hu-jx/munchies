@@ -10,7 +10,6 @@ import 'package:frontend_munchies/screens/activities/view_models/activities_view
 import 'package:frontend_munchies/screens/activities/views/activities.dart';
 import 'package:frontend_munchies/screens/activities/views/activities_widgets/record_card.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/fields/item_name.dart';
-import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/logging_form.dart';
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:frontend_munchies/models/record.dart';
