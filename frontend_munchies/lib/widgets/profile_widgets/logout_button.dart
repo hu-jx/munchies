@@ -44,11 +44,12 @@ class _LogoutButtonState extends State<LogoutButton> {
   Future<void> _onLogoutPressed() async {
     await Authentication.logout();
     if (!mounted) return;
-    Navigator.push(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
         builder: (context) => LoginPage(authentication: Authentication.real()),
       ),
+      (Route<dynamic> route) => false,
     );
   }
 
