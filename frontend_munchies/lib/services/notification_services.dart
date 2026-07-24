@@ -4,8 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 
 class NotificationServices {
-  // static const String _baseUrl = "http://10.0.2.2:3000/api";
-  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  static const String _baseUrl = "http://localhost:3000/api";
+  // static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   static Future<void> init() async {
     final notificationSettings = await FirebaseMessaging.instance

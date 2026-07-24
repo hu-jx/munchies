@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -57,6 +54,14 @@ class DefaultFirebaseOptions {
     appId: '1:566827527571:android:d7c71975fa798566238c66',
     messagingSenderId: '566827527571',
     projectId: 'munchies-auth',
+    storageBucket: 'munchies-auth.firebasestorage.app',
+  );
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyAzElILtlBsIh-mkEoLIq3nlAxhNRifCGE',
+    appId: '1:566827527571:web:93816817e7bd99b1238c66',
+    messagingSenderId: '566827527571',
+    projectId: 'munchies-auth',
+    authDomain: 'munchies-auth.firebaseapp.com',
     storageBucket: 'munchies-auth.firebasestorage.app',
   );
 }

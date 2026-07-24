@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class RecommendationServices {
-  // static const String _baseUrl = "http://10.0.2.2:3000/api";
-  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  static const String _baseUrl = "http://localhost:3000/api";
+  // static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   static Future<Map<String, dynamic>> getRecommendation({
     required String idToken,
