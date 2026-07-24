@@ -110,12 +110,12 @@ class _FeedViewState extends State<FeedView> {
         width: width,
         height: height * 0.9,
         color: Colours.lightBeige,
-        child: Center(child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(color: Colours.greyPink),
-          ],
-        )),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [CircularProgressIndicator(color: Colours.greyPink)],
+          ),
+        ),
       );
     }
 
@@ -134,20 +134,32 @@ class _FeedViewState extends State<FeedView> {
                 await loadFriendsPosts();
               },
               child: ((friendsPosts.isEmpty)
-                  ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              "No posts from friends, or no friends added yet",
-                              style: backgroundTextStyle,
-                            ),
+                  ? LayoutBuilder(
+                      builder: (context, constraint) => SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraint.maxHeight,
                           ),
-                        ],
-                      )],
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      "No posts from friends, or no friends added yet",
+                                      style: backgroundTextStyle,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     )
                   : ListView.builder(
                       physics: AlwaysScrollableScrollPhysics(),
