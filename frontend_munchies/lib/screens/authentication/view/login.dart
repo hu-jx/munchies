@@ -68,131 +68,138 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget buildCenter() {
-    return SizedBox(
-      width: 342.0,
-      // height
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(height: 5),
-          Text(
-            'MUNCHIES',
-            style: GoogleFonts.cherryBombOne(
-              color: Colours.greyPink,
-              fontSize: 52.0,
-            ),
-          ),
-          Text(
-            'You need an account to continue!',
-            style: GoogleFonts.poppins(color: Colours.greyPink, fontSize: 16.0),
-          ),
-          SizedBox(height: 10.0),
-          buildTextfields(),
-          _isLoading
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    // SizedBox(height: MediaQuery.of(context).size.height * 0.02,),
-                    Padding(
-                      padding: const EdgeInsets.all(40),
-                      child: SizedBox(
-                        height: 10,
-                        width: 298,
-                        child: LinearProgressIndicator(
-                          color: Colours.greyPink,
-                          backgroundColor: Colours.darkerBeige,
-                          // strokeWidth: 6.0,
-                        ),
-                        // height: 60,
-                        //   width: 60,
-                        //   child: CircularProgressIndicator(
-                        //     color: Colours.greyPink,
-                        //     backgroundColor: Colours.darkerBeige,
-                        //     strokeWidth: 6.0,)
-                      ),
-                    ),
-                  ],
-                )
-              : Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+    return ScrollConfiguration(
+      behavior: ScrollBehavior().copyWith(overscroll: false),
+      child: SingleChildScrollView(
+        physics: ClampingScrollPhysics(),
+        child: SizedBox(
+          width: 342.0,
+          // height
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 5),
+              Text(
+                'MUNCHIES',
+                style: GoogleFonts.cherryBombOne(
+                  color: Colours.greyPink,
+                  fontSize: 52.0,
+                ),
+              ),
+              Text(
+                'You need an account to continue!',
+                style: GoogleFonts.poppins(color: Colours.greyPink, fontSize: 16.0),
+              ),
+              SizedBox(height: 10.0),
+              buildTextfields(),
+              _isLoading
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ResetPage(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            'Forget password',
-                            style: GoogleFonts.poppins(
-                              color: Colours.grey,
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colours.grey,
+                        // SizedBox(height: MediaQuery.of(context).size.height * 0.02,),
+                        Padding(
+                          padding: const EdgeInsets.all(40),
+                          child: SizedBox(
+                            height: 10,
+                            width: 298,
+                            child: LinearProgressIndicator(
+                              color: Colours.greyPink,
+                              backgroundColor: Colours.darkerBeige,
+                              // strokeWidth: 6.0,
                             ),
+                            // height: 60,
+                            //   width: 60,
+                            //   child: CircularProgressIndicator(
+                            //     color: Colours.greyPink,
+                            //     backgroundColor: Colours.darkerBeige,
+                            //     strokeWidth: 6.0,)
                           ),
                         ),
                       ],
-                    ),
-                    //disable button while trying to log in to prevent multiple navigation.
-                    //enable button once logged in
-                    AppButton(
-                      text: 'Login',
-                      onPressed: () async {
-                        if (formKey.currentState?.validate() == true) {
-                          await tryLogin();
-                        }
-                      },
-                      size: Size(298, 48),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    )
+                  : Column(
                       children: [
-                        Flexible(
-                          fit: FlexFit.loose,
-                          child: Text(
-                            'New to Munchies?',
-                            style: GoogleFonts.poppins(color: Colours.grey),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RegisterPage(
-                                  authentication: Authentication.real(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ResetPage(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'Forget password',
+                                style: GoogleFonts.poppins(
+                                  color: Colours.grey,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: Colours.grey,
                                 ),
                               ),
-                            );
-                            //redirect to sign up page
-                          },
-                          child: Text(
-                            'Sign up now!',
-                            style: GoogleFonts.poppins(
-                              color: Colours.greyPink,
-                              decorationColor: Colours.greyPink,
-                              decoration: TextDecoration.underline,
                             ),
-                          ),
+                          ],
+                        ),
+                        //disable button while trying to log in to prevent multiple navigation.
+                        //enable button once logged in
+                        AppButton(
+                          text: 'Login',
+                          onPressed: () async {
+                            if (formKey.currentState?.validate() == true) {
+                              FocusScope.of(context).unfocus(); 
+                              await tryLogin();
+                            }
+                          },
+                          size: Size(298, 48),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: Text(
+                                'New to Munchies?',
+                                style: GoogleFonts.poppins(color: Colours.grey),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => RegisterPage(
+                                      authentication: Authentication.real(),
+                                    ),
+                                  ),
+                                );
+                                //redirect to sign up page
+                              },
+                              child: Text(
+                                'Sign up now!',
+                                style: GoogleFonts.poppins(
+                                  color: Colours.greyPink,
+                                  decorationColor: Colours.greyPink,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-          //Text("test"),
-          ShowErrorMessage(errorMessage: errorMessage),
-          // Text(
-          //   errorMessage ?? "",
-          //   style: GoogleFonts.poppins(color: Colors.red, fontSize: 14.0),
-          // ),
-        ],
+              //Text("test"),
+              ShowErrorMessage(errorMessage: errorMessage),
+              // Text(
+              //   errorMessage ?? "",
+              //   style: GoogleFonts.poppins(color: Colors.red, fontSize: 14.0),
+              // ),
+            ],
+          ),
+        ),
       ),
     );
   }
