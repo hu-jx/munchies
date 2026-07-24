@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:frontend_munchies/screens/activities/data/repositories/record_changer.dart';
 import 'package:frontend_munchies/screens/activities/domain/repositories/record_repo.dart';
 import 'package:frontend_munchies/screens/activities/views/activities_widgets/record_card.dart';
 import 'package:frontend_munchies/screens/authentication/view/login.dart';
@@ -15,7 +16,6 @@ import 'package:frontend_munchies/screens/loggingFeature/views/logging_widgets/i
 import 'package:frontend_munchies/screens/loggingFeature/views/tracking.dart';
 import 'package:frontend_munchies/screens/main_screen.dart';
 import 'package:frontend_munchies/widgets/button.dart';
-import 'package:frontend_munchies/widgets/ignore_widgets/record_changer.dart';
 import 'package:frontend_munchies/main.dart' as app;
 import 'package:provider/provider.dart';
 
