@@ -24,6 +24,9 @@ if (!fs.existsSync('./uploads')) {
 }
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
+app.get('/ping', (req, res) => {
+  res.status(200).send('OK')
+})
 app.use('/api', authRouter)
 app.use('/api', recordRouter)
 app.use('/api', userRouter)

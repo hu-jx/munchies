@@ -25,7 +25,6 @@ class GoalServices implements GoalServicesRepo {
       } else if (goal[0] is! Map<String, dynamic>) {
           throw Exception('Unexpected data format');
       }
-      debugPrint("THE LATEST GOAL IS $goal");
       return Goal.fromJson(goal[0]);
     } else if (response.statusCode == 204) {
       return null;
@@ -55,7 +54,6 @@ class GoalServices implements GoalServicesRepo {
         throw Exception('Unexpected data format');
       }
       data.map((key, val) {
-          debugPrint("TYPES ARE $val");
           return MapEntry(key, val);
         } );
       return [data['streak'], data['last_success']];
@@ -82,7 +80,6 @@ class GoalServices implements GoalServicesRepo {
 
   @override
   Future<void> updateGoalById(http.Client? client, String idToken, Map<String, dynamic> updates, String goalId) async {
-    debugPrint('reached services');
     final httpClient = client ?? http.Client();
     updates.removeWhere((key, value) => value == null);
     updates = updates.map((key, value) => MapEntry(key.toString(), value.toString()),);
@@ -92,7 +89,6 @@ class GoalServices implements GoalServicesRepo {
       },
       body: updates
     );
-    debugPrint('completed http call');
 
     if (response.statusCode != 201) {
       throw Exception('Failed to update current goal');

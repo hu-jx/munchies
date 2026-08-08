@@ -194,6 +194,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             text: 'Sign up now!',
                             onPressed: () async {
                               if (formKey.currentState?.validate() == true) {
+                                FocusScope.of(context).unfocus(); 
                                 await tryRegister();
                               }
                             },

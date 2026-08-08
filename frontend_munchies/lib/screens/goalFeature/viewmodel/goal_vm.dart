@@ -123,7 +123,6 @@ class GoalViewModel extends ChangeNotifier {
 
   //the only thing a user can update is the quantity
   Future<void> updateLatestGoal(int quantity) async {
-    debugPrint('ended at updateLatestGoal in vm');
     String? curr_goal_id = _latestGoal?.goal_id;
     if (curr_goal_id == null || _latestGoal == null) {
       throw Exception('Goal could not be accessed or no goals to update');
@@ -155,7 +154,6 @@ class GoalViewModel extends ChangeNotifier {
       } else {
         int curr_qty = _latestGoal!.quantity;
         if (quantity > curr_qty) {
-          debugPrint('ended at createHigherGoal in vm');
           await goalRepo.createHigherGoal(
             Goal(
               start_date: start_date ?? DateTime.now(),
@@ -164,14 +162,11 @@ class GoalViewModel extends ChangeNotifier {
             ),
           );
         } else if (isSameWeek(_latestGoal!.start_date, start_date ?? DateTime.now())) {
-          debugPrint('ended at updateGoalById in vm');
-          debugPrint(_latestGoal?.goal_id.toString());
           //update goal by id
           await goalRepo.updateGoalById(_latestGoal!.goal_id!, {
             'quantity': quantity,
           });
         } else if (quantity < curr_qty) {
-          debugPrint('ended at createNewGoal in vm');
           //create new higher goal
           await goalRepo.createNewGoal(
             Goal(
@@ -193,7 +188,6 @@ class GoalViewModel extends ChangeNotifier {
   bool isSameWeek(DateTime date1, DateTime date2) {
     DateTime monday1 = date1.subtract(Duration(days: date1.weekday - 1));
     DateTime monday2 = date2.subtract(Duration(days: date2.weekday - 1));
-    debugPrint(monday1.toIso8601String() + monday2.toIso8601String());
 
     return monday1.year == monday2.year &&
         monday1.month == monday2.month &&

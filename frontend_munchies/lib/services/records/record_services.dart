@@ -154,7 +154,6 @@ class RecordServices {
     String id,
     Map<String, dynamic> updates,
   ) async {
-    debugPrint("AT RECORD SERVICES ${updates.toString()}");
     var headers = {
       'Authorization': 'Bearer $idToken',
       'Content-Type': 'application/json',
@@ -173,7 +172,6 @@ class RecordServices {
     Map<String, String> data = updates.map(
       (key, value) => MapEntry(key, value.toString()),
     );
-    debugPrint("UPDATES ARE $data");
     request.fields.addAll(data);
     request.headers.addAll(headers);
 
@@ -275,7 +273,7 @@ class RecordServices {
       }
       return recordsList;
     } else {
-      debugPrint('Status: ${res.statusCode}, Body: ${res.body}, Reason: ${res.reasonPhrase}');
+      // debugPrint('Status: ${res.statusCode}, Body: ${res.body}, Reason: ${res.reasonPhrase}');
       //Exception: Failed to fetch the list of friends posts
       throw Exception('Failed to fetch the list of friends posts');
     }
@@ -343,11 +341,10 @@ class RecordServices {
         throw Exception('No records found');
       } else {
         if (consumption[0] is! Map<String, dynamic>) {
-          debugPrint('reached here');
           throw Exception('Unexpected data format');
         }
       }
-      debugPrint("${consumption[0]} is before count then ${consumption[0]['count']} is after");
+      // debugPrint("${consumption[0]} is before count then ${consumption[0]['count']} is after");
       return consumption[0]['count'] ?? 0;
     } else {
       debugPrint(res.reasonPhrase);

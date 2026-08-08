@@ -81,7 +81,7 @@ class GoalPostView extends StatelessWidget {
                           children: [
                             SizedBox(height: height * 0.05,),
                             Text(
-                              'No goals yet!\nCreate one today!',
+                              'No goals yet!\nCreate a new daily maximum consumption goal!',
                               style: backgroundTextStyle,
                               textAlign: TextAlign.center,
                             ),
@@ -186,9 +186,7 @@ class GoalPostView extends StatelessWidget {
               actions: [
                 TapDebouncer(
                   onTap: () async {
-                    debugPrint("Reached onTap");
                     if (_formKey.currentState?.validate() == true) {
-                      debugPrint("goalController text is ${goalController.text}");
                       await viewModel.onSavePressed(
                         int.parse(goalController.text),
                       );

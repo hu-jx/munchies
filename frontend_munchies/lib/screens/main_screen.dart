@@ -49,13 +49,13 @@ class _HomepageState extends State<Homepage> {
   //REMOVE AFT JS TO GET TOKENS FOR NOTIF
   void getToken() async {
     if (widget.messaging != null) {
-      debugPrint("GOT HERE");
+      // debugPrint("GOT HERE");
       return;
     } else {
-      debugPrint("ENTERED NORMAL FIREBASE MESSAGING");
+      // debugPrint("ENTERED NORMAL FIREBASE MESSAGING");
     await FirebaseMessaging.instance.deleteToken();
     String? token = await FirebaseMessaging.instance.getToken();
-    debugPrint("FCM TOKEN: $token");
+    // debugPrint("FCM TOKEN: $token");
     }
   }
 
