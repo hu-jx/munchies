@@ -65,5 +65,6 @@ class ProfileVM extends ChangeNotifier implements ProfileVMRepo {
     }
   }
 
+  @override
   bool get isLoading => _isLoading;
 }
