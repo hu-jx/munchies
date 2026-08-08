@@ -12,7 +12,7 @@ class ImageSelectionButton extends StatefulWidget {
     required this.sendBackPhotoFile,
     required this.boxSize,
     this.existing_url,
-    this.existing_photo_file
+    this.existing_photo_file,
   });
 
   final Function(File photo_file) sendBackPhotoFile;
@@ -29,64 +29,63 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
   void checkIfUpdate() {
     if (widget.existing_url != null) {
       if (!mounted) return;
-    setState(() {
-      image = Image.network(widget.existing_url!, fit: BoxFit.contain);
-    });
+      setState(() {
+        image = Image.network(widget.existing_url!, fit: BoxFit.contain);
+      });
+    }
+    if (widget.existing_photo_file != null) {
+      if (!mounted) return;
+      setState(() {
+        image = Image.file(widget.existing_photo_file!);
+      });
+    }
   }
-  if (widget.existing_photo_file != null) {
-    if (!mounted) return;
-    setState(() {
-      image = Image.file(widget.existing_photo_file!);
-    });
-  }
-}
 
-@override
+  @override
   void initState() {
     super.initState();
     checkIfUpdate();
-    }
-  
+  }
 
   @override
-  Widget build(BuildContext context) {    
-      return ElevatedButton(
-        onPressed: () {
-          _onImagePickerPressed(context);
-        } ,
-        style: ButtonStyle(
-          backgroundColor: WidgetStatePropertyAll(Colours.lightBeige),
-          fixedSize: WidgetStatePropertyAll(
-            widget.boxSize,
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        _onImagePickerPressed(context);
+      },
+      style: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(Colours.lightBeige),
+        fixedSize: WidgetStatePropertyAll(widget.boxSize),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: Colors.brown.withValues(alpha: 0.5)),
           ),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: BorderSide(color: Colors.brown.withValues(alpha: 0.5)),
-            ),
-          ),
-          elevation: WidgetStatePropertyAll(0.0),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: (image == null) ?
-           Text(
-          "Add a photo!",
-          textAlign: TextAlign.center,
-          style: backgroundTextStyle,)
-        : Padding(
-          padding: EdgeInsetsGeometry.all(8.0),
-          child: image,
-      ));
+        elevation: WidgetStatePropertyAll(0.0),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: (image == null)
+          ? Text(
+              "Add a photo!",
+              textAlign: TextAlign.center,
+              style: backgroundTextStyle,
+            )
+          : Padding(padding: EdgeInsetsGeometry.all(8.0), child: image),
+    );
   }
 
   Future<void> _onImagePickerPressed(BuildContext context) async {
     await showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
-        return SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: MediaQuery.of(context).size.width,
+              maxWidth: MediaQuery.of(context).size.width,
+            ),
             child: Column(
               mainAxisSize: .min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -131,8 +130,8 @@ class _ImageSelectionButtonState extends State<ImageSelectionButton> {
     if (selected == null) return;
     if (mounted) {
       setState(() {
-      image = Image.file(File(selected.path), fit: BoxFit.contain);
-    });
+        image = Image.file(File(selected.path), fit: BoxFit.contain);
+      });
     }
 
     widget.sendBackPhotoFile.call(File(selected.path));
