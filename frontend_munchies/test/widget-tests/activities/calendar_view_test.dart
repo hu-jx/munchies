@@ -16,10 +16,14 @@ void main() {
   late MockRecordRepo mockRepo;
   late StreamController<void> streamController;
   late List<Record> mockRecords;
-  late List<Record> julyRec;
+  late List<Record> thisMonthRecords;
   late CalendarViewModel viewModel;
 
   setUp(() {
+    final int month = DateTime.now().month;
+    final int currDay = DateTime.now().day;
+    final List<int> testDays = currDay < 28 ? [currDay - 1, currDay + 1] : [currDay - 1, currDay - 2];
+    
     mockRecords = [
         Record(
           record_id: 'id1',
@@ -39,33 +43,32 @@ void main() {
         ),
         Record(
           record_id: 'id3',
-          itemName: 'June test 2',
-          date: DateTime(2026, 6, 25),
+          itemName: 'This month test 1',
+          date: DateTime(2026, month, testDays[0]),
           cost: 500,
           isFavourited: false,
           isVisible: false,
         ),
         Record(
           record_id: 'id4',
-          itemName: 'July test',
-          date: DateTime(2026, 7, 1),
+          itemName: 'This month test 2',
+          date: DateTime(2026, month, testDays[1]),
           cost: 500,
           isFavourited: false,
           isVisible: false,
         ),
       ];
-      julyRec = mockRecords.sublist(3, 4);
+      thisMonthRecords = mockRecords.sublist(2, 4);
     mockRepo = MockRecordRepo();
     streamController = StreamController<void>.broadcast();
     when(
       () => mockRepo.recordStream,
     ).thenAnswer((_) => streamController.stream);
     when(
-        () => mockRepo.fetchAllRecords({'monthly': '7,2026'}),
-      ).thenAnswer((_) async => julyRec);
+        () => mockRepo.fetchAllRecords({'monthly': '$month,2026'}),
+      ).thenAnswer((_) async => thisMonthRecords);
     viewModel = CalendarViewModel(recordRepo: mockRepo);
   });
-
 
 
   Widget createTestCalendar() {
@@ -94,12 +97,12 @@ void main() {
     await loadCalendar(tester);
     expect(find.byType(TableCalendar), findsOne);
     expect(find.text('Monthly Logs'), findsOne);
-    expect(find.byType(RecordCard), findsNWidgets(1));
+    expect(find.byType(RecordCard), findsNWidgets(2));
   });
 
   testWidgets('check for icons', (tester) async {
     await loadCalendar(tester);
-    expect(find.byIcon((Icons.cookie_rounded)), findsNWidgets(1));
+    expect(find.byIcon((Icons.cookie_rounded)), findsNWidgets(2));
   });
 
   testWidgets('click on icon to show only records of that date', (tester) async {
@@ -114,9 +117,12 @@ void main() {
     await tester.tap(find.byIcon(Icons.cookie_rounded).first);
     await tester.pumpAndSettle();
     
+    await tester.scrollUntilVisible(find.byIcon(Icons.refresh_rounded), 200.0,
+      scrollable: find.byType(Scrollable).last,);
+      await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.refresh_rounded));
     await tester.pumpAndSettle();
 
-    expect(find.byType(RecordCard), findsNWidgets(1));
+    expect(find.byType(RecordCard), findsNWidgets(2));
   });
 }

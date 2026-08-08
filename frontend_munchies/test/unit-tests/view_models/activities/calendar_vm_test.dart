@@ -15,13 +15,22 @@ void main() {
   late List<Record> mockRecords;
   late List<Record> mayRecords;
   late List<Record> juneRecords;
-  late List<Record> julyRecords;
+  late List<Record> thisMonthRecords;
   late Map<String, String> mayQuery;
   late Map<String, String> juneQuery;
-  late Map<String, String> julyQuery;
+  late Map<String, String> thisMonthQuery;
   late Map<String, String> aprilQuery;
+  late int month;
+  late List<int> testDays;
+
+  setUpAll(() {
+    month = DateTime.now().month;
+    final int currDay = DateTime.now().day;
+    testDays = currDay < 28 ? [currDay - 1, currDay + 1] : [currDay - 1, currDay - 2];
+  });
 
   setUp(() {
+   
     mockRecords = [
         Record(
           itemName: 'May test',
@@ -38,8 +47,8 @@ void main() {
           isVisible: false,
         ),
         Record(
-          itemName: 'July test',
-          date: DateTime(2026, 7, 1),
+          itemName: 'this month test',
+          date: DateTime(2026, month, testDays[0]),
           cost: 500,
           isFavourited: false,
           isVisible: false,
@@ -47,11 +56,11 @@ void main() {
       ];
       mayRecords = mockRecords.sublist(0, 1);
       juneRecords = mockRecords.sublist(1, 2);
-      julyRecords = mockRecords.sublist(2, 3);
+      thisMonthRecords = mockRecords.sublist(2, 3);
       aprilQuery = {'monthly': '4,2026'};
       mayQuery = {'monthly': '5,2026'};
       juneQuery = {'monthly': '6,2026'};
-      julyQuery = {'monthly': '7,2026'};
+      thisMonthQuery = {'monthly': '$month,2026'};
     mockRepo = MockRecordRepo();
     streamController = StreamController<void>.broadcast();
     when(
@@ -97,7 +106,7 @@ void main() {
 
     setUp(() async {
       when(
-        () => mockRepo.fetchAllRecords({'monthly': '7,2026'}),
+        () => mockRepo.fetchAllRecords({'monthly': '$month,2026'}),
       ).thenAnswer((_) async => mockRecords);
       viewModel = CalendarViewModel(recordRepo: mockRepo);
       await pumpEventQueue();
@@ -111,7 +120,7 @@ void main() {
         expect(viewModel.datesWithRecord, [
           DateTime(2026, 5, 1),
           DateTime(2026, 6, 22),
-          DateTime(2026, 7, 1)
+          DateTime(2026, month, testDays[0])
         ]);
         expect(viewModel.recordDetails, mockRecords);
       },
@@ -145,21 +154,21 @@ void main() {
       mockRecords = [
         Record(
           itemName: 'Monthly test',
-          date: DateTime(2026, 7, 22),
+          date: DateTime(2026, month, testDays[0]),
           cost: 500,
           isFavourited: false,
           isVisible: false,
         ),
         Record(
           itemName: 'Selected day test',
-          date: DateTime(2026, 7, 1),
+          date: DateTime(2026, month, testDays[1]),
           cost: 500,
           isFavourited: false,
           isVisible: false,
         ),
       ];
-      mockDateList = [DateTime(2026, 7, 22), DateTime(2026, 7, 1)];
-      query = {'monthly': '7,2026'};
+      mockDateList = [DateTime(2026, month, testDays[0]), DateTime(2026, month, testDays[1])];
+      query = {'monthly': '$month,2026'};
     });
     //test on success
     test(
@@ -169,11 +178,11 @@ void main() {
           () => mockRepo.fetchAllRecords(query),
         ).thenAnswer((_) async => mockRecords);
         CalendarViewModel viewModel = CalendarViewModel(recordRepo: mockRepo);
-        viewModel.getMonthlyRecords(DateTime(2026, 7, 1));
+        viewModel.getMonthlyRecords(DateTime(2026, month, testDays[0]));
         await pumpEventQueue();
 
         expect(viewModel.recordDetails, mockRecords);
-        expect(viewModel.focusedDay, DateTime(2026, 7, 1));
+        expect(viewModel.focusedDay, DateTime(2026, month, testDays[0]));
         expect(viewModel.isLoading, false);
         expect(viewModel.errorMessage, null);
         expect(viewModel.selectedDay, null);
@@ -205,7 +214,7 @@ void main() {
         final CancelableOperation? firstOperation = viewModel.fetchOperation;
 
         //second fetch triggered here. execute fetchOperation assignment by pumping event queue
-        viewModel.getMonthlyRecords(DateTime(2026, 7, 1));
+        viewModel.getMonthlyRecords(DateTime(2026, month, testDays[0]));
         await pumpEventQueue();
         final CancelableOperation? secondOperation = viewModel.fetchOperation;
 
@@ -243,7 +252,7 @@ void main() {
         CalendarViewModel viewModel = CalendarViewModel(recordRepo: mockRepo);
         await pumpEventQueue();
 
-        viewModel.getMonthlyRecords(DateTime(2026, 7, 1));
+        viewModel.getMonthlyRecords(DateTime(2026, month, testDays[0]));
         await pumpEventQueue();
 
         expect(viewModel.errorMessage, 'Exception: Test Exception');
@@ -261,8 +270,8 @@ void main() {
 
     setUp(() async {
       when(
-        () => mockRepo.fetchAllRecords({'monthly': '7,2026'}),
-      ).thenAnswer((_) async => julyRecords);
+        () => mockRepo.fetchAllRecords({'monthly': '$month,2026'}),
+      ).thenAnswer((_) async => thisMonthRecords);
       viewModel = CalendarViewModel(recordRepo: mockRepo);
       await pumpEventQueue();
     });
@@ -302,7 +311,7 @@ void main() {
         await Future.delayed(Duration(seconds: 1));
         await pumpEventQueue();
 
-        expect(viewModel.recordDetails, julyRecords);
+        expect(viewModel.recordDetails, thisMonthRecords);
         expect(isSameDay(viewModel.dataAsOfDay, DateTime.now()), true);
         expect(viewModel.isLoading, false);
         expect(viewModel.errorMessage, 'Exception: Test Exception');
@@ -326,8 +335,8 @@ void main() {
           () => mockRepo.fetchAllRecords(juneQuery),
         ).thenAnswer((_) async => juneRecords);
         when(
-          () => mockRepo.fetchAllRecords(julyQuery),
-        ).thenAnswer((_) async => julyRecords);
+          () => mockRepo.fetchAllRecords(thisMonthQuery),
+        ).thenAnswer((_) async => thisMonthRecords);
         CancelableOperation? beforePageChangeOp = viewModel.fetchOperation;
 
         //check that the fetchOperation is NOT reassigned -> it should be the instance before any page change is called
@@ -392,7 +401,4 @@ void main() {
       expect(notified, false);
     });
   });
-
-  //test onDeletePressed - this has been tested in Activities VM and has passed the tests
-  group('onDeletePressed', () {});
 }

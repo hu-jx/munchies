@@ -150,7 +150,7 @@ void main() {
     viewModel = GoalViewModel(goalRepo: mockGoalRepo, recordRepo: mockRecordRepo);
     await loadProfilePage(tester);
 
-    expect(find.text('No goals yet!\nCreate one today!'), findsOne);
+    expect(find.text('No goals yet!\nCreate a new daily maximum consumption goal!'), findsOne);
     expect(find.byType(AppButton), findsOne);
   });
 

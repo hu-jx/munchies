@@ -23,7 +23,6 @@ class ProfileVM extends ChangeNotifier implements ProfileVMRepo {
   }
 
   void getName() async {
-    debugPrint("ENTERED GET NAME");
     try {
       _isLoading = true;
       notifyListeners();
@@ -33,9 +32,7 @@ class ProfileVM extends ChangeNotifier implements ProfileVMRepo {
       _profile = profile;
       _isLoading = false;
       notifyListeners();
-      debugPrint("COMPLETED GET NAME. Profile is ${_profile?.firstName}");
     } catch (e) {
-      debugPrint("ERROR OCCURRED AT GET NAME ${e.toString()}");
       _errorMessage = e.toString();
       _profile = null;
       _isLoading = false;
