@@ -1,4 +1,3 @@
-// routes/testNotification.js (or wherever your routes live)
 import express from 'express';
 import admin from 'firebase-admin';
 
