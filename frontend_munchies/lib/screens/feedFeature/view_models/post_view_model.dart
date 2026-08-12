@@ -27,7 +27,6 @@ Future<void> vmToggleLikes(
     throw Exception("Record does not have an id");
   }
 
-  //if isLiked, unlike, if not liked, like
   if (isLiked) {
     await RecordServices.removeLike(idToken, recordId, client: client);
   } else {

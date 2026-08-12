@@ -29,9 +29,6 @@ export async function sendNotif(user) {
 
 async function scheduleNotifs(user, count) {
     const msPerWeek = 24 * 60 * 60 * 1000
-    //msPerWeek for TESTING PURPOSES
-    //const msPerWeek = 5 * 60 * 1000;
-    //add 1 to deal with the case that count is 0
     const intervals = msPerWeek / (count + 1)
 
     for (let i = 1; i <= count; i++) {

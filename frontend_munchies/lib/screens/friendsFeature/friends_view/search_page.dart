@@ -129,7 +129,5 @@ class _SearchPageState extends State<SearchPage> {
       getCurrentUPTest: widget.getCurrentUPTest,
       checkStatusTest: widget.checkStatusTest,
     );
-
-    //Text(foundUser!.firstName + ": " + foundUser!.emailAddress);
   }
 }

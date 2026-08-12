@@ -16,11 +16,10 @@ export async function createRequest(req, res) {
                 { sender_id: receiver_id, receiver_id: sender_id }
             ]
         })
-        //else if it is already in the database
         if (in_database) {
             //for accepted/pending statuses
             return res.status(400).json({ message: "Request already exists" })
-            //TO ADD, if the status is declined, revive it by updating its status to pending and senders and receivers
+            //FUTURE IMPLEMENTATION(not meant for Orbital submission): if the status is declined, revive it by updating its status to pending and senders and receivers
         }
 
         const new_req = new Request({
@@ -36,9 +35,6 @@ export async function createRequest(req, res) {
 }
 
 
-//update request
-//change the status to accept/decline
-//sender_id=&receiver_id=&response=accepted/declined
 export async function updateRequest(req, res) {
     try {
         var { sender_id, receiver_id, response } = req.query
@@ -84,8 +80,6 @@ export async function updateRequest(req, res) {
 }
 
 
-// get pending requests
-// get_pending_req?user_uid=....
 export async function getPendingRequest(req, res) {
     try {
         //var { user_uid } = req.query

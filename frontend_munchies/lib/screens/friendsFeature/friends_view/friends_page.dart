@@ -107,7 +107,7 @@ class _FriendsPageState extends State<FriendsPage> {
           children: [
             RefreshIndicator(
               onRefresh: () async {
-                await loadFriends(); // or loadPendingRequests()
+                await loadFriends(); 
               },
               child: friendsDisplay(),
             ),
@@ -122,12 +122,6 @@ class _FriendsPageState extends State<FriendsPage> {
     return IconButton(
       onPressed: () {
         Navigator.pop(context);
-        /*
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ProfileView()),
-        );
-        */
       },
       icon: const Icon(Icons.arrow_back),
     );

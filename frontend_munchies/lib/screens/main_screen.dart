@@ -20,11 +20,8 @@ class Homepage extends StatefulWidget {
     super.key,
     this.viewOptions = const [
       HomePageView(),
-      //DashboardView(),
       Dashboard(),
-      //const Center(child: Text('Dashboard. Not yet implemented.')),
       Center(child: Text('Track.')),
-      //const Center(child: Text('Feed. Not yet implemented.')),
       FeedView(),
       ProfilePage(),
     ],
@@ -46,26 +43,9 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
-  //REMOVE AFT JS TO GET TOKENS FOR NOTIF
-  void getToken() async {
-    if (widget.messaging != null) {
-      // debugPrint("GOT HERE");
-      return;
-    } else {
-      // debugPrint("ENTERED NORMAL FIREBASE MESSAGING");
-    await FirebaseMessaging.instance.deleteToken();
-    String? token = await FirebaseMessaging.instance.getToken();
-    // debugPrint("FCM TOKEN: $token");
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    if (kIsWeb) {}
-    else if (Platform.isAndroid) {
-      getToken();
-    }
     Provider.of<RecordRepository>(context, listen: false);
   }
 

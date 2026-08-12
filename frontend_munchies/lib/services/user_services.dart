@@ -9,8 +9,8 @@ import 'package:frontend_munchies/services/auth/auth_exception.dart';
 import 'package:http/http.dart' as http;
 
 class UserServices {
-  static const String _baseUrl = "http://localhost:3000/api";
-  // static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  //static const String _baseUrl = "http://localhost:3000/api";
+  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
   static Future<UserProfile?> searchUser({
     required String emailAddress,
@@ -76,11 +76,6 @@ class UserServices {
       for (final item in decoded) {
         friends.add(UserProfile.fromJson(item as Map<String, dynamic>));
       }
-      /*
-      final List<UserProfile> friends = decoded
-          .map((friend) => UserProfile.fromJson(friend))
-          .toList();
-          */
       return friends;
     } else {
       debugPrint(res.reasonPhrase);
