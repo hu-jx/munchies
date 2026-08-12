@@ -52,8 +52,6 @@ class _FeedViewState extends State<FeedView> {
     final List<Record> result = (widget.getFriendsPostsTest != null)
         ? await widget.getFriendsPostsTest!()
         : await getFriendsPosts();
-    //final result = await getFriendsPosts();
-    print("FETCHING FRIEND POSTS");
 
     final posts = await Future.wait(
       result.map((record) async {
@@ -77,7 +75,6 @@ class _FeedViewState extends State<FeedView> {
     if (!mounted) return;
 
     setState(() {
-      //friendsPosts = result;
       friendsPosts = posts;
       friendsPostsLoading = false;
     });
@@ -97,8 +94,6 @@ class _FeedViewState extends State<FeedView> {
     }
   }
 
-  //ScrollConfiguration(
-  //behavior: ScrollBehavior().copyWith(overscroll: false),
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -167,8 +162,6 @@ class _FeedViewState extends State<FeedView> {
                       itemCount: friendsPosts.length,
                       itemBuilder: (BuildContext context, int index) {
                         return
-                        //height: (friendsPosts[index].photo_URL == null) ? 120 : 350,
-                        // height: getHeight(friendsPosts[index], height),
                         Center(
                           child: RecordDisplay(
                             key: ValueKey(friendsPosts[index].record.record_id),
@@ -178,7 +171,6 @@ class _FeedViewState extends State<FeedView> {
                             height: height,
                             width: width,
                           ),
-                          //child: Text('Entry ${friendsPosts[index]}'),
                         );
                       },
                     )),

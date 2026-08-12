@@ -7,7 +7,6 @@ import 'package:frontend_munchies/screens/feedFeature/view_models/post_view_mode
 import 'package:frontend_munchies/styles/colours.dart';
 import 'package:frontend_munchies/styles/textStyles.dart';
 
-
 class RecordDisplay extends StatefulWidget {
   Post post;
   final UserProfile posterProfile;
@@ -23,15 +22,14 @@ class RecordDisplay extends StatefulWidget {
     required this.record,
     required this.height,
     required this.width,
-    this.toggleLikesTest
-  });  
+    this.toggleLikesTest,
+  });
 
   @override
- State<RecordDisplay> createState() => _RecordDisplayState();
+  State<RecordDisplay> createState() => _RecordDisplayState();
 }
 
 class _RecordDisplayState extends State<RecordDisplay> {
-  
   late var _isLiked = widget.post.isLiked;
   late var likesCount = widget.post.count;
 
@@ -52,11 +50,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
   @override
   Widget build(BuildContext context) {
     final imgUrl = widget.record.photo_URL;
-    /*final likesCount = likes?.length ?? 0;
-    if (widget.posterProfile == null) {
-      return Text("posterProfile missing");
-    }
-    */
+
     return Padding(
       padding: const EdgeInsets.only(
         left: 15.0,
@@ -69,7 +63,6 @@ class _RecordDisplayState extends State<RecordDisplay> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
           color: Colours.darkerBeige,
-          //border: BoxBorder.all(color: Colours.darkBrown),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
@@ -85,10 +78,11 @@ class _RecordDisplayState extends State<RecordDisplay> {
                   children: [
                     LikeButton(
                       isLiked: _isLiked,
-                      onPressed: widget.toggleLikesTest ?? () {
-                        toggleLikes();
-                      },
-                      //onPressed: (() => toggleLikes()),
+                      onPressed:
+                          widget.toggleLikesTest ??
+                          () {
+                            toggleLikes();
+                          },
                     ),
                     Text(likesCount.toString()),
                   ],
@@ -145,11 +139,11 @@ class _RecordDisplayState extends State<RecordDisplay> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(height: 10),
                     //IMAGE HERE
                     imgUrl != null
                         ? Row(
-                          mainAxisSize: MainAxisSize.min,
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SizedBox(
@@ -168,9 +162,11 @@ class _RecordDisplayState extends State<RecordDisplay> {
                     //CAPTION HERE
                     (widget.record.details == null)
                         ? Row()
-                        : widget.record.details!.isEmpty ? Row() : Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
+                        : widget.record.details!.isEmpty
+                        ? Row()
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 widget.posterProfile.firstName.toString(),
@@ -181,7 +177,7 @@ class _RecordDisplayState extends State<RecordDisplay> {
                                   fontWeight: FontWeight(600),
                                 ),
                               ),
-                              SizedBox(width: 10,),
+                              SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   widget.record.details!,
@@ -200,4 +196,4 @@ class _RecordDisplayState extends State<RecordDisplay> {
       ),
     );
   }
-  }
+}

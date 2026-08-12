@@ -346,12 +346,6 @@ export async function getDashboardData(req, res) {
             dateFormat = "month"
         }
 
-        /* debug logs
-        console.log("Querying:", { user_uid, startDate, endDate })
-        console.log("Date objects:", new Date(startDate), new Date(endDate))
-        console.log("view:", view, "dateFormat:", dateFormat)
-        */
-
         if (view === "futureView") {
             //call the prediction model, which should return data in this format
             //predict timeData, predict catData
@@ -426,7 +420,7 @@ export async function getFriendsPost(req, res) {
             {
                 firebase_uid: req.uid,
             })
-        //temp fix, edge case when a user creates a new acc but doesnt hv the id registered i think
+        //edge case when a user creates a new acc but doesnt hv the id registered
         if (!currentUser) {
             return res.status(200).json([]);
         }
@@ -449,15 +443,6 @@ export async function addLike(req, res) {
             {
                 firebase_uid: req.uid,
             })
-
-        /* to check if it is already liked but add to set handles that
-        const already_liked = await Record.findOne({ _id: new ObjectId(id), likes: currentUser.mongo_id})
-
-        //else if it is already in the database
-        if (already_liked) {
-            return res.status(400).json({ message: "Already liked" });
-        }
-            */
 
         await Record.findByIdAndUpdate(new ObjectId(id), {
             $addToSet: { likes: currentUser }

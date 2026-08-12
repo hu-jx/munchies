@@ -6,10 +6,9 @@ import 'package:frontend_munchies/models/friend_request.dart';
 import 'package:http/http.dart' as http;
 
 class RequestServices {
-  static const String _baseUrl = "http://localhost:3000/api";
-  // static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
+  //static const String _baseUrl = "http://localhost:3000/api";
+  static const String _baseUrl = "https://munchies-5dvw.onrender.com/api";
 
-  //RETURNED null in this function
   static Future<String> checkStatus({
     required String sender_id,
     required String receiver_id,
